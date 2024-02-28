@@ -61,9 +61,12 @@ const CreateProfileScreen = ({navigation, route}) => {
                     SetValue={setProfile_name}
                     placeholder='Enter your profile name here...'
                     label='Profile Name:'/>
-                <FlatButton
-                    text="Create Profile"
-                    onPress={handleCreateProfile}/>
+                <View style={{width: '100%', height: 100, paddingTop: 20}}>
+                    <FlatButton
+                        text="Create Profile"
+                        onPress={handleCreateProfile}
+                    />
+                </View>
             </View>
         </View>
     );

@@ -13,10 +13,11 @@ const HomeScreen = ({navigation}) => {
     return(
         <View style={{flexDirection: 'column', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <Text style={{fontSize: 50, fontWeight: 'bold', paddingBottom: 20, textAlign: 'center'}}>Welcome to Grade Manager!</Text>
-          <View>
-              <FlatButton
-                text='Create New Profile'
-                onPress={() => handleGoToCreateProfile(false) }/>
+          <View style={{width: '70%', height: '12%'}}>
+                <FlatButton
+                    text='Create New Profile'
+                    onPress={() => handleGoToCreateProfile(false)}
+                />
           </View>
         </View>
     );
