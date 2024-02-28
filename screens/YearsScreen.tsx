@@ -89,6 +89,8 @@ const YearView = ({year}) => {
 
 const YearsScreen = ({navigation, route}) => {
     const {profile} = route.params;
+    // const profile_name = profile.name;
+    // navigation.setParams({title: {profile_name}});
     console.log('YearsScreen.tsx: profile:', profile);
     console.log('YearsScreen.tsx: profile["name"]:', profile["name"]);
     console.log('YearsScreen.tsx: profile["academic_years"]:', profile["academic_years"]);

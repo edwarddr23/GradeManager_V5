@@ -45,7 +45,7 @@ function App(): React.JSX.Element {
           name="Home"
           component={HomeScreen}
           options={{
-            title: 'Home',
+            // title: 'Home',
             headerStyle: {
               backgroundColor: '#f4511e'
             },
@@ -54,24 +54,33 @@ function App(): React.JSX.Element {
               fontWeight: 'bold'
             },
             // headerTitleAlign: 'center'
-            }}/>
+          }}/>
         <Stack.Screen
           name="Create Profile"
           component={CreateProfileScreen}/>
         <Stack.Screen
           name="Years"
           component={YearsScreen}
-          options={{
+          options={({route}) => ({
             title: 'Academic Years',
+            // title: () => (
+            //   <Text>Hello</Text>
+            // ),
             headerRight: () => (
               <View style={{width: 100, height: 45}}>
                 <FlatButton
                   text="Save"
-                  onPress={(console.log('PRESSED SAVE BUTTON!'))}
+                  onPress={() => {
+                    console.log('PRESSED SAVE BUTTON!');
+                    console.log('Save button: route.params:', route.params);
+                    const {profile} = route.params;
+                    console.log('Save button: profile:', profile);
+                    // console.log('Save button: route.params.name:', route.params);
+                  }}
                 />
               </View>
             )
-          }}/>
+          })}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
