@@ -26,6 +26,7 @@ export default function InputWithLabel ({value, SetValue, placeholder, label}) {
                 onBlur={() => setIsFocus(false)}
                 value={value}
                 placeholder={placeholder}
+                placeholderTextColor='#808080'
                 onChangeText={text => SetValue(text)}
                 onSubmitEditing={() => {
                     console.log('custom :D');

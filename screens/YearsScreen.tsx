@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Feather from 'react-native-vector-icons/Feather'
+import Footer from '../shared/custom_footer'
 
 const YearView = ({year}) => {
     // useStates for TextInputs:
@@ -89,6 +90,8 @@ const YearView = ({year}) => {
 
 const YearsScreen = ({navigation, route}) => {
     const {profile} = route.params;
+    // navigation.setOptions({title: 'Academic Years: ' + profile["name"]});
+    // navigation.setParams({title: profile["name"]});
     // const profile_name = profile.name;
     // navigation.setParams({title: {profile_name}});
     console.log('YearsScreen.tsx: profile:', profile);
@@ -125,9 +128,9 @@ const YearsScreen = ({navigation, route}) => {
     });
 
     return(
-        <View style={ {flex: 1, flexDirection: 'column', alignItems: 'center', paddingTop: 20} } >
+        <View style={ {flex: 1, flexDirection: 'column', alignItems: 'center', paddingTop: 10} } >
             <View style={{width: 80, height: 80}}>
-              <TouchableOpacity 
+            <TouchableOpacity 
                 activeOpacity={0.5} 
                 onPress={() => {
                     console.log('Button Pressed!')
@@ -141,18 +144,22 @@ const YearsScreen = ({navigation, route}) => {
                     },
                     ])
                 }}
-              >
+            >
                 <AntDesign name="pluscircleo" style={styles.plus_icon} size={80}/>
-              </TouchableOpacity>
+            </TouchableOpacity>
             </View>
             <Text style={{fontSize: 17, fontWeight: 'bold', paddingBottom: 5}}>Press the plus sign to add an academic year</Text>
-            <FlatList
-                data={years}
-                renderItem={(curr_year => {
-                  return renderYear(curr_year);
-                })}
-                width='90%'
-            />
+            <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
+                <FlatList
+                    style={{width: '90%', flex: 1, backgroundColor: 'purple'}}
+                    data={years}
+                    renderItem={(curr_year => {
+                        return renderYear(curr_year);
+                    })}
+                />
+                {/* FOOTER */}
+                <Footer profile={profile}/>
+            </View>
         </View>
     );
 }

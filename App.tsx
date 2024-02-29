@@ -64,9 +64,7 @@ function App(): React.JSX.Element {
           component={YearsScreen}
           options={({navigation, route}) => ({
             title: 'Academic Years',
-            // title: () => (
-            //   <Text>Hello</Text>
-            // ),
+            // title: {route.params}["name"],
             headerRight: () => (
               <View style={{width: 100, height: 45}}>
                 <FlatButton
