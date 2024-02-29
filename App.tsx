@@ -34,6 +34,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import HomeScreen from './screens/HomeScreen';
 import CreateProfileScreen from './screens/CreateProfileScreen';
 import YearsScreen from './screens/YearsScreen';
+import SaveScreen from './screens/SaveScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -61,7 +62,7 @@ function App(): React.JSX.Element {
         <Stack.Screen
           name="Years"
           component={YearsScreen}
-          options={({route}) => ({
+          options={({navigation, route}) => ({
             title: 'Academic Years',
             // title: () => (
             //   <Text>Hello</Text>
@@ -75,12 +76,16 @@ function App(): React.JSX.Element {
                     console.log('Save button: route.params:', route.params);
                     const {profile} = route.params;
                     console.log('Save button: profile:', profile);
+                    navigation.navigate("Save", {profile: profile});
                     // console.log('Save button: route.params.name:', route.params);
                   }}
                 />
               </View>
             )
           })}/>
+          <Stack.Screen
+            name="Save"
+            component={SaveScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
