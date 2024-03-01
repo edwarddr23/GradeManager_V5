@@ -35,6 +35,7 @@ import HomeScreen from './screens/HomeScreen';
 import CreateProfileScreen from './screens/CreateProfileScreen';
 import YearsScreen from './screens/YearsScreen';
 import SaveScreen from './screens/SaveScreen';
+import LoadScreen from './screens/LoadScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -84,6 +85,9 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="Save"
             component={SaveScreen}/>
+          <Stack.Screen
+            name="Load"
+            component={LoadScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

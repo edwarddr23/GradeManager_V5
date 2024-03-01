@@ -19,6 +19,10 @@ const initializeProfile = (profile_name) => {
                     {
                         name: "Economics 202",
                         type: "fraction"
+                    },
+                    {
+                        name: "The Friggin 313",
+                        type: "fraction"
                     }
                 ]
             },
@@ -33,6 +37,14 @@ const initializeProfile = (profile_name) => {
                     {
                         name: "Developmental Instruction 301",
                         type: "percentage"
+                    },
+                    {
+                        name: "Liberal Stuff 101",
+                        type: "percentage"
+                    },
+                    {
+                        name: "Biology 101",
+                        type: "fraction"
                     }
                 ]
             }
