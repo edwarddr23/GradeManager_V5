@@ -1,28 +1,117 @@
-import React from 'react'
-import { View, Text } from 'react-native'
-import RNFS from 'react-native-fs'
+import React, { useState } from 'react'
+import { View, Text, ScrollView } from 'react-native'
+
+import storage from '../shared/storage';
+import InputWithLabel from '../shared/custom_text_Inputs';
+import { PrintData } from '../shared/profile_functions';
+import FlatButton from '../shared/custom_buttons';
 
 const LoadScreen = ({navigation}) => {
+    const[loadFileName, setLoadFileName] = useState('');
+    const[fileExists, setFileExists] = useState('');
+    const[profile, setProfile] = useState({});
+
+    const renderProfilePreview = () => {
+        // let exists = fileExists();
+        if(fileExists === 'true') {
+            return(PrintData(profile));
+        }
+        else if(fileExists === 'false') {
+            return(
+                <Text>Profile: "{loadFileName}" could not be found.</Text>
+            );
+        }
+        else {
+            console.log('renderProfilePreview(): fileExists():', fileExists);
+            return(
+                <Text>Profile Preview here...</Text>
+            );
+        }
+    }
+
+    const renderLoadProfileButton = () => {
+        if(fileExists === 'true') {
+            return(
+                <FlatButton 
+                    text={'Load \"' +  loadFileName + '\"'}
+                    onPress={() => {
+                        readFile();
+                        // poosaveToFileHandler(saveFileName);
+                    }}
+                />
+            );
+        }
+        else{
+            return null;
+        }
+    }
+
+    // const saveFileExists = () => {
+    //     if(loadFileName != ''){
+    //         console.log('saveFileExists(): searching for', loadFileName + '...');
+    //         storage.load({key: loadFileName})
+    //             .then((data) => {
+    //                 setFileExists('true')
+    //             })
+    //             .catch((err) => {
+    //                 setFileExists('false')
+    //             });
+    //     }
+    //     else{
+    //         console.log('saveFileExists(): No profile name entered.');
+    //         setFileExists('')
+    //     }
+    // }
 
     // Inspired by https://www.waldo.com/blog/react-native-fs
     const readFile = () => {
-        RNFS.readDir(RNFS.DocumentDirectoryPath)
-            .then((result) => {
-                console.log('LoadScreen.tsx: readFile(): result:', result);
-                return Promise.all([RNFS.stat(result[0].path), result[0].path]);
+        console.log('LoadScreen.tsx: readFile(): Reading from', loadFileName + '...');
+        storage.load({key: loadFileName})
+            .then((data) => {
+                const profile = data.profile;
+                setProfile(profile);
+                setFileExists('true');
+                console.log('LoadScreen.tsx: readFile(): profile:', profile);
             })
-            .then((statResult) => {
-                if(statResult[0].isFile()) {
-                    console.log('LoadScreen.tsx: readFile(): statResult[1]:', RNFS.readFile(statResult[1], 'utf8'));
-                    return RNFS.readFile(statResult[1], 'utf8');
-                }
-            })
+            .catch((err) => {
+                console.warn(err.message);
+                console.log('err.name:', err.name);
+                setFileExists('false');
+            });
     };
 
     return(
-        <View>
-            <Text>Load Screen</Text>
-            {readFile()}
+        <View style={{flexDirection: 'column', flex: 1}}>
+            <View style={{flex: 1, marginVertical: '5%', marginHorizontal: '5%'}}>
+                {/* <View style={{flex: .5}}> */}
+                    <InputWithLabel
+                        value={loadFileName}
+                        SetValue={setLoadFileName}
+                        placeholder={'Enter profile name here...'}
+                        label="Profile Name:"
+                    />
+                    <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
+                {/* </View> */}
+                {/* <Text>"{loadFileName}" exists: {String(saveFileExists())}</Text> */}
+                <View style={{flex: .3, marginTop: '5%'}}>
+                    <FlatButton 
+                        text='Show Preview'
+                        onPress={() => {
+                            readFile();
+                            // poosaveToFileHandler(saveFileName);
+                        }}
+                    />
+                </View>
+                <View style={{flex: 1}}>
+                    <ScrollView style={{paddingTop: '5%'}}>
+                        {renderProfilePreview()}
+                    </ScrollView>
+                </View>
+                <View style={{flex: .3, paddingBottom: '10%'}}>
+                    {renderLoadProfileButton()}
+                </View>
+                {/* <View style={{flex:}}></View> */}
+            </View>
         </View>
     );
 }

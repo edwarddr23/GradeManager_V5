@@ -87,7 +87,10 @@ function App(): React.JSX.Element {
             component={SaveScreen}/>
           <Stack.Screen
             name="Load"
-            component={LoadScreen}/>
+            component={LoadScreen}
+            options={() => ({
+              title: 'Load a Profile'
+            })}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
