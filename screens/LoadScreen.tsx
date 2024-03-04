@@ -35,8 +35,8 @@ const LoadScreen = ({navigation}) => {
                 <FlatButton 
                     text={'Load \"' +  loadFileName + '\"'}
                     onPress={() => {
-                        readFile();
-                        // poosaveToFileHandler(saveFileName);
+                        console.log('renderLoadProfileButton(): profile:', profile);
+                        navigation.navigate('Years', {profile: profile});
                     }}
                 />
             );
@@ -92,8 +92,9 @@ const LoadScreen = ({navigation}) => {
                     />
                     <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
                 {/* </View> */}
+                {readFile()}
                 {/* <Text>"{loadFileName}" exists: {String(saveFileExists())}</Text> */}
-                <View style={{flex: .3, marginTop: '5%'}}>
+                {/* <View style={{flex: .3, marginTop: '5%'}}>
                     <FlatButton 
                         text='Show Preview'
                         onPress={() => {
@@ -101,7 +102,7 @@ const LoadScreen = ({navigation}) => {
                             // poosaveToFileHandler(saveFileName);
                         }}
                     />
-                </View>
+                </View> */}
                 <View style={{flex: 1}}>
                     <ScrollView style={{paddingTop: '5%'}}>
                         {renderProfilePreview()}

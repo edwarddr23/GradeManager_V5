@@ -8,46 +8,46 @@ const initializeProfile = (profile_name) => {
     const profile = {
         name: profile_name,
         academic_years: [
-            {
-                beg_year: 2022,
-                end_year: 2023,
-                classes: [
-                    {
-                        name: "Things 101",
-                        type: "percentage"
-                    },
-                    {
-                        name: "Economics 202",
-                        type: "fraction"
-                    },
-                    {
-                        name: "The Friggin 313",
-                        type: "fraction"
-                    }
-                ]
-            },
-            {
-                beg_year: 2023,
-                end_year: 2024,
-                classes: [
-                    {
-                        name: "Liberal Stuff 101",
-                        type: "percentage"
-                    },
-                    {
-                        name: "Developmental Instruction 301",
-                        type: "percentage"
-                    },
-                    {
-                        name: "Liberal Stuff 101",
-                        type: "percentage"
-                    },
-                    {
-                        name: "Biology 101",
-                        type: "fraction"
-                    }
-                ]
-            }
+            // {
+            //     beg_year: 2022,
+            //     end_year: 2023,
+            //     classes: [
+            //         {
+            //             name: "Things 101",
+            //             type: "percentage"
+            //         },
+            //         {
+            //             name: "Economics 202",
+            //             type: "fraction"
+            //         },
+            //         {
+            //             name: "The Friggin 313",
+            //             type: "fraction"
+            //         }
+            //     ]
+            // },
+            // {
+            //     beg_year: 2023,
+            //     end_year: 2024,
+            //     classes: [
+            //         {
+            //             name: "Liberal Stuff 101",
+            //             type: "percentage"
+            //         },
+            //         {
+            //             name: "Developmental Instruction 301",
+            //             type: "percentage"
+            //         },
+            //         {
+            //             name: "Liberal Stuff 101",
+            //             type: "percentage"
+            //         },
+            //         {
+            //             name: "Biology 101",
+            //             type: "fraction"
+            //         }
+            //     ]
+            // }
         ]
     }
     return profile;
