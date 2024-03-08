@@ -56,12 +56,9 @@ const initializeProfile = (profile_name) => {
 const CreateProfileScreen = ({navigation, route}) => {
     const [profile_name, setProfile_name] = useState('');
 
-    const [isFocus, setIsFocus] = useState(false);
-
     const handleCreateProfile = () => {
         const new_profile = initializeProfile(profile_name);
         return navigation.navigate('Years', {profile: new_profile});
-        // return navigation.navigate('Years', {profile: {new_profile}});
     }
 
     return(
