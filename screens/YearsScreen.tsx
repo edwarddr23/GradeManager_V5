@@ -103,9 +103,7 @@ const YearsScreen = ({navigation, route}) => {
     }, [years]);
 
     const renderYear = ((curr_year) => {
-        // console.log('renderYear(): curr_year:', curr_year);
-        // const y = {curr_year};
-        // console.log('renderYear(): y:', y);
+        console.log('renderYear(): curr_year.item.id:', curr_year.item.id);
         return(
             // Render current semester in a custom SemesterView component
             <YearView year={curr_year} years={years} setYears={setYears} key={curr_year.item.id}/>
@@ -146,7 +144,7 @@ const YearsScreen = ({navigation, route}) => {
                 <FlatList
                     style={{width: '90%', flex: 1}}
                     data={years}
-                    keyExtractor={(item, index) => item.key}
+                    keyExtractor={(item, index) => item.id}
                     renderItem={curr_year => {
                         return renderYear(curr_year);
                     }}
