@@ -37,6 +37,7 @@ import YearsScreen from './screens/YearsScreen';
 import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
 import ClassScreen from './screens/ClassScreen';
+import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -87,6 +88,9 @@ function App(): React.JSX.Element {
             name="Class"
             component={ClassScreen}
           />
+          <Stack.Screen
+            name="Sections"
+            component={ConfigureSectionsScreen}/>
           <Stack.Screen
             name="Save"
             component={SaveScreen}/>

@@ -4,6 +4,20 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import Feather from 'react-native-vector-icons/Feather'
 import Footer from '../shared/custom_footer'
 
+// Initializes an array's elements so that each one has a unique id.
+const initializeArrKeys = (arr) => {
+    let initArr = [...arr];
+    let tmp_nextId = 0;
+    return(arr.map(element => {
+        let tmpElement ={
+            ...element,
+            id: tmp_nextId
+        };
+        tmp_nextId++;
+        return tmpElement;
+    }));
+}
+
 const ClassView = ({curr_class, navigation, profile}) => {
     return(
         <TouchableOpacity 
@@ -22,7 +36,7 @@ const YearView = ({year, years, setYears, navigation, profile}) => {
     const[beg_year, setBeg_year] = useState(String(year.item.beg_year));
     const[end_year, setEnd_year] = useState(String(year.item.end_year));
     const[is_editing, setIs_editing] = useState(false);
-    const[classes, setClasses] = useState(year.item["classes"])
+    const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
 
     const[expanded, setExpanded] = useState(false);
 
@@ -59,21 +73,30 @@ const YearView = ({year, years, setYears, navigation, profile}) => {
                                 {expanded && (<AntDesign name="upcircleo" size={40} color="black"/>)}
                             </TouchableOpacity>
                         </View>
+                        {/* If the academic year is expanded... */}
+                        {/* Show the button to add classes. */}
+                        {expanded && (
+                            <View>
+                                <TouchableOpacity
+                                    style={{alignSelf: 'center'}}
+                                    onPress={() => console.log('adding a class?')}>
+                                    <AntDesign name="pluscircleo" size={40} color="black"/>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        {/* If there's existing classes, display them */}
                         {expanded && classes.length > 0 
                             && (
                                 <View>
-                                    <TouchableOpacity
-                                        style={{alignSelf: 'center'}}
-                                        onPress={() => console.log('adding a class?')}>
-                                        <AntDesign name="pluscircleo" size={40} color="black"/>
-                                    </TouchableOpacity>
                                     {classes.map((curr_class) => {
+                                        console.log('MAP: curr_class:', curr_class);
                                         return(
-                                            <ClassView curr_class={curr_class} navigation={navigation} profile={profile} key={curr_class.id}/>
+                                            <ClassView key={curr_class.id} curr_class={curr_class} navigation={navigation} profile={profile}/>
                                         );
                                     })}
                                 </View>
-                            )}
+                        )}
+                        {/* If there are no existing classes, let the user know that there are none yet.*/}
                         {expanded && classes.length == 0 && (
                             <Text>No classes yet!</Text>
                         )}
@@ -133,25 +156,10 @@ const YearView = ({year, years, setYears, navigation, profile}) => {
     return(handleYearRender());
 }
 
-// Gives each year in years state array an id. This will change on each initial render of YearsScreen. A new id is determined everytime to ensure that there are no jumps in IDs and that they each have a unique ID no matter what.
-const initializeYears = (years) => {
-    let init_years = [...years];
-    let tmp_nextId = 0;
-    init_years = init_years.map(year => {
-        let tmpYear = {
-            ...year,
-            id: tmp_nextId
-        };
-        tmp_nextId += 1;
-        return tmpYear;
-    });
-    return init_years;
-}
-
 const YearsScreen = ({navigation, route}) => {
     const {profile} = route.params;
     
-    const [years, setYears] = useState(initializeYears(profile["academic_years"]));
+    const [years, setYears] = useState(initializeArrKeys(profile["academic_years"]));
 
     const [nextId, setNextId] = useState(() => {
         if(years.length > 0){
