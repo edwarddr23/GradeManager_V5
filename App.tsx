@@ -36,6 +36,7 @@ import CreateProfileScreen from './screens/CreateProfileScreen';
 import YearsScreen from './screens/YearsScreen';
 import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
+import ClassScreen from './screens/ClassScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -82,6 +83,10 @@ function App(): React.JSX.Element {
               </View>
             )
           })}/>
+          <Stack.Screen
+            name="Class"
+            component={ClassScreen}
+          />
           <Stack.Screen
             name="Save"
             component={SaveScreen}/>

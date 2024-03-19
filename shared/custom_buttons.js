@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
         height: '100%',
         padding: 10,
         borderRadius: 10,
-        borderWidth: 3,
+        // borderWidth: 3,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -29,9 +29,10 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
         fontWeight: 'bold',
         textAlign: 'center',
-        fontSize: 17,
+        fontSize: 20,
         // backgroundColor: 'blue',
         width: '100%',
-        height: '100%'
+        height: '100%',
+        color: 'white'
     }
 })
