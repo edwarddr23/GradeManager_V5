@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -38,56 +38,44 @@ import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
 import ClassScreen from './screens/ClassScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
+import { ProfileContent, ProfileContext } from './shared/profile_context';
 
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
+  const[name, setName] = useState('something');
+  let profile: ProfileContent = {
+    name: name,
+    setName: setName
+  };
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            // title: 'Home',
-            headerStyle: {
-              backgroundColor: '#f4511e'
-            },
-            headerTintColor: 'white',
-            headerTitleStyle: {
-              fontWeight: 'bold'
-            },
-            // headerTitleAlign: 'center'
-          }}/>
-        <Stack.Screen
-          name="Create Profile"
-          component={CreateProfileScreen}/>
-        <Stack.Screen
-          name="Years"
-          component={YearsScreen}
-          options={({navigation, route}) => ({
-            title: 'Academic Years',
-            // title: {route.params}["name"],
-            headerRight: () => (
-              <View style={{width: 100, height: 45}}>
-                <FlatButton
-                  text="Save"
-                  onPress={() => {
-                    console.log('PRESSED SAVE BUTTON!');
-                    console.log('Save button: route.params:', route.params);
-                    const {profile} = route.params;
-                    console.log('Save button: profile:', profile);
-                    navigation.navigate("Save", {profile: profile});
-                    // console.log('Save button: route.params.name:', route.params);
-                  }}
-                />
-              </View>
-            )
-          })}/>
+    <ProfileContext.Provider value={ profile }>
+      <NavigationContainer>
+        <Stack.Navigator>
           <Stack.Screen
-            name="Class"
-            component={ClassScreen}
+            name="Home"
+            component={HomeScreen}
+            options={{
+              // title: 'Home',
+              headerStyle: {
+                backgroundColor: '#f4511e'
+              },
+              headerTintColor: 'white',
+              headerTitleStyle: {
+                fontWeight: 'bold'
+              },
+              // headerTitleAlign: 'center'
+            }}/>
+          <Stack.Screen
+            name="Create Profile"
+            component={CreateProfileScreen}/>
+          <Stack.Screen
+            name="Years"
+            component={YearsScreen}
             options={({navigation, route}) => ({
+              title: 'Academic Years',
+              // title: {route.params}["name"],
               headerRight: () => (
                 <View style={{width: 100, height: 45}}>
                   <FlatButton
@@ -103,22 +91,43 @@ function App(): React.JSX.Element {
                   />
                 </View>
               )
-            })}
-          />
-          <Stack.Screen
-            name="Sections"
-            component={ConfigureSectionsScreen}/>
-          <Stack.Screen
-            name="Save"
-            component={SaveScreen}/>
-          <Stack.Screen
-            name="Load"
-            component={LoadScreen}
-            options={() => ({
-              title: 'Load a Profile'
             })}/>
-      </Stack.Navigator>
-    </NavigationContainer>
+            <Stack.Screen
+              name="Class"
+              component={ClassScreen}
+              options={({navigation, route}) => ({
+                headerRight: () => (
+                  <View style={{width: 100, height: 45}}>
+                    <FlatButton
+                      text="Save"
+                      onPress={() => {
+                        console.log('PRESSED SAVE BUTTON!');
+                        console.log('Save button: route.params:', route.params);
+                        const {profile} = route.params;
+                        console.log('Save button: profile:', profile);
+                        navigation.navigate("Save", {profile: profile});
+                        // console.log('Save button: route.params.name:', route.params);
+                      }}
+                    />
+                  </View>
+                )
+              })}
+            />
+            <Stack.Screen
+              name="Sections"
+              component={ConfigureSectionsScreen}/>
+            <Stack.Screen
+              name="Save"
+              component={SaveScreen}/>
+            <Stack.Screen
+              name="Load"
+              component={LoadScreen}
+              options={() => ({
+                title: 'Load a Profile'
+              })}/>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ProfileContext.Provider>
   );
 }
 
