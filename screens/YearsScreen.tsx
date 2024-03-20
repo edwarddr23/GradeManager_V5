@@ -7,85 +7,14 @@ import Footer from '../shared/custom_footer'
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
 import { useProfileContext } from '../shared/profile_context'
-// curr_class={curr_class} classes={classes} year={year} years={years} setYears={setYears} setClasses={setClasses} navigation={navigation} profile={profile}
-const ClassView = ({curr_class, classes, setClasses, year, years, setYears, navigation, profile}) => {
-    const[is_editing, setIs_editing] = useState(false);
-    const[name, setName] = useState(curr_class.name);
 
-    return(
-        <TouchableOpacity 
-            style={{width: '100%', backgroundColor: '#b8b8b8', borderRadius: 10, padding: 10, marginVertical: 10}}
-            onPress={() => {
-                navigation.navigate('Class', {profile: profile, curr_class: curr_class});
-            }}>
-            <View style={{flexDirection: 'row'}}>
-                <View style={{flexDirection: 'column'}}>
-                    {is_editing == false && (
-                        <Text style={{fontWeight: 'bold', fontSize: 22}}>{curr_class.name}:</Text>
-                    )}
-                    {is_editing == true && (
-                        <InputWithLabel value={name} SetValue={setName} placeholder={curr_class.name} label={'Class Name:'}/>
-                    )}
-                    <Text style={{fontSize: 18}}>Grade Type: {curr_class.type}</Text>
-                </View>
-                {/* Button for editing name of a Class. */}
-                {is_editing == false && (
-                    <TouchableOpacity
-                    style={{marginLeft: 'auto', alignSelf: 'center'}}
-                    activeOpacity={0.5}
-                    onPress={() => {
-                        setIs_editing(!is_editing);
-                        // console.log('editing a class?')
-                    }}
-                    >
-                        <AntDesign name="edit" size={40} color="black"/>
-                    </TouchableOpacity>
-                )}
-                {/* Done button for editing the name of a class. */}
-                {is_editing == true && (
-                    <TouchableOpacity
-                    style={{marginLeft: 'auto', alignSelf: 'center'}}
-                        activeOpacity={0.5}
-                        onPress={() => {
-                            // Updating class array in state differently than with years array since a refresh is not forced unless a major change in array classes is found. If there is no immediate re-render initiated, a save click after pushing this done button will result in no changes on the save screen. Inspired by https://dev.to/andyrewlee/how-to-update-an-array-of-objects-in-react-state-3d, but I do not use the spread operator, as the resulting array is too similar and does not cause a re-render.
-                            const currentClassID = classes.findIndex(c => c.id === curr_class.id);
-                            const updatedClass = {...classes[currentClassID], name: name};
-                            const newClasses = classes;
-                            newClasses[currentClassID] = updatedClass;
-                            setClasses(newClasses);
-                            setYears(data => data.map(item => {
-                                // console.log('MAP: item.id:', item.id);
-                                // console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
-                                console.log(`${item.id} == ${year.item.id}:`, (item.id == year.id));
-                                if(item.id !== year.item.id) return item;
-                                else{
-                                    // console.log('DONE BUTTON: year found!');
-                                    return {
-                                        ...item,
-                                        classes: classes
-                                    }
-                                }
-                            }));
-                            console.log('DONE BUTTON: years:', years);
-                            console.log('DONE BUTTON: year.item', year.item);
-                            console.log('DONE BUTTON: year.classes:', year.classes);
-                            setIs_editing(!is_editing);
-                        }}>
-                        <AntDesign name="checkcircleo" size={40} style={{backgroundColor: 'purple'}}/>
-                    </TouchableOpacity>
-                )}
-            </View>
-        </TouchableOpacity>
-    );
-}
-
-const YearView = ({year, years, setYears, navigation}) => {
+const YearView = ({year, years, setYears, classes, setClasses, navigation}) => {
     const profile_context = useProfileContext();
     // useStates for TextInputs:
     const[beg_year, setBeg_year] = useState(String(year.item.beg_year));
     const[end_year, setEnd_year] = useState(String(year.item.end_year));
     const[is_editing, setIs_editing] = useState(false);
-    const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
+    // const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
     
     const[expanded, setExpanded] = useState(false);
 
@@ -93,10 +22,86 @@ const YearView = ({year, years, setYears, navigation}) => {
         setExpanded(!expanded);
     }
 
+    const ClassView = ({curr_class, year}) => {
+        const[is_editingClass, setIs_editingClass] = useState(false);
+        const[name, setName] = useState(curr_class.name);
+        // const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
+    
+        return(
+            <TouchableOpacity 
+                style={{width: '100%', backgroundColor: '#b8b8b8', borderRadius: 10, padding: 10, marginVertical: 10}}
+                onPress={() => {
+                    navigation.navigate('Class', {curr_class: curr_class});
+                }}>
+                <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'column'}}>
+                        {is_editingClass == false && (
+                            <Text style={{fontWeight: 'bold', fontSize: 22}}>{curr_class.name}:</Text>
+                        )}
+                        {is_editingClass == true && (
+                            <InputWithLabel 
+                                value={name} 
+                                setValue={setName} 
+                                extraOnChangeText={() => {}}
+                                placeholder={curr_class.name} 
+                                label={'Class Name:'}/>
+                        )}
+                        <Text style={{fontSize: 18}}>Grade Type: {curr_class.type}</Text>
+                    </View>
+                    {/* Button for editing name of a Class. */}
+                    {is_editingClass == false && (
+                        <TouchableOpacity
+                        style={{marginLeft: 'auto', alignSelf: 'center'}}
+                        activeOpacity={0.5}
+                        onPress={() => {
+                            setIs_editingClass(!is_editingClass);
+                            // console.log('editing a class?')
+                        }}
+                        >
+                            <AntDesign name="edit" size={40} color="black"/>
+                        </TouchableOpacity>
+                    )}
+                    {/* Done button for editing the name of a class. */}
+                    {is_editingClass == true && (
+                        <TouchableOpacity
+                        style={{marginLeft: 'auto', alignSelf: 'center'}}
+                            activeOpacity={0.5}
+                            onPress={() => {
+                                // Updating class array in state differently than with years array since a refresh is not forced unless a major change in array classes is found. If there is no immediate re-render initiated, a save click after pushing this done button will result in no changes on the save screen. Inspired by https://dev.to/andyrewlee/how-to-update-an-array-of-objects-in-react-state-3d, but I do not use the spread operator, as the resulting array is too similar and does not cause a re-render.
+                                const currentClassID = classes.findIndex(c => c.id === curr_class.id);
+                                const updatedClass = {...classes[currentClassID], name: name};
+                                const newClasses = classes;
+                                newClasses[currentClassID] = updatedClass;
+                                setClasses(newClasses);
+                                setYears(data => data.map(item => {
+                                    // console.log('MAP: item.id:', item.id);
+                                    // console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
+                                    console.log(`${item.id} == ${year.item.id}:`, (item.id == year.id));
+                                    if(item.id !== year.item.id) return item;
+                                    else{
+                                        // console.log('DONE BUTTON: year found!');
+                                        return {
+                                            ...item,
+                                            classes: classes
+                                        }
+                                    }
+                                }));
+                                console.log('DONE BUTTON FOR CLASS: expanded', expanded);
+                                setIs_editingClass(!is_editingClass);
+                                console.log(`DONE BUTTON FOR CLASS: is_editingClass: ${is_editingClass}, is_editing: ${is_editing}`);
+                            }}>
+                            <AntDesign name="checkcircleo" size={40} style={{backgroundColor: 'purple'}}/>
+                        </TouchableOpacity>
+                    )}
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
     const handleYearRender = () => {
         // console.log('handleYearRender(): is_editing:', is_editing);
         // Viewing state of Academic Year.
-        if (is_editing == false) {
+        if (!is_editing) {
             return(
                 // <Feather name="edit" style={{color: "black", flex: 1}} size={24}/>
                 <View style={{paddingBottom: 10}}>
@@ -110,7 +115,7 @@ const YearView = ({year, years, setYears, navigation}) => {
                                 onPress={() => {
                                     console.log('edit button: year:', year);
                                     console.log('edit button: year.item.id:', year.item.id);
-                                    console.log('edit button: years:', years);
+                                    // console.log('edit button: years:', years);
                                     setIs_editing(true);
                                 }}>
                                 <AntDesign name="edit" size={40} color="black"/>
@@ -123,7 +128,7 @@ const YearView = ({year, years, setYears, navigation}) => {
                             </TouchableOpacity>
                         </View>
                         {/* If the academic year is expanded... */}
-                        {/* Show the button that adds classes. */}
+                        {/* The button that adds classes to an academic year. */}
                         {expanded && (
                             <View>
                                 <TouchableOpacity
@@ -136,6 +141,31 @@ const YearView = ({year, years, setYears, navigation}) => {
                                                 id: findNextID(classes)
                                             }
                                         ]);
+                                        // setYears(data => data.map(item => {
+                                        //     if(item.id !== year.item.id) return item;
+                                        //     return {
+                                        //         ...item,
+                                        //         beg_year: beg_year,
+                                        //         end_year: end_year
+                                        //     };
+                                        // }))
+                                        // profile_context.years.setClasses(classes);
+                                        // // Updating class array in state differently than with years array since a refresh is not forced unless a major change in array classes is found. If there is no immediate re-render initiated, a save click after pushing this done button will result in no changes on the save screen. Inspired by https://dev.to/andyrewlee/how-to-update-an-array-of-objects-in-react-state-3d, but I do not use the spread operator, as the resulting array is too similar and does not cause a re-render.
+                                        // const newClasses = classes;
+                                        // let newClass = {
+                                        //     name: "New Class",
+                                        //     id: findNextID(classes)
+                                        // }
+                                        // newClasses.push(newClass);
+                                        // // console.log(`Add button: added ${newClass.name} to newClasses: ${newClasses}`);
+                                        // // setClasses(newClasses);
+                                        // console.log('ADD CLASSES BUTTON: year.id:', year.item.id);
+                                        const currentYearIdx = years.findIndex(c => c.id === year.item.id);
+                                        console.log(`ADD CLASSES BUTTON: profile_context: ${profile_context}`);
+                                        console.log(`ADD CLASSES BUTTON: profile_context.years: ${profile_context.years}`);
+                                        console.log(`ADD CLASSES BUTTON: profile_context.years[${currentYearIdx}]: ${profile_context.years[currentYearIdx]}`);
+                                        // profile_context.years[currentYearIdx].setClasses(classes);
+                                        // console.log('ADD CLASSES BUTTON: profile_context.years[currentYearIdx]:', profile_context.years[currentYearIdx]);
                                     }}>
                                     <AntDesign name="pluscircleo" size={40} color="black"/>
                                 </TouchableOpacity>
@@ -148,7 +178,7 @@ const YearView = ({year, years, setYears, navigation}) => {
                                     {classes.map((curr_class) => {
                                         // console.log('MAP: curr_class:', curr_class);
                                         return(
-                                            <ClassView key={curr_class.id} curr_class={curr_class} classes={classes} setClasses={setClasses} year={year} years={years} setYears={setYears} setClasses={setClasses} navigation={navigation} profile={profile}/>
+                                            <ClassView key={curr_class.id} curr_class={curr_class} year={year}/>
                                         );
                                     })}
                                 </View>
@@ -161,65 +191,67 @@ const YearView = ({year, years, setYears, navigation}) => {
                 </View>
             );
         }
-        // Editing state of Academic Year.
-        return(
-            <View style={{paddingBottom: 10}}>
-              <View style={styles.year}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text style={{textAlignVertical: 'center', fontSize: 17}}>Academic Year:</Text>
-                    {/*Beg Year Number */}
-                    <TextInput
-                        style={styles.inputText}
-                        value={beg_year}
-                        placeholder="Start"
-                        onChangeText={text => {
-                            setBeg_year(text);
-                        }}
-                        keyboardType="numeric"
-                    />
-                    {/*End Year Number */}
-                    <TextInput
-                        style={styles.inputText}
-                        value={end_year}
-                        placeholder="End"
-                        onChangeText={text => {
-                            setEnd_year(text);
-                        }}
-                        keyboardType="numeric"
-                    />
-                    {/* Done Button, which saves the changes to the state years array by editing only the year with the current id. */}
-                    <TouchableOpacity 
-                        onPress={() => {
-                            // console.log('Done button: beg_year:', beg_year);
-                            // console.log('Done button: end_year:', end_year);
-                            setYears(data => data.map(item => {
-                                if(item.id !== year.item.id) return item;
-                                return {
-                                    ...item,
-                                    beg_year: beg_year,
-                                    end_year: end_year
-                                };
-                            }))
-                            // profile_context.setYears(years);
-                            setIs_editing(false);
-                        }}>
-                        <AntDesign name="checkcircleo" size={40} color={'green'}/>
-                    </TouchableOpacity>
+        else if(is_editing){
+            // Editing state of Academic Year.
+            return(
+                <View style={{paddingBottom: 10}}>
+                    <View style={styles.year}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Text style={{textAlignVertical: 'center', fontSize: 17}}>Academic Year:</Text>
+                            {/*Beg Year Number */}
+                            <TextInput
+                                style={styles.inputText}
+                                value={beg_year}
+                                placeholder="Start"
+                                onChangeText={text => {
+                                    setBeg_year(text);
+                                }}
+                                keyboardType="numeric"
+                            />
+                            {/*End Year Number */}
+                            <TextInput
+                                style={styles.inputText}
+                                value={end_year}
+                                placeholder="End"
+                                onChangeText={text => {
+                                    setEnd_year(text);
+                                }}
+                                keyboardType="numeric"
+                            />
+                            {/* Done Button, which saves the changes to the state years array by editing only the year with the current id. */}
+                            <TouchableOpacity 
+                                onPress={() => {
+                                    // console.log('Done button: beg_year:', beg_year);
+                                    // console.log('Done button: end_year:', end_year);
+                                    setYears(data => data.map(item => {
+                                        if(item.id !== year.item.id) return item;
+                                        return {
+                                            ...item,
+                                            beg_year: beg_year,
+                                            end_year: end_year
+                                        };
+                                    }))
+                                    // profile_context.setYears(years);
+                                    setIs_editing(!is_editing);
+                                }}>
+                                <AntDesign name="checkcircleo" size={40} color={'green'}/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
-              </View>
-            </View>
-        );
+            );
+        }
     }
 
     return(handleYearRender());
 }
 
-const YearsScreen = ({navigation, route}) => {
+const YearsScreen = ({navigation}) => {
     const profile_context = useProfileContext();
     console.log('YearsScreen.tsx: profile_context:', profile_context);
-    // const {profile} = route.params;
     
     const [years, setYears] = useState(initializeArrKeys(profile_context.years));
+    const [classes, setClasses] = useState([]);
 
     const [nextId, setNextId] = useState(() => {
         if(years.length > 0){
@@ -227,21 +259,20 @@ const YearsScreen = ({navigation, route}) => {
         }
         return 0;
     });
-    
-    // console.log('INITIAL nextId:', nextId);
 
     useEffect(() => {
         // profile["academic_years"] = years;
         profile_context.setYears(years);
-        console.log('useEffect(): years:', years);
-        console.log(`useEffect(): profile_context.years: ${profile_context.years}`);
+        // console.log('useEffect(): years:', years);
+        // console.log(`useEffect(): profile_context.years: ${profile_context.years}`);
+        // toggleExpand();
     }, [years]);
 
     const renderYear = ((curr_year) => {
-        console.log('renderYear(): curr_year.item.id:', curr_year.item.id);
+        // console.log('renderYear(): curr_year.item.id:', curr_year.item.id);
         return(
             // Render current semester in a custom SemesterView component
-            <YearView year={curr_year} years={years} setYears={setYears} key={curr_year.item.id} navigation={navigation}/>
+            <YearView key={curr_year.item.id} year={curr_year} years={years} setYears={setYears} classes={classes} setClasses={setClasses} navigation={navigation}/>
         );
     });
 
@@ -258,7 +289,8 @@ const YearsScreen = ({navigation, route}) => {
                                 id: nextId,
                                 beg_year: "",
                                 end_year: "",
-                                classes: []
+                                classes: classes,
+                                setClasses: setClasses
                             },
                         ])
                         console.log('years after adding:', years);

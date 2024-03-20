@@ -38,13 +38,14 @@ import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
 import ClassScreen from './screens/ClassScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
-import { ClassContent, ProfileContent, ProfileContext } from './shared/profile_context';
+import { YearContent, ClassContent, ProfileContent, ProfileContext } from './shared/profile_context';
 
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
   const[name, setName] = useState('UNINITIALIZED');
   const[years, setYears] = useState([]);
+  const[classes, setClasses] = useState([]);
 
   let profile: ProfileContent = {
     profile_name: name,

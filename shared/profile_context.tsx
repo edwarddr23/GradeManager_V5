@@ -22,20 +22,19 @@ import { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 //     );
 // }
 
+export type YearContent = {
+    classes: ClassContent[]
+    setClasses: (value: never[]) => void
+    beg_year: Int32
+    end_year: Int32
+}
+
 // Inspired by https://dev.to/madv/usecontext-with-typescript-23ln.
 export type ProfileContent = {
     profile_name: string
     setProfile_name: (value: string) => void
     years: YearContent[]
     setYears: (value: never[]) => void
-    // classes: string[]
-    // setClasses: (value: never[]) => void
-}
-
-export type YearContent = {
-    classes: ClassContent[]
-    beg_year: Int32
-    end_year: Int32
 }
 
 export type ClassContent = {
@@ -48,8 +47,6 @@ export const ProfileContext = createContext<ProfileContent>({
     setProfile_name: () => {},
     years: [],
     setYears: () => {}
-    // classes: [],
-    // setClasses: () => {}
 });
 
 export const useProfileContext = () => useContext(ProfileContext);

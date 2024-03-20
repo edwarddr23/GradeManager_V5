@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, TextInput } from 'react-native'
 
-export default function InputWithLabel ({value, SetValue, placeholder, label}) {
+export default function InputWithLabel ({value, setValue, extraOnChangeText, placeholder, label}) {
     const [isFocus, setIsFocus] = useState(false);
 
     const renderLabel = (labelText) => {
@@ -27,7 +27,10 @@ export default function InputWithLabel ({value, SetValue, placeholder, label}) {
                 value={value}
                 placeholder={placeholder}
                 placeholderTextColor='#808080'
-                onChangeText={text => SetValue(text)}
+                onChangeText={text => {
+                    setValue(text);
+                    extraOnChangeText();
+                }}
                 onSubmitEditing={() => {
                     // console.log('custom :D');
                     // console.log('SemesterView(): semester: ', semester);

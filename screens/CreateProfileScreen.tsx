@@ -79,7 +79,8 @@ const CreateProfileScreen = ({navigation, route}) => {
             <View style={{paddingTop: 20, paddingHorizontal: 20}}>
                 <InputWithLabel
                     value={profile_name}
-                    SetValue={setProfile_name}
+                    setValue={setProfile_name}
+                    extraOnChangeText={() => {}}
                     placeholder='Enter your profile name here...'
                     label='Profile Name:'/>
                 <View style={{width: '100%', height: 100, paddingTop: 20}}>
