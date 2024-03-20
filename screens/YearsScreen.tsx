@@ -8,7 +8,7 @@ import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
 import { useProfileContext } from '../shared/profile_context'
 
-const ClassView = ({curr_class, classes, setClasses, year, setYears}) => {
+const ClassView = ({ navigation, curr_class, classes, setClasses, year, setYears }) => {
     const[is_editingClass, setIs_editingClass] = useState(false);
     const[name, setName] = useState(curr_class.name);
     // const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
@@ -174,7 +174,7 @@ const YearView = ({year, years, setYears, navigation}) => {
                                     {classes.map((curr_class) => {
                                         // console.log('MAP: curr_class:', curr_class);
                                         return(
-                                            <ClassView key={curr_class.id} curr_class={curr_class} classes={classes} setClasses={setClasses} year={year} setYears={setYears}/>
+                                            <ClassView key={curr_class.id} navigation={navigation} curr_class={curr_class} classes={classes} setClasses={setClasses} year={year} setYears={setYears}/>
                                         );
                                     })}
                                 </View>

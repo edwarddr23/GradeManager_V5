@@ -10,15 +10,15 @@ import { useProfileContext } from '../shared/profile_context';
 const LoadScreen = ({navigation}) => {
     const profile_context = useProfileContext();
     const[loadFileName, setLoadFileName] = useState('');
-    const[fileExists, setFileExists] = useState('');
+    const[fileExists, setFileExists] = useState(false);
     const[profile, setProfile] = useState({});
 
     const renderProfilePreview = () => {
         // let exists = fileExists();
-        if(fileExists === 'true') {
+        if(fileExists === true && loadFileName != '') {
             return(PrintData(profile));
         }
-        else if(fileExists === 'false') {
+        else if(fileExists === false) {
             return(
                 <Text>Profile: "{loadFileName}" could not be found.</Text>
             );
@@ -32,7 +32,7 @@ const LoadScreen = ({navigation}) => {
     }
 
     const renderLoadProfileButton = () => {
-        if(fileExists === 'true') {
+        if(fileExists === true && loadFileName != '') {
             return(
                 <FlatButton 
                     text={'Load \"' +  loadFileName + '\"'}
@@ -53,10 +53,10 @@ const LoadScreen = ({navigation}) => {
     //         console.log('saveFileExists(): searching for', loadFileName + '...');
     //         storage.load({key: loadFileName})
     //             .then((data) => {
-    //                 setFileExists('true')
+    //                 setFileExists(true)
     //             })
     //             .catch((err) => {
-    //                 setFileExists('false')
+    //                 setFileExists(false)
     //             });
     //     }
     //     else{
@@ -67,20 +67,25 @@ const LoadScreen = ({navigation}) => {
 
     // Inspired by https://www.waldo.com/blog/react-native-fs
     const readFile = (fileName) => {
+        if(fileName == ''){
+            setFileExists(false);
+            return
+        }
         console.log('LoadScreen.tsx: readFile(): Reading from', fileName + '...');
         storage.load({key: fileName})
             .then((data) => {
+                console.log('readFile(): data:', data);
                 const profile = data.profile;
                 setProfile(profile);
-                setFileExists('true');
                 console.log('LoadScreen.tsx: readFile(): profile:', profile);
                 profile_context.setProfile_name(profile.profile_name);
                 profile_context.setYears(profile.years);
+                setFileExists(true);
             })
             .catch((err) => {
                 console.warn(err.message);
                 console.log('err.name:', err.name);
-                setFileExists('false');
+                setFileExists(false);
             });
     };
 
