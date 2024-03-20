@@ -5,16 +5,75 @@ import Feather from 'react-native-vector-icons/Feather'
 import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
+import InputWithLabel from '../shared/custom_text_Inputs'
+// curr_class={curr_class} classes={classes} year={year} years={years} setYears={setYears} setClasses={setClasses} navigation={navigation} profile={profile}
+const ClassView = ({curr_class, classes, setClasses, year, years, setYears, navigation, profile}) => {
+    const[is_editing, setIs_editing] = useState(false);
+    const[name, setName] = useState(curr_class.name);
 
-const ClassView = ({curr_class, navigation, profile}) => {
     return(
         <TouchableOpacity 
             style={{width: '100%', backgroundColor: '#b8b8b8', borderRadius: 10, padding: 10, marginVertical: 10}}
             onPress={() => {
                 navigation.navigate('Class', {profile: profile, curr_class: curr_class});
             }}>
-            <Text style={{fontWeight: 'bold', fontSize: 22}}>{curr_class.name}:</Text>
-            <Text style={{fontSize: 18}}>Grade Type: {curr_class.type}</Text>
+            <View style={{flexDirection: 'row'}}>
+                <View style={{flexDirection: 'column'}}>
+                    {is_editing == false && (
+                        <Text style={{fontWeight: 'bold', fontSize: 22}}>{curr_class.name}:</Text>
+                    )}
+                    {is_editing == true && (
+                        <InputWithLabel value={name} SetValue={setName} placeholder={curr_class.name} label={'Class Name:'}/>
+                    )}
+                    <Text style={{fontSize: 18}}>Grade Type: {curr_class.type}</Text>
+                </View>
+                {/* Button for editing name of a Class. */}
+                {is_editing == false && (
+                    <TouchableOpacity
+                    style={{marginLeft: 'auto', alignSelf: 'center'}}
+                    activeOpacity={0.5}
+                    onPress={() => {
+                        setIs_editing(!is_editing);
+                        // console.log('editing a class?')
+                    }}
+                    >
+                        <AntDesign name="edit" size={40} color="black"/>
+                    </TouchableOpacity>
+                )}
+                {/* Done button for editing the name of a class. */}
+                {is_editing == true && (
+                    <TouchableOpacity
+                    style={{marginLeft: 'auto', alignSelf: 'center'}}
+                        activeOpacity={0.5}
+                        onPress={() => {
+                            // Updating class array in state differently than with years array since a refresh is not forced unless a major change in array classes is found. If there is no immediate re-render initiated, a save click after pushing this done button will result in no changes on the save screen. Inspired by https://dev.to/andyrewlee/how-to-update-an-array-of-objects-in-react-state-3d, but I do not use the spread operator, as the resulting array is too similar and does not cause a re-render.
+                            const currentClassID = classes.findIndex(c => c.id === curr_class.id);
+                            const updatedClass = {...classes[currentClassID], name: name};
+                            const newClasses = classes;
+                            newClasses[currentClassID] = updatedClass;
+                            setClasses(newClasses);
+                            setYears(data => data.map(item => {
+                                console.log('MAP: item.id:', item.id);
+                                console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
+                                console.log(`${item.id} == ${year.item.id}:`, (item.id == year.id));
+                                if(item.id !== year.item.id) return item;
+                                else{
+                                    console.log('DONE BUTTON: year found!');
+                                    return {
+                                        ...item,
+                                        classes: classes
+                                    }
+                                }
+                            }));
+                            console.log('DONE BUTTON: years:', years);
+                            console.log('DONE BUTTON: year.item', year.item);
+                            console.log('DONE BUTTON: year.classes:', year.classes);
+                            setIs_editing(!is_editing);
+                        }}>
+                        <AntDesign name="checkcircleo" size={40} color="black"/>
+                    </TouchableOpacity>
+                )}
+            </View>
         </TouchableOpacity>
     );
 }
@@ -25,7 +84,7 @@ const YearView = ({year, years, setYears, navigation, profile}) => {
     const[end_year, setEnd_year] = useState(String(year.item.end_year));
     const[is_editing, setIs_editing] = useState(false);
     const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
-
+    
     const[expanded, setExpanded] = useState(false);
 
     const toggleExpand = () => {
@@ -85,9 +144,9 @@ const YearView = ({year, years, setYears, navigation, profile}) => {
                             && (
                                 <View>
                                     {classes.map((curr_class) => {
-                                        console.log('MAP: curr_class:', curr_class);
+                                        // console.log('MAP: curr_class:', curr_class);
                                         return(
-                                            <ClassView key={curr_class.id} curr_class={curr_class} navigation={navigation} profile={profile}/>
+                                            <ClassView key={curr_class.id} curr_class={curr_class} classes={classes} setClasses={setClasses} year={year} years={years} setYears={setYears} setClasses={setClasses} navigation={navigation} profile={profile}/>
                                         );
                                     })}
                                 </View>
@@ -167,7 +226,7 @@ const YearsScreen = ({navigation, route}) => {
     // console.log('INITIAL nextId:', nextId);
 
     useEffect(() => {
-        profile["academic_years"] = years
+        profile["academic_years"] = years;
         console.log('useEffect(): years:', years);
     }, [years]);
 
