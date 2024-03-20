@@ -4,19 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import Feather from 'react-native-vector-icons/Feather'
 import Footer from '../shared/custom_footer'
 
-// Initializes an array's elements so that each one has a unique id.
-const initializeArrKeys = (arr) => {
-    let initArr = [...arr];
-    let tmp_nextId = 0;
-    return(arr.map(element => {
-        let tmpElement ={
-            ...element,
-            id: tmp_nextId
-        };
-        tmp_nextId++;
-        return tmpElement;
-    }));
-}
+import { initializeArrKeys, findNextID } from '../shared/key_functions'
 
 const ClassView = ({curr_class, navigation, profile}) => {
     return(
@@ -74,12 +62,20 @@ const YearView = ({year, years, setYears, navigation, profile}) => {
                             </TouchableOpacity>
                         </View>
                         {/* If the academic year is expanded... */}
-                        {/* Show the button to add classes. */}
+                        {/* Show the button that adds classes. */}
                         {expanded && (
                             <View>
                                 <TouchableOpacity
                                     style={{alignSelf: 'center'}}
-                                    onPress={() => console.log('adding a class?')}>
+                                    onPress={() => {
+                                        setClasses([
+                                            ...classes,
+                                            {
+                                                name: "New Class",
+                                                id: findNextID(classes)
+                                            }
+                                        ]);
+                                    }}>
                                     <AntDesign name="pluscircleo" size={40} color="black"/>
                                 </TouchableOpacity>
                             </View>
@@ -186,7 +182,7 @@ const YearsScreen = ({navigation, route}) => {
     return(
         <View style={ {flex: 1, flexDirection: 'column', alignItems: 'center', paddingTop: 10} } >
             <View style={{width: 80, height: 80}}>
-                {/* Add Years Button */}
+                {/* Button that adds years */}
                 <TouchableOpacity 
                     activeOpacity={0.5} 
                     onPress={() => {
