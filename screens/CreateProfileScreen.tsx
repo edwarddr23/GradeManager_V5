@@ -1,64 +1,76 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 
 import InputWithLabel from '../shared/custom_text_Inputs';
 import FlatButton from '../shared/custom_buttons';
+import { useProfileContext } from '../shared/profile_context';
 
-const initializeProfile = (profile_name) => {
-    const profile = {
-        name: profile_name,
-        academic_years: [
-            // {
-            //     beg_year: 2022,
-            //     end_year: 2023,
-            //     classes: [
-            //         {
-            //             name: "Things 101",
-            //             type: "percentage"
-            //         },
-            //         {
-            //             name: "Economics 202",
-            //             type: "fraction"
-            //         },
-            //         {
-            //             name: "The Friggin 313",
-            //             type: "fraction"
-            //         }
-            //     ]
-            // },
-            // {
-            //     beg_year: 2023,
-            //     end_year: 2024,
-            //     classes: [
-            //         {
-            //             name: "Liberal Stuff 101",
-            //             type: "percentage"
-            //         },
-            //         {
-            //             name: "Developmental Instruction 301",
-            //             type: "percentage"
-            //         },
-            //         {
-            //             name: "Liberal Stuff 101",
-            //             type: "percentage"
-            //         },
-            //         {
-            //             name: "Biology 101",
-            //             type: "fraction"
-            //         }
-            //     ]
-            // }
-        ]
-    }
-    return profile;
-}
+// const initializeProfile = (profile_name) => {
+//     const profile = {
+//         name: profile_name,
+//         academic_years: [
+//             // {
+//             //     beg_year: 2022,
+//             //     end_year: 2023,
+//             //     classes: [
+//             //         {
+//             //             name: "Things 101",
+//             //             type: "percentage"
+//             //         },
+//             //         {
+//             //             name: "Economics 202",
+//             //             type: "fraction"
+//             //         },
+//             //         {
+//             //             name: "The Friggin 313",
+//             //             type: "fraction"
+//             //         }
+//             //     ]
+//             // },
+//             // {
+//             //     beg_year: 2023,
+//             //     end_year: 2024,
+//             //     classes: [
+//             //         {
+//             //             name: "Liberal Stuff 101",
+//             //             type: "percentage"
+//             //         },
+//             //         {
+//             //             name: "Developmental Instruction 301",
+//             //             type: "percentage"
+//             //         },
+//             //         {
+//             //             name: "Liberal Stuff 101",
+//             //             type: "percentage"
+//             //         },
+//             //         {
+//             //             name: "Biology 101",
+//             //             type: "fraction"
+//             //         }
+//             //     ]
+//             // }
+//         ]
+//     }
+//     return profile;
+// }
 
 const CreateProfileScreen = ({navigation, route}) => {
+    const profile_context = useProfileContext();
     const [profile_name, setProfile_name] = useState('');
+    profile_context.profile_name = profile_name;
+    profile_context.setProfile_name = setProfile_name;
+
+    useEffect(() => {
+        console.log('useEffect(): profile_context.profile_name:', profile_context.profile_name);
+    });
+
+    function initializeProfile() {
+        profile_context.setYears([]);
+    }
 
     const handleCreateProfile = () => {
-        const new_profile = initializeProfile(profile_name);
-        return navigation.navigate('Years', {profile: new_profile});
+        initializeProfile();
+        return navigation.navigate('Years');
     }
 
     return(

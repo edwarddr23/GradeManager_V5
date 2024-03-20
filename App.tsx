@@ -38,15 +38,19 @@ import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
 import ClassScreen from './screens/ClassScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
-import { ProfileContent, ProfileContext } from './shared/profile_context';
+import { ClassContent, ProfileContent, ProfileContext } from './shared/profile_context';
 
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
-  const[name, setName] = useState('something');
+  const[name, setName] = useState('UNINITIALIZED');
+  const[years, setYears] = useState([]);
+
   let profile: ProfileContent = {
-    name: name,
-    setName: setName
+    profile_name: name,
+    setProfile_name: setName,
+    years: years,
+    setYears: setYears
   };
 
   return (
@@ -81,11 +85,11 @@ function App(): React.JSX.Element {
                   <FlatButton
                     text="Save"
                     onPress={() => {
-                      console.log('PRESSED SAVE BUTTON!');
-                      console.log('Save button: route.params:', route.params);
-                      const {profile} = route.params;
-                      console.log('Save button: profile:', profile);
-                      navigation.navigate("Save", {profile: profile});
+                      // console.log('PRESSED SAVE BUTTON!');
+                      // console.log('Save button: route.params:', route.params);
+                      // const {profile} = route.params;
+                      // console.log('Save button: profile:', profile);
+                      navigation.navigate("Save");
                       // console.log('Save button: route.params.name:', route.params);
                     }}
                   />

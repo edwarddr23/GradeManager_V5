@@ -2,16 +2,16 @@ import React from 'react'
 import { View, Text } from 'react-native';
 
 import FlatButton from '../shared/custom_buttons';
-import { ProfileContext, useProfileContext } from '../shared/profile_context';
+// import { ProfileContext, useProfileContext } from '../shared/profile_context';
 
 const HomeScreen = ({navigation}) => {
-    const profile_context = useProfileContext();
+    // const profile_context = useProfileContext();
     
-    console.log('HomeScreen.tsx: profile_context:', profile_context);
+    // console.log('HomeScreen.tsx: profile_context:', profile_context);
 
     function handleGoToCreateProfile (isLoadingProfile) {
         if(isLoadingProfile === false){
-            return navigation.navigate('Create Profile', {name: 'NEW'});
+            return navigation.navigate('Create Profile');
         }
     };
 

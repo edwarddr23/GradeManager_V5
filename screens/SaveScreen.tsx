@@ -6,40 +6,43 @@ import InputWithLabel from '../shared/custom_text_Inputs';
 import FlatButton from '../shared/custom_buttons';
 import storage from '../shared/storage';
 import { PrintData } from '../shared/profile_functions';
+import { useProfileContext } from '../shared/profile_context';
 
 const SaveScreen = ({navigation, route}) => {
-    const {profile} = route.params;
-    const[documentsFolder, setDocumentsFolder] = useState('');
+    const profile_context = useProfileContext();
+    // const {profile} = route.params;
+    // const[documentsFolder, setDocumentsFolder] = useState('');
     const[saveFileName, setSaveFileName] = useState('');
-    const[fileExists, setFileExists] = useState(false);
+    // const[fileExists, setFileExists] = useState(false);
 
-    useEffect(() => {
-        setDocumentsFolder(RNFS.DocumentDirectoryPath);
-    }, []);
+    // useEffect(() => {
+    //     setDocumentsFolder(RNFS.DocumentDirectoryPath);
+    // }, []);
 
     // Sets state fileExists to true or false depending on if the file is found or not. Set to a state so that it can be actively displayed in View.
-    function saveFileExists() {
-        let saveFilePath = documentsFolder + '/SaveFiles/' + saveFileName + '.txt';
-        RNFS.exists(saveFilePath)
-            .then((exists) => {
-                setFileExists(exists);
-            })
-            .catch((error => {
-                console.log('SaveScreen.tsx: saveToFileHandler(): Error saving to file.');
-            }))
-        return fileExists;
-    }
+    // function saveFileExists() {
+    //     let saveFilePath = documentsFolder + '/SaveFiles/' + saveFileName + '.txt';
+    //     RNFS.exists(saveFilePath)
+    //         .then((exists) => {
+    //             setFileExists(exists);
+    //         })
+    //         .catch((error => {
+    //             console.log('SaveScreen.tsx: saveToFileHandler(): Error saving to file.');
+    //         }))
+    //     return fileExists;
+    // }
     
     const saveToFileHandler = (saveFileName) => {
         console.log('SaveScreen.tsx: saveToFileHandler():', saveFileName);
         storage.save({
             key: String(saveFileName),
             data: {
-                profile: profile
+                profile: profile_context
             },
             expires: null
         });
         console.log('SaveScreen.tsx: saveToFileHandler(): Save successful?');
+        navigation.goBack();
     }
 
     return(
@@ -48,7 +51,7 @@ const SaveScreen = ({navigation, route}) => {
                 <InputWithLabel
                     value={saveFileName}
                     SetValue={setSaveFileName}
-                    placeholder={'Suggestion: \"' + profile["name"] + '\"?'}
+                    placeholder={'Suggestion: \"' + profile_context.profile_name + '\"?'}
                     label="Save File Name:"
                 />
                 <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
@@ -62,7 +65,7 @@ const SaveScreen = ({navigation, route}) => {
                     />
                 </View>
                 <ScrollView style={{paddingTop: '5%', flex: 1}}>
-                    {PrintData(profile)}
+                    {PrintData()}
                 </ScrollView>
             </View>
         </View>

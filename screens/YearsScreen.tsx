@@ -6,6 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
+import { useProfileContext } from '../shared/profile_context'
 // curr_class={curr_class} classes={classes} year={year} years={years} setYears={setYears} setClasses={setClasses} navigation={navigation} profile={profile}
 const ClassView = ({curr_class, classes, setClasses, year, years, setYears, navigation, profile}) => {
     const[is_editing, setIs_editing] = useState(false);
@@ -53,12 +54,12 @@ const ClassView = ({curr_class, classes, setClasses, year, years, setYears, navi
                             newClasses[currentClassID] = updatedClass;
                             setClasses(newClasses);
                             setYears(data => data.map(item => {
-                                console.log('MAP: item.id:', item.id);
-                                console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
+                                // console.log('MAP: item.id:', item.id);
+                                // console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
                                 console.log(`${item.id} == ${year.item.id}:`, (item.id == year.id));
                                 if(item.id !== year.item.id) return item;
                                 else{
-                                    console.log('DONE BUTTON: year found!');
+                                    // console.log('DONE BUTTON: year found!');
                                     return {
                                         ...item,
                                         classes: classes
@@ -70,7 +71,7 @@ const ClassView = ({curr_class, classes, setClasses, year, years, setYears, navi
                             console.log('DONE BUTTON: year.classes:', year.classes);
                             setIs_editing(!is_editing);
                         }}>
-                        <AntDesign name="checkcircleo" size={40} color="black"/>
+                        <AntDesign name="checkcircleo" size={40} style={{backgroundColor: 'purple'}}/>
                     </TouchableOpacity>
                 )}
             </View>
@@ -78,7 +79,8 @@ const ClassView = ({curr_class, classes, setClasses, year, years, setYears, navi
     );
 }
 
-const YearView = ({year, years, setYears, navigation, profile}) => {
+const YearView = ({year, years, setYears, navigation}) => {
+    const profile_context = useProfileContext();
     // useStates for TextInputs:
     const[beg_year, setBeg_year] = useState(String(year.item.beg_year));
     const[end_year, setEnd_year] = useState(String(year.item.end_year));
@@ -198,9 +200,10 @@ const YearView = ({year, years, setYears, navigation, profile}) => {
                                     end_year: end_year
                                 };
                             }))
+                            // profile_context.setYears(years);
                             setIs_editing(false);
                         }}>
-                        <AntDesign name="checkcircleo" style={styles.plus_icon} size={40}/>
+                        <AntDesign name="checkcircleo" size={40} color={'green'}/>
                     </TouchableOpacity>
                 </View>
               </View>
@@ -212,9 +215,11 @@ const YearView = ({year, years, setYears, navigation, profile}) => {
 }
 
 const YearsScreen = ({navigation, route}) => {
-    const {profile} = route.params;
+    const profile_context = useProfileContext();
+    console.log('YearsScreen.tsx: profile_context:', profile_context);
+    // const {profile} = route.params;
     
-    const [years, setYears] = useState(initializeArrKeys(profile["academic_years"]));
+    const [years, setYears] = useState(initializeArrKeys(profile_context.years));
 
     const [nextId, setNextId] = useState(() => {
         if(years.length > 0){
@@ -226,15 +231,17 @@ const YearsScreen = ({navigation, route}) => {
     // console.log('INITIAL nextId:', nextId);
 
     useEffect(() => {
-        profile["academic_years"] = years;
+        // profile["academic_years"] = years;
+        profile_context.setYears(years);
         console.log('useEffect(): years:', years);
+        console.log(`useEffect(): profile_context.years: ${profile_context.years}`);
     }, [years]);
 
     const renderYear = ((curr_year) => {
         console.log('renderYear(): curr_year.item.id:', curr_year.item.id);
         return(
             // Render current semester in a custom SemesterView component
-            <YearView year={curr_year} years={years} setYears={setYears} key={curr_year.item.id} navigation={navigation} profile={profile}/>
+            <YearView year={curr_year} years={years} setYears={setYears} key={curr_year.item.id} navigation={navigation}/>
         );
     });
 
@@ -273,7 +280,7 @@ const YearsScreen = ({navigation, route}) => {
                 />
             </View>
             {/* FOOTER */}
-            <Footer profile={profile}/>
+            <Footer/>
         </View>
     );
 }

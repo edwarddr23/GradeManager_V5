@@ -29,7 +29,7 @@ export default function InputWithLabel ({value, SetValue, placeholder, label}) {
                 placeholderTextColor='#808080'
                 onChangeText={text => SetValue(text)}
                 onSubmitEditing={() => {
-                    console.log('custom :D');
+                    // console.log('custom :D');
                     // console.log('SemesterView(): semester: ', semester);
                     // console.log('BEFORE SemesterView(): semester.year: ', semester.year);
                     // semester.year = year;

@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, TextInput, StyleSheet } from 'react-native'
 
 import storage from '../shared/storage';
 import InputWithLabel from '../shared/custom_text_Inputs';
 import { PrintData } from '../shared/profile_functions';
 import FlatButton from '../shared/custom_buttons';
+import { useProfileContext } from '../shared/profile_context';
 
 const LoadScreen = ({navigation}) => {
+    const profile_context = useProfileContext();
     const[loadFileName, setLoadFileName] = useState('');
     const[fileExists, setFileExists] = useState('');
     const[profile, setProfile] = useState({});
@@ -64,14 +66,16 @@ const LoadScreen = ({navigation}) => {
     // }
 
     // Inspired by https://www.waldo.com/blog/react-native-fs
-    const readFile = () => {
-        console.log('LoadScreen.tsx: readFile(): Reading from', loadFileName + '...');
-        storage.load({key: loadFileName})
+    const readFile = (fileName) => {
+        console.log('LoadScreen.tsx: readFile(): Reading from', fileName + '...');
+        storage.load({key: fileName})
             .then((data) => {
                 const profile = data.profile;
                 setProfile(profile);
                 setFileExists('true');
                 console.log('LoadScreen.tsx: readFile(): profile:', profile);
+                profile_context.setProfile_name(profile.profile_name);
+                profile_context.setYears(profile.years);
             })
             .catch((err) => {
                 console.warn(err.message);
@@ -84,15 +88,26 @@ const LoadScreen = ({navigation}) => {
         <View style={{flexDirection: 'column', flex: 1}}>
             <View style={{flex: 1, marginVertical: '5%', marginHorizontal: '5%'}}>
                 {/* <View style={{flex: .5}}> */}
-                    <InputWithLabel
+                <View style={{height: 50}}>
+                    <TextInput
+                        style={styles.inputText}
+                        value={loadFileName}
+                        onChangeText={text => {
+                            setLoadFileName(text);
+                            readFile(text);
+                        }}
+                        placeholder='Enter profile name here'
+                    />
+                </View>
+                    {/* <InputWithLabel
                         value={loadFileName}
                         SetValue={setLoadFileName}
                         placeholder={'Enter profile name here...'}
                         label="Profile Name:"
-                    />
+                    /> */}
                     <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
                 {/* </View> */}
-                {readFile()}
+                {/* {readFile()} */}
                 {/* <Text>"{loadFileName}" exists: {String(saveFileExists())}</Text> */}
                 {/* <View style={{flex: .3, marginTop: '5%'}}>
                     <FlatButton 
@@ -118,3 +133,14 @@ const LoadScreen = ({navigation}) => {
 }
 
 export default LoadScreen;
+
+const styles = StyleSheet.create({
+    inputText: {
+        fontSize: 20,
+        borderWidth: 3,
+        borderRadius: 10,
+        padding: 10,
+        marginHorizontal: 5,
+        flex: 1
+    }
+});
