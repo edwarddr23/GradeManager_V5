@@ -87,6 +87,23 @@ function App(): React.JSX.Element {
           <Stack.Screen
             name="Class"
             component={ClassScreen}
+            options={({navigation, route}) => ({
+              headerRight: () => (
+                <View style={{width: 100, height: 45}}>
+                  <FlatButton
+                    text="Save"
+                    onPress={() => {
+                      console.log('PRESSED SAVE BUTTON!');
+                      console.log('Save button: route.params:', route.params);
+                      const {profile} = route.params;
+                      console.log('Save button: profile:', profile);
+                      navigation.navigate("Save", {profile: profile});
+                      // console.log('Save button: route.params.name:', route.params);
+                    }}
+                  />
+                </View>
+              )
+            })}
           />
           <Stack.Screen
             name="Sections"

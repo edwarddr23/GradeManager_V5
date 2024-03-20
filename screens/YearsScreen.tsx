@@ -271,9 +271,9 @@ const YearsScreen = ({navigation, route}) => {
                         return renderYear(curr_year);
                     }}
                 />
-                {/* FOOTER */}
-                <Footer profile={profile}/>
             </View>
+            {/* FOOTER */}
+            <Footer profile={profile}/>
         </View>
     );
 }
