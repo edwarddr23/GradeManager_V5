@@ -8,11 +8,10 @@ import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
 import { useProfileContext } from '../shared/profile_context'
 
-const ClassView = ({ navigation, curr_class, classes, setClasses, year, years, setYears }) => {
+const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
     const profile_context = useProfileContext();
     const[is_editingClass, setIs_editingClass] = useState(false);
     const[name, setName] = useState(curr_class.name);
-    // const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
 
     return(
         <TouchableOpacity 
@@ -65,27 +64,31 @@ const ClassView = ({ navigation, curr_class, classes, setClasses, year, years, s
                         activeOpacity={0.5}
                         onPress={() => {
                             // Updating class array in state differently than with years array since a refresh is not forced unless a major change in array classes is found. If there is no immediate re-render initiated, a save click after pushing this done button will result in no changes on the save screen. Inspired by https://dev.to/andyrewlee/how-to-update-an-array-of-objects-in-react-state-3d, but I do not use the spread operator, as the resulting array is too similar and does not cause a re-render.
-                            const currentClassID = classes.findIndex(c => c.id === curr_class.id);
-                            const updatedClass = {...classes[currentClassID], name: name};
-                            const newClasses = classes;
-                            newClasses[currentClassID] = updatedClass;
-                            setClasses(newClasses);
-                            console.log('DONE BUTTON: years:', years);
-                            console.log('DONE BUTTON: setYears:', setYears);
-                            // setYears([]);
-                            setYears(data => data.map(item => {
-                                // console.log('MAP: item.id:', item.id);
-                                // console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
-                                console.log(`${item.id} == ${year.id}:`, (item.id == year.id));
-                                if(item.id !== year.id) return item;
-                                else{
-                                    // console.log('DONE BUTTON: year found!');
-                                    return {
-                                        ...item,
-                                        classes: classes
-                                    }
+                            // const currentClassID = classes.findIndex(c => c.id === curr_class.id);
+                            // const updatedClass = {...classes[currentClassID], name: name};
+                            // const newClasses = classes;
+                            // newClasses[currentClassID] = updatedClass;
+                            updateClasses(
+                                {
+                                    ...curr_class,
+                                    name: name
                                 }
-                            }));
+                            );
+                            // setClasses(newClasses);
+                            // setYears([]);
+                            // setYears(data => data.map(item => {
+                            //     // console.log('MAP: item.id:', item.id);
+                            //     // console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
+                            //     console.log(`${item.id} == ${year.id}:`, (item.id == year.id));
+                            //     if(item.id !== year.id) return item;
+                            //     else{
+                            //         // console.log('DONE BUTTON: year found!');
+                            //         return {
+                            //             ...item,
+                            //             classes: classes
+                            //         }
+                            //     }
+                            // }));
                             // console.log('DONE BUTTON FOR CLASS: expanded', expanded);
                             setIs_editingClass(!is_editingClass);
                             // console.log(`DONE BUTTON FOR CLASS: is_editingClass: ${is_editingClass}, is_editing: ${is_editing}`);
@@ -98,13 +101,13 @@ const ClassView = ({ navigation, curr_class, classes, setClasses, year, years, s
     );
 }
 
-const YearView = ({year, years, setYears, navigation}) => {
+const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
     const profile_context = useProfileContext();
     // useStates for TextInputs:
-    const[beg_year, setBeg_year] = useState(String(year.item.beg_year));
-    const[end_year, setEnd_year] = useState(String(year.item.end_year));
+    const[beg_year, setBeg_year] = useState(String(year.beg_year));
+    const[end_year, setEnd_year] = useState(String(year.end_year));
     const[is_editing, setIs_editing] = useState(false);
-    const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
+    const[classes, setClasses] = useState(initializeArrKeys(year["classes"]))
     
     const[expanded, setExpanded] = useState(false);
 
@@ -127,8 +130,6 @@ const YearView = ({year, years, setYears, navigation}) => {
                                 style={{marginRight: 20}}
                                 activeOpacity={0.5} 
                                 onPress={() => {
-                                    console.log('edit button: year:', year);
-                                    console.log('edit button: year.item.id:', year.item.id);
                                     // console.log('edit button: years:', years);
                                     setIs_editing(true);
                                 }}>
@@ -155,27 +156,15 @@ const YearView = ({year, years, setYears, navigation}) => {
                                         //         id: findNextID(classes)
                                         //     }
                                         // ]);
-                                        const newClasses = [...classes];
-                                        newClasses.push(
+                                        const newClasses = [
+                                            ...classes,
                                             {
                                                 name: "New Class",
                                                 id: findNextID(classes)
                                             }
-                                        );
+                                        ];
                                         setClasses(newClasses);
-                                        setYears(data => data.map(item => {
-                                            // console.log('MAP: item.id:', item.id);
-                                            // console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
-                                            console.log(`${item.id} == ${year.item.id}:`, (item.id == year.id));
-                                            if(item.id !== year.item.id) return item;
-                                            else{
-                                                // console.log('DONE BUTTON: year found!');
-                                                return {
-                                                    ...item,
-                                                    classes: classes
-                                                }
-                                            }
-                                        }));
+                                        updateClassesInYear(year, newClasses);
                                     }}>
                                     <AntDesign name="pluscircleo" size={40} color="black"/>
                                 </TouchableOpacity>
@@ -186,9 +175,20 @@ const YearView = ({year, years, setYears, navigation}) => {
                             && (
                                 <View>
                                     {classes.map((curr_class) => {
+                                        const chgClasses = (new_class) => {
+                                            console.log(`chgClasses(): new_class.name: ${new_class.name}`);
+                                            console.log(`chgClasses(): year: ${year}`)
+                                            const new_classes = classes.map((c) => {
+                                                if(c.id !== new_class.id) return c;
+                                                return new_class;
+                                            });
+                                            setClasses(new_classes);
+                                            // console.log(`chgClasses(): classes[0].name: ${classes[0].name}`);
+                                            updateClassesInYear(year, new_classes);
+                                        }
                                         // console.log('MAP: curr_class:', curr_class);
                                         return(
-                                            <ClassView key={curr_class.id} navigation={navigation} curr_class={curr_class} classes={classes} setClasses={setClasses} year={year.item} years={years} setYears={setYears}/>
+                                            <ClassView key={curr_class.id} navigation={navigation} curr_class={curr_class} updateClasses={chgClasses} year={year.item}/>
                                         );
                                     })}
                                 </View>
@@ -231,17 +231,13 @@ const YearView = ({year, years, setYears, navigation}) => {
                             {/* Done Button, which saves the changes to the state years array by editing only the year with the current id. */}
                             <TouchableOpacity 
                                 onPress={() => {
-                                    // console.log('Done button: beg_year:', beg_year);
-                                    // console.log('Done button: end_year:', end_year);
-                                    setYears(data => data.map(item => {
-                                        if(item.id !== year.item.id) return item;
-                                        return {
-                                            ...item,
+                                    updateYears(
+                                        {
+                                            ...year.item,
                                             beg_year: beg_year,
                                             end_year: end_year
-                                        };
-                                    }))
-                                    // profile_context.setYears(years);
+                                        }
+                                    );
                                     setIs_editing(!is_editing);
                                 }}>
                                 <AntDesign name="checkcircleo" size={40} color={'green'}/>
@@ -276,13 +272,13 @@ const YearsScreen = ({navigation}) => {
         // console.log(`useEffect(): years: ${years}`);
         console.log('USEEFFECT()');
         profile_context.setYears(years);
-        console.log('useEffect(): profile_context years:');
-        profile_context.years.map(year => {
-            console.log('useEffect(): year:', year);
-            year.classes.map(c => {
-                console.log('useEffect(): c.name:', c.name);
-            });
-        });
+        // console.log('useEffect(): profile_context years:');
+        // profile_context.years.map(year => {
+        //     console.log('useEffect(): year:', year);
+        //     year.classes.map(c => {
+        //         console.log('useEffect(): c.name:', c.name);
+        //     });
+        // });
         // console.log('useEffect(): profile_context:', profile_context);
         // console.log('useEffect(): profile_context.years[0]:', profile_context.years[0]);
         // console.log('useEffect(): profile_context.years[1]:', profile_context.years[1]);
@@ -290,10 +286,36 @@ const YearsScreen = ({navigation}) => {
     }, [years]);
 
     const renderYear = ((curr_year) => {
-        // console.log('renderYear(): curr_year.item.id:', curr_year.item.id);
+        // console.log('renderYear(): curr_year.item:', curr_year.item);
+        const chgYrsHandler = (new_year) => {
+            setYears((yrs) => yrs.map((y) => {
+                console.log(`y.id: ${y.id}, new_year.id: ${new_year.id}`);
+                if(y.id != new_year.id) return y;
+                return new_year;
+            }))
+            console.log('changeYearsHandler(): new_year:', new_year)
+            console.log('changeYearsHandler(): years:', years)
+        }
+
+        const chgClassesInYrHandler = (new_year, new_classes) => {
+            console.log(`chgClassesInYrHandler(): new_year: ${new_year}`);
+            const new_years = years.map(y => {
+                console.log(`${y.id} == ${new_year.id}:`, (y.id == new_year.id));
+                if(y.id !== new_year.id) return y;
+                else{
+                    return {
+                        ...y,
+                        classes: new_classes
+                    }
+                }
+            });
+            setYears(new_years);
+            profile_context.setYears(new_years);
+        }
+
         return(
             // Render current semester in a custom SemesterView component
-            <YearView key={curr_year.item.id} year={curr_year} years={years} setYears={setYears} navigation={navigation}/>
+            <YearView key={curr_year.item.id} year={curr_year.item} updateYears={chgYrsHandler} updateClassesInYear={chgClassesInYrHandler} navigation={navigation}/>
         );
     });
 

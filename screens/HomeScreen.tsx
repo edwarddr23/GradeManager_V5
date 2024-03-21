@@ -7,7 +7,7 @@ import { useProfileContext } from '../shared/profile_context';
 const HomeScreen = ({navigation}) => {
     const profile_context = useProfileContext();
     
-    console.log('HomeScreen.tsx: profile_context:', profile_context);
+    // console.log('HomeScreen.tsx: profile_context:', profile_context);
 
     function handleGoToCreateProfile (isLoadingProfile) {
         if(isLoadingProfile === false){
