@@ -29,17 +29,18 @@ export type YearContent = {
     end_year: Int32
 }
 
+export type ClassContent = {
+    year_id: Int32
+    name: string
+    setName: (c: string) => void
+}
+
 // Inspired by https://dev.to/madv/usecontext-with-typescript-23ln.
 export type ProfileContent = {
     profile_name: string
     setProfile_name: (value: string) => void
     years: YearContent[]
     setYears: (value: never[]) => void
-}
-
-export type ClassContent = {
-    class_name: string
-    setClass_name: (c: string) => void
 }
 
 export const ProfileContext = createContext<ProfileContent>({

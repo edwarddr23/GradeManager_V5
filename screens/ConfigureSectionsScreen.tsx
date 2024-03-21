@@ -7,17 +7,20 @@ import Footer from '../shared/custom_footer';
 import { findNextID, initializeArrKeys } from '../shared/key_functions';
 
 const ConfigureSectionsScreen = ({navigation, route}) => {
-    const { profile } = route.params;
-    const [curr_class, setCurr_class] = useState(route.params.curr_class);
+    console.log(`ConfigureSectionsScreen(): route.params: ${route.params}`);
+    const { year, curr_class } = route.params;
+    console.log(`ConfigureSectionsScreen(): year: ${year}`);
+    console.log(`ConfigureSectionsScreen(): curr_class: ${curr_class}`);
+    const [c_class, setc_class] = useState(route.params.curr_class);
 
     const[sections, setSections] = useState(() => {
-        if(curr_class.sections === undefined) return [];
-        return initializeArrKeys(curr_class.sections);
+        if(c_class.sections === undefined) return [];
+        return initializeArrKeys(c_class.sections);
     });
 
     useEffect(() => {
         // Change the header title to reflect the current class's sections being edited.
-        navigation.setOptions({title: `Sections for ${curr_class.name}`});
+        navigation.setOptions({title: `Sections for ${c_class.name}`});
         console.log('useEffect(): sections:', sections);
         console.log('useEffect(): sections[0]', sections[0]);
     }, []);
@@ -93,7 +96,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                 }}>
                 <AntDesign name='pluscircleo' size={70} color="black"/>
             </TouchableOpacity>
-            {(curr_class.sections === undefined || curr_class.sections.length == 0) && (
+            {(c_class.sections === undefined || c_class.sections.length == 0) && (
                 <View style={{marginTop: '5%'}}>
                     <Text style={{fontSize: 30}}>No Sections Yet!</Text>
                 </View>
@@ -111,7 +114,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                     }}
                 />
                 {/* FOOTER */}
-                <Footer profile={profile}/>
+                <Footer/>
             </View>
         </View>
     );

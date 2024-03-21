@@ -45,7 +45,7 @@ const Stack = createNativeStackNavigator();
 function App(): React.JSX.Element {
   const[name, setName] = useState('UNINITIALIZED');
   const[years, setYears] = useState([]);
-  const[classes, setClasses] = useState([]);
+  // const[classes, setClasses] = useState([]);
 
   let profile: ProfileContent = {
     profile_name: name,

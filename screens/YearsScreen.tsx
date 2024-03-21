@@ -8,7 +8,8 @@ import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
 import { useProfileContext } from '../shared/profile_context'
 
-const ClassView = ({ navigation, curr_class, classes, setClasses, year, setYears }) => {
+const ClassView = ({ navigation, curr_class, classes, setClasses, year, years, setYears }) => {
+    const profile_context = useProfileContext();
     const[is_editingClass, setIs_editingClass] = useState(false);
     const[name, setName] = useState(curr_class.name);
     // const[classes, setClasses] = useState(initializeArrKeys(year.item["classes"]))
@@ -17,7 +18,17 @@ const ClassView = ({ navigation, curr_class, classes, setClasses, year, setYears
         <TouchableOpacity 
             style={{width: '100%', backgroundColor: '#b8b8b8', borderRadius: 10, padding: 10, marginVertical: 10}}
             onPress={() => {
-                navigation.navigate('Class', {curr_class: curr_class});
+                profile_context.years.map(y => {
+                    console.log('ClassView(): y:', y);
+                    year.classes.map(c => {
+                        console.log('ClassView(): c.name:', c.name);
+                    });
+                });
+                console.log('ClassView(): curr_class:', curr_class);
+                console.log('ClassView(): year:', year);
+                // console.log(`profile_context.years: ${profile_context.years}`);
+                // console.log(`profile_context.years[0]: ${profile_context.years[0]}`);
+                navigation.navigate('Class', {curr_class_id: curr_class.id, year_id: year.id});
             }}>
             <View style={{flexDirection: 'row'}}>
                 <View style={{flexDirection: 'column'}}>
@@ -59,11 +70,14 @@ const ClassView = ({ navigation, curr_class, classes, setClasses, year, setYears
                             const newClasses = classes;
                             newClasses[currentClassID] = updatedClass;
                             setClasses(newClasses);
+                            console.log('DONE BUTTON: years:', years);
+                            console.log('DONE BUTTON: setYears:', setYears);
+                            // setYears([]);
                             setYears(data => data.map(item => {
                                 // console.log('MAP: item.id:', item.id);
                                 // console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
-                                console.log(`${item.id} == ${year.item.id}:`, (item.id == year.id));
-                                if(item.id !== year.item.id) return item;
+                                console.log(`${item.id} == ${year.id}:`, (item.id == year.id));
+                                if(item.id !== year.id) return item;
                                 else{
                                     // console.log('DONE BUTTON: year found!');
                                     return {
@@ -174,7 +188,7 @@ const YearView = ({year, years, setYears, navigation}) => {
                                     {classes.map((curr_class) => {
                                         // console.log('MAP: curr_class:', curr_class);
                                         return(
-                                            <ClassView key={curr_class.id} navigation={navigation} curr_class={curr_class} classes={classes} setClasses={setClasses} year={year} setYears={setYears}/>
+                                            <ClassView key={curr_class.id} navigation={navigation} curr_class={curr_class} classes={classes} setClasses={setClasses} year={year.item} years={years} setYears={setYears}/>
                                         );
                                     })}
                                 </View>
@@ -244,7 +258,9 @@ const YearView = ({year, years, setYears, navigation}) => {
 
 const YearsScreen = ({navigation}) => {
     const profile_context = useProfileContext();
-    console.log('YearsScreen.tsx: profile_context:', profile_context);
+    // console.log('YearsScreen.tsx: profile_context:', profile_context);
+    // console.log('YearsScreen.tsx: profile_context.years:', profile_context.years);
+    // console.log('YearsScreen.tsx: profile_context.years[0].classes:', profile_context.years[0].classes);
     
     const [years, setYears] = useState(initializeArrKeys(profile_context.years));
 
@@ -257,9 +273,19 @@ const YearsScreen = ({navigation}) => {
 
     useEffect(() => {
         // profile["academic_years"] = years;
+        // console.log(`useEffect(): years: ${years}`);
+        console.log('USEEFFECT()');
         profile_context.setYears(years);
-        // console.log('useEffect(): years:', years);
-        // console.log(`useEffect(): profile_context.years: ${profile_context.years}`);
+        console.log('useEffect(): profile_context years:');
+        profile_context.years.map(year => {
+            console.log('useEffect(): year:', year);
+            year.classes.map(c => {
+                console.log('useEffect(): c.name:', c.name);
+            });
+        });
+        // console.log('useEffect(): profile_context:', profile_context);
+        // console.log('useEffect(): profile_context.years[0]:', profile_context.years[0]);
+        // console.log('useEffect(): profile_context.years[1]:', profile_context.years[1]);
         // toggleExpand();
     }, [years]);
 
