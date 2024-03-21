@@ -34,40 +34,32 @@ const ClassScreen = ({route, navigation}) => {
     
     useEffect(() => {
         // Set the header title of the screen to the name of the class.
-        navigation.setOptions({title: `Sections for ${curr_class.name}`});
+        navigation.setOptions({title: curr_class.name});
         // PrintClassesFromProfile();
     });
-
+    
     return(
-        <View>
-            <Text>Hello</Text>
+        <View style={{flexDirection: 'column', flex: 1, alignItems: 'center'}}>
+            <View style={{height: '10%', marginTop: '5%'}}>
+                <FlatButton
+                    text={'Configure Sections'}
+                    onPress={() => navigation.navigate('Sections', {year: year, curr_class: curr_class})}
+                />
+            </View>
+            {(curr_class.sections === undefined || curr_class.sections.length == 0) && (
+                <View style={{marginTop: '5%', flex: 1}}>
+                    <Text style={{textAlign: 'center', fontSize: 30}}>No Sections yet!</Text>
+                </View>
+            )}
+            {(curr_class.sections != undefined && curr_class.sections.length > 0) && (
+                <View style={{flex: 1, alignItems: 'center'}}>
+                
+                </View>
+            )}
             {/* FOOTER */}
             <Footer/>
         </View>
     );
-    
-    // return(
-    //     <View style={{flexDirection: 'column', flex: 1, alignItems: 'center'}}>
-    //         <View style={{height: '10%', marginTop: '5%'}}>
-    //             <FlatButton
-    //                 text={'Configure Sections'}
-    //                 onPress={() => navigation.navigate('Sections', {year: year, curr_class: curr_class})}
-    //             />
-    //         </View>
-    //         {(c_class.sections === undefined || c_class.sections.length == 0) && (
-    //             <View style={{marginTop: '5%', flex: 1}}>
-    //                 <Text style={{textAlign: 'center', fontSize: 30}}>No Sections yet!</Text>
-    //             </View>
-    //         )}
-    //         {(c_class.sections != undefined && c_class.sections.length > 0) && (
-    //             <View style={{flex: 1, alignItems: 'center'}}>
-                
-    //             </View>
-    //         )}
-    //         {/* FOOTER */}
-    //         <Footer/>
-    //     </View>
-    // );
 }
 
 export default ClassScreen;
