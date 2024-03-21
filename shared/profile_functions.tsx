@@ -27,11 +27,32 @@ export const PrintData = () => {
         let child_key = 0;
         // console.log('PrintClasses(): year:', year);
     
+        function PrintSections(curr_class) {
+            if(curr_class.sections === undefined || curr_class.sections.length == 0){
+                return(
+                    <View>
+                        <Text>{'\t\t'}No sections yet!</Text>
+                    </View>
+                );
+            }
+
+            return(
+                <View>
+                    {curr_class.sections.map((s) => {
+                        <Text>A Section here</Text>
+                    })}
+                </View>
+            );
+        }
+
         return(
             // <Text>Class Here</Text>
             <View>
-                {year["classes"].map((curr_class) =>
-                    <Text key={child_key++}>{curr_class["name"]}</Text>
+                {year.classes.map((curr_class) =>
+                    <View>
+                        <Text style={{textDecorationLine: 'underline'}} key={child_key++}>{'\t' + curr_class["name"]}</Text>
+                        {PrintSections(curr_class)}
+                    </View>
                 )}
             </View>
         )

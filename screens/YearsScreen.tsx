@@ -19,15 +19,15 @@ const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
             onPress={() => {
                 profile_context.years.map(y => {
                     console.log('ClassView(): y:', y);
-                    year.classes.map(c => {
+                    y.classes.map(c => {
                         console.log('ClassView(): c.name:', c.name);
                     });
                 });
                 console.log('ClassView(): curr_class:', curr_class);
                 console.log('ClassView(): year:', year);
-                // console.log(`profile_context.years: ${profile_context.years}`);
-                // console.log(`profile_context.years[0]: ${profile_context.years[0]}`);
-                navigation.navigate('Class', {curr_class_id: curr_class.id, year_id: year.id});
+                console.log(`profile_context.years: ${profile_context.years}`);
+                console.log(`profile_context.years[0]: ${profile_context.years[0]}`);
+                navigation.navigate('Class', { year: year, curr_class: curr_class });
             }}>
             <View style={{flexDirection: 'row'}}>
                 <View style={{flexDirection: 'column'}}>
@@ -47,12 +47,12 @@ const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
                 {/* Button for editing name of a Class. */}
                 {is_editingClass == false && (
                     <TouchableOpacity
-                    style={{marginLeft: 'auto', alignSelf: 'center'}}
-                    activeOpacity={0.5}
-                    onPress={() => {
-                        setIs_editingClass(!is_editingClass);
-                        // console.log('editing a class?')
-                    }}
+                        style={{marginLeft: 'auto', alignSelf: 'center'}}
+                        activeOpacity={0.5}
+                        onPress={() => {
+                            setIs_editingClass(!is_editingClass);
+                            // console.log('editing a class?')
+                        }}
                     >
                         <AntDesign name="edit" size={40} color="black"/>
                     </TouchableOpacity>
@@ -63,37 +63,15 @@ const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
                     style={{marginLeft: 'auto', alignSelf: 'center'}}
                         activeOpacity={0.5}
                         onPress={() => {
-                            // Updating class array in state differently than with years array since a refresh is not forced unless a major change in array classes is found. If there is no immediate re-render initiated, a save click after pushing this done button will result in no changes on the save screen. Inspired by https://dev.to/andyrewlee/how-to-update-an-array-of-objects-in-react-state-3d, but I do not use the spread operator, as the resulting array is too similar and does not cause a re-render.
-                            // const currentClassID = classes.findIndex(c => c.id === curr_class.id);
-                            // const updatedClass = {...classes[currentClassID], name: name};
-                            // const newClasses = classes;
-                            // newClasses[currentClassID] = updatedClass;
                             updateClasses(
                                 {
                                     ...curr_class,
                                     name: name
                                 }
                             );
-                            // setClasses(newClasses);
-                            // setYears([]);
-                            // setYears(data => data.map(item => {
-                            //     // console.log('MAP: item.id:', item.id);
-                            //     // console.log(`DONE BUTTON: typeof item.id: ${typeof item.id}`);
-                            //     console.log(`${item.id} == ${year.id}:`, (item.id == year.id));
-                            //     if(item.id !== year.id) return item;
-                            //     else{
-                            //         // console.log('DONE BUTTON: year found!');
-                            //         return {
-                            //             ...item,
-                            //             classes: classes
-                            //         }
-                            //     }
-                            // }));
-                            // console.log('DONE BUTTON FOR CLASS: expanded', expanded);
                             setIs_editingClass(!is_editingClass);
-                            // console.log(`DONE BUTTON FOR CLASS: is_editingClass: ${is_editingClass}, is_editing: ${is_editing}`);
                         }}>
-                        <AntDesign name="checkcircleo" size={40} style={{backgroundColor: 'purple'}}/>
+                        <AntDesign name="checkcircleo" size={40} color='green'/>
                     </TouchableOpacity>
                 )}
             </View>
@@ -116,7 +94,6 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
     }
 
     const handleYearRender = () => {
-        // console.log('handleYearRender(): is_editing:', is_editing);
         // Viewing state of Academic Year.
         if (!is_editing) {
             return(
@@ -149,13 +126,6 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                 <TouchableOpacity
                                     style={{alignSelf: 'center'}}
                                     onPress={() => {
-                                        // setClasses([
-                                        //     ...classes,
-                                        //     {
-                                        //         name: "New Class",
-                                        //         id: findNextID(classes)
-                                        //     }
-                                        // ]);
                                         const newClasses = [
                                             ...classes,
                                             {
@@ -188,7 +158,7 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                         }
                                         // console.log('MAP: curr_class:', curr_class);
                                         return(
-                                            <ClassView key={curr_class.id} navigation={navigation} curr_class={curr_class} updateClasses={chgClasses} year={year.item}/>
+                                            <ClassView key={curr_class.id} navigation={navigation} curr_class={curr_class} updateClasses={chgClasses} year={year}/>
                                         );
                                     })}
                                 </View>
