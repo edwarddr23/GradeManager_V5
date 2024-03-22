@@ -6,7 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
-import { useProfileContext, ClassContent } from '../shared/profile_context'
+import { useProfileContext, ClassContent, YearContent } from '../shared/profile_context'
 
 const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
     const profile_context = useProfileContext();
@@ -82,8 +82,16 @@ const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
 const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
     const profile_context = useProfileContext();
     // useStates for TextInputs:
-    const[beg_year, setBeg_year] = useState(String(year.beg_year));
-    const[end_year, setEnd_year] = useState(String(year.end_year));
+    const[beg_year, setBeg_year] = useState(() => {
+                                                if(year.beg_year === -1) return ''
+                                                else{
+                                                    return year.beg_year;
+                                                }});
+    const[end_year, setEnd_year] = useState(() => {
+                                                if(year.end_year === -1) return ''
+                                                else{
+                                                    return year.end_year;
+                                                }});
     const[is_editing, setIs_editing] = useState(false);
     const[classes, setClasses] = useState(initializeArrKeys(year["classes"]))
     
@@ -126,19 +134,36 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                 <TouchableOpacity
                                     style={{alignSelf: 'center'}}
                                     onPress={() => {
-                                        let newClass: ClassContent;
-                                        newClass = {
-                                            ...newClass,
-                                            name: "New Class",
-                                            id: findNextID(classes)
-                                        }
+                                        // id: Int32
+                                        // year_id: Int32
+                                        // name: string
+                                        // setName: (c: string) => void
+                                        // sections: SectionContent[]
+                                        // setSections: (value: never[]) => void
+                                        let new_class: ClassContent = {
+                                            id: findNextID(classes),
+                                            year_id: year.id,
+                                            name: 'New Class',
+                                            setName: () => {},
+                                            sections: [],
+                                            setSections: () => {}
+                                        };
                                         const newClasses = [
                                             ...classes,
-                                            {
-                                                name: "New Class",
-                                                id: findNextID(classes)
-                                            }
-                                        ];
+                                            new_class
+                                        ]
+                                        // newClass = {
+                                        //     ...newClass,
+                                        //     id: findNextID(classes),
+                                        //     name: "New Class"
+                                        // }
+                                        // const newClasses = [
+                                        //     ...classes,
+                                        //     {
+                                        //         name: "New Class",
+                                        //         id: findNextID(classes)
+                                        //     }
+                                        // ];
                                         setClasses(newClasses);
                                         updateClassesInYear(year, newClasses);
                                     }}>
@@ -209,7 +234,7 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                 onPress={() => {
                                     updateYears(
                                         {
-                                            ...year.item,
+                                            ...year,
                                             beg_year: beg_year,
                                             end_year: end_year
                                         }
@@ -269,8 +294,8 @@ const YearsScreen = ({navigation}) => {
                 if(y.id != new_year.id) return y;
                 return new_year;
             }))
-            console.log('changeYearsHandler(): new_year:', new_year)
-            console.log('changeYearsHandler(): years:', years)
+            console.log('chgYrsHandler(): new_year:', new_year)
+            console.log('chgYrsHandler(): years:', years)
         }
 
         const chgClassesInYrHandler = (new_year, new_classes) => {
@@ -286,7 +311,7 @@ const YearsScreen = ({navigation}) => {
                 }
             });
             setYears(new_years);
-            profile_context.setYears(new_years);
+            // profile_context.setYears(new_years);
         }
 
         return(
@@ -302,17 +327,33 @@ const YearsScreen = ({navigation}) => {
                 <TouchableOpacity 
                     activeOpacity={0.5} 
                     onPress={() => {
+                        // id: Int32
+                        // classes: ClassContent[]
+                        // setClasses: (value: never[]) => void
+                        // beg_year: Int32
+                        // end_year: Int32
+                        let new_year: YearContent ={
+                            id: nextId,
+                            classes: [],
+                            setClasses: () => {},
+                            beg_year: -1,
+                            end_year: -1
+                        }
                         setYears([
                             ...years,
-                            {
-                                id: nextId,
-                                beg_year: "",
-                                end_year: "",
-                                classes: [],
-                                setClasses: () => {}
-                            },
+                            new_year
                         ])
-                        console.log('years after adding:', years);
+                        // setYears([
+                        //     ...years,
+                        //     {
+                        //         id: nextId,
+                        //         classes: [],
+                        //         setClasses: () => {},
+                        //         beg_year: '',
+                        //         end_year: ''
+                        //     },
+                        // ])
+                        // console.log('years after adding:', years);
                         setNextId(nextId + 1);
                     }}
                 >

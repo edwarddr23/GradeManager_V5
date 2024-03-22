@@ -1,27 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 
-// const ProfileContext = createContext();
-
-// function ProfileProvider(props) {
-//     const profileData = {
-//         name: 'huh?',
-//         classes: [
-//             {
-//                 name: 'Test 101'
-//             },
-//             {
-//                 name: 'Something 201'
-//             }
-//         ]
-//     }
-//     return (
-//         <ProfileContext.Provider value={profileData}>
-//             {props.children}
-//         </ProfileContext.Provider>
-//     );
-// }
-
 export type YearContent = {
     id: Int32
     classes: ClassContent[]

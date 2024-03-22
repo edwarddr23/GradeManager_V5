@@ -42,6 +42,7 @@ function PrintClasses(year) {
 }
 
 function PrintSections(curr_class) {
+    let child_key = 0;
     if(curr_class.sections === undefined || curr_class.sections.length == 0){
         return(
             <View>
@@ -57,7 +58,7 @@ function PrintSections(curr_class) {
                 child_key++;
                 return(
                     <View key={child_key}>
-                        <Text>A Section here</Text>
+                        <Text>{'\t\t'}A Section here</Text>
                     </View>
                 );
                 // {child_key++}

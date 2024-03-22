@@ -21,9 +21,10 @@ const ClassScreen = ({route, navigation}) => {
     const { year, curr_class } = route.params;
     // console.log(`ClassScreen(): year_id: ${year_id}`);
     // console.log(`ClassScreen(): curr_class_id: ${curr_class_id}`);
-    console.log(`ClassScreen(): year: ${year}`);
-    console.log(`ClassScreen(): year.classes[0]: ${year.classes[0]}`);
-    console.log(`ClassScreen(): c_class.name: ${curr_class.name}`);
+    // console.log(`ClassScreen(): year: ${year}`);
+    // console.log(`ClassScreen(): year.classes[0]: ${year.classes[0]}`);
+    console.log(`ClassScreen(): curr_class.name: ${curr_class.name}`);
+    console.log(`ClassScreen(): curr_class.sections: ${curr_class.sections}`);
     // console.log(`ClassScreen(): years: ${years}`);
     // const year = profile_context.years.find((year) => year.id === year_id);
     // const curr_class = year.classes.find((c) => c.id === curr_class_id);
