@@ -14,16 +14,15 @@ const LoadScreen = ({navigation}) => {
     const[profile, setProfile] = useState({});
 
     const renderProfilePreview = () => {
-        // let exists = fileExists();
         if(fileExists === true && loadFileName != '') {
-            return(PrintData(profile));
+            return(PrintData(profile_context));
         }
-        else if(fileExists === false) {
+        else if(fileExists === false && loadFileName != '') {
             return(
                 <Text>Profile: "{loadFileName}" could not be found.</Text>
             );
         }
-        else {
+        else{
             console.log('renderProfilePreview(): fileExists():', fileExists);
             return(
                 <Text>Profile Preview here...</Text>

@@ -57,7 +57,7 @@ const ClassScreen = ({route, navigation}) => {
             )}
             {(curr_class.sections != undefined && curr_class.sections.length > 0) && (
                 <View style={{flex: 1, alignItems: 'center'}}>
-                
+                    <Text style={{textAlign: 'center', fontSize: 30}}>Sections would be here!</Text>
                 </View>
             )}
             {/* FOOTER */}

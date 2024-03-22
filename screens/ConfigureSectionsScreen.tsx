@@ -5,8 +5,61 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import InputWithLabel from '../shared/custom_text_Inputs';
 import Footer from '../shared/custom_footer';
 import { findNextID, initializeArrKeys } from '../shared/key_functions';
+import { useProfileContext } from '../shared/profile_context';
+
+const SectionView = ({section}) => {
+    const[is_editing, setIs_editing] = useState(false);
+    const[name, setName] = useState(() => {
+        if(section.item.name == "") return "New Section";
+        return section.item.name;
+        // return "New Section";
+        // console.log('useState(): section.item:', section.item);
+        // return section.item.name;
+    });
+    console.log('SectionView: name:', name);
+    // console.log(`SectionView: sections: ${sections}`);
+    return(
+        <View style={styles.section}>
+            {!is_editing && (
+                <View style={{flexDirection: 'row'}}>
+                    <Text style={{alignSelf: 'center', fontSize: 20}}>{name}</Text>
+                    
+                    <TouchableOpacity
+                        style={{marginLeft: 'auto'}}
+                        onPress={() => {
+                            console.log(`editing section ${section.item.id}?`);
+                            setIs_editing(!is_editing);
+                        }}>
+                        <AntDesign name="edit" size={40} color="black"/>
+                    </TouchableOpacity>
+                </View>  
+            )}
+            {is_editing && (
+                <View style={{flexDirection: 'row'}}>
+                    <TextInput
+                        style={styles.inputText}
+                        value={name}
+                        placeholder={name}
+                        onChangeText={text => {
+                            setName(text);
+                        }}
+                        keyboardType="numeric"
+                    />
+                    <TouchableOpacity
+                        style={{marginLeft: 'auto'}}
+                        onPress={() => {
+                            setIs_editing(!is_editing);
+                        }}>
+                        <AntDesign name="checkcircleo" size={40} color="black"/>
+                    </TouchableOpacity>
+                </View>
+            )}
+        </View>
+    );
+}
 
 const ConfigureSectionsScreen = ({navigation, route}) => {
+    const profile_context = useProfileContext();
     console.log(`ConfigureSectionsScreen(): route.params: ${route.params}`);
     const { year, curr_class } = route.params;
     console.log(`ConfigureSectionsScreen(): year: ${year}`);
@@ -22,69 +75,18 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         // Change the header title to reflect the current class's sections being edited.
         navigation.setOptions({title: `Sections for ${c_class.name}`});
         console.log('useEffect(): sections:', sections);
-        console.log('useEffect(): sections[0]', sections[0]);
+        // console.log('useEffect(): sections[0]', sections[0]);
     }, []);
-    
-    const SectionView = ({section}) => {
-        const[is_editing, setIs_editing] = useState(false);
-        const[name, setName] = useState(() => {
-            if(section.item.name == "") return "New Section";
-            return section.item.name;
-            // return "New Section";
-            // console.log('useState(): section.item:', section.item);
-            // return section.item.name;
-        });
-        console.log('SectionView: name:', name);
-        // console.log(`SectionView: sections: ${sections}`);
-        return(
-            <View style={styles.section}>
-                {!is_editing && (
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={{alignSelf: 'center', fontSize: 20}}>{name}</Text>
-                        <TouchableOpacity
-                            style={{marginLeft: 'auto'}}
-                            onPress={() => {
-                                console.log(`editing section ${section.item.id}?`);
-                                setIs_editing(!is_editing);
-                            }}>
-                            <AntDesign name="edit" size={40} color="black"/>
-                        </TouchableOpacity>
-                    </View>  
-                )}
-                {is_editing && (
-                    <View style={{flexDirection: 'row'}}>
-                        <TextInput
-                            style={styles.inputText}
-                            value={name}
-                            placeholder={name}
-                            onChangeText={text => {
-                                setName(text);
-                            }}
-                            keyboardType="numeric"
-                        />
-                        <TouchableOpacity
-                            style={{marginLeft: 'auto'}}
-                            onPress={() => {
-                                setIs_editing(!is_editing);
-                            }}>
-                            <AntDesign name="checkcircleo" size={40} color="black"/>
-                        </TouchableOpacity>
-                    </View>
-                )}
-            </View>
-        );
-    }
 
     return(
         <View style={{flexDirection: 'column', flex: 1, alignItems: 'center'}}>
-            {/* Add Sections button */}
+            {/* Button that adds sections. */}
             <TouchableOpacity
                 style={{marginTop: '3%'}}
                 activeOpacity={0.5}
                 onPress={() => {
-                    let newSections = sections;
-                    newSections = [
-                        ...newSections,
+                    let newSections = [
+                        ...sections,
                         {
                             id: findNextID(sections),
                             rel_weight: undefined,
@@ -92,7 +94,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                         }
                     ];
                     setSections(newSections);
-                    console.log('onPress(): sections:', sections);
+                    console.log('CURRENT CLASS:', profile_context.years.find((y) => y.id === year.id)?.classes.find((c) => c.id === curr_class.id));
                 }}>
                 <AntDesign name='pluscircleo' size={70} color="black"/>
             </TouchableOpacity>
@@ -105,6 +107,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                 <FlatList
                     style={{width: '90%', flex: 1}}
                     data={sections}
+                    keyExtractor={(section) => section.id}
                     renderItem={section => {
                         return(
                             <View style={{alignItems: 'center'}}>
@@ -113,9 +116,9 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                         );
                     }}
                 />
-                {/* FOOTER */}
-                <Footer/>
             </View>
+            {/* FOOTER */}
+            <Footer/>
         </View>
     );
 }

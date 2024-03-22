@@ -6,7 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
-import { useProfileContext } from '../shared/profile_context'
+import { useProfileContext, ClassContent } from '../shared/profile_context'
 
 const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
     const profile_context = useProfileContext();
@@ -126,6 +126,12 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                 <TouchableOpacity
                                     style={{alignSelf: 'center'}}
                                     onPress={() => {
+                                        let newClass: ClassContent;
+                                        newClass = {
+                                            ...newClass,
+                                            name: "New Class",
+                                            id: findNextID(classes)
+                                        }
                                         const newClasses = [
                                             ...classes,
                                             {
