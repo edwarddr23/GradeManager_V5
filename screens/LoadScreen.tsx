@@ -8,7 +8,7 @@ import FlatButton from '../shared/custom_buttons';
 import { useProfileContext } from '../shared/profile_context';
 
 const LoadScreen = ({navigation}) => {
-    const profile_context = useProfileContext();
+    const { profile_context } = useProfileContext();
     const[loadFileName, setLoadFileName] = useState('');
     const[fileExists, setFileExists] = useState(false);
     const[profile, setProfile] = useState({});

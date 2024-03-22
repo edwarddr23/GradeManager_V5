@@ -60,7 +60,7 @@ const SectionView = ({section, updateSections}) => {
 }
 
 const ConfigureSectionsScreen = ({navigation, route}) => {
-    const profile_context = useProfileContext();
+    const { profile_context } = useProfileContext();
     console.log(`ConfigureSectionsScreen(): route.params: ${route.params}`);
     const { year, curr_class } = route.params;
     console.log(`ConfigureSectionsScreen(): year: ${year}`);
@@ -80,7 +80,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         if(sections.length > 0){
             console.log(`useEffect(): sections.find((s) => s.id === 0).name: ${sections.find((s) => s.id === 0).name}`);
             // console.log('useEffect(): sections[0]', sections[0]);
-            profile_context.years.find((y) => y.id === year.id)?.classes.find((c) => c.id === curr_class.id)?.setSections(sections);
+            // profile_context.years.find((y) => y.id === year.id)?.classes.find((c) => c.id === curr_class.id)?.setSections(sections);
         }
         console.log(`useEffect(): profile_context current class sections: ${profile_context.years.find((y) => y.id === year.id)?.classes.find((c) => c.id === curr_class.id).sections}`);
     }, [sections]);

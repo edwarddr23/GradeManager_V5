@@ -109,7 +109,7 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                 <View style={{paddingBottom: 10}}>
                     <View style={styles.year}>
                         <View style={{flexDirection: 'row'}}>
-                            <Text style={{textAlignVertical: 'center', fontSize: 20, flex: 1}}>Academic Year {beg_year}-{end_year}</Text>
+                            <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Academic Year {beg_year}-{end_year}</Text>
                             {/* Edit Button to change the years range */}
                             <TouchableOpacity 
                                 style={{marginRight: 20}}
@@ -118,13 +118,13 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                     // console.log('edit button: years:', years);
                                     setIs_editing(true);
                                 }}>
-                                <AntDesign name="edit" size={40} color="black"/>
+                                <AntDesign name="edit" size={50} color="black"/>
                             </TouchableOpacity>
                             {/* Expand Button to see classes. */}
                             <TouchableOpacity
                                 onPress={toggleExpand}>
-                                {!expanded && (<AntDesign name="downcircleo" size={40} color="black"/>)}
-                                {expanded && (<AntDesign name="upcircleo" size={40} color="black"/>)}
+                                {!expanded && (<AntDesign name="downcircleo" size={50} color="black"/>)}
+                                {expanded && (<AntDesign name="upcircleo" size={50} color="black"/>)}
                             </TouchableOpacity>
                         </View>
                         {/* If the academic year is expanded... */}
@@ -171,7 +171,7 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                         setClasses(newClasses);
                                         updateClassesInYear(year, newClasses);
                                     }}>
-                                    <AntDesign name="pluscircleo" size={40} color="black"/>
+                                    <AntDesign name="pluscircleo" size={50} color="black"/>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -245,7 +245,7 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                     );
                                     setIs_editing(!is_editing);
                                 }}>
-                                <AntDesign name="checkcircleo" size={40} color={'green'}/>
+                                <AntDesign name="checkcircleo" size={50} color={'green'}/>
                             </TouchableOpacity>
                         </View>
                     </View>

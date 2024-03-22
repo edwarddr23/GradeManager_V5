@@ -7,35 +7,12 @@ import { useProfileContext } from '../shared/profile_context';
 import { PrintClassesFromProfile } from '../shared/profile_functions';
 
 const ClassScreen = ({route, navigation}) => {
-    const profile_context = useProfileContext();
-    console.log(`ConfigureSectionsScreen(): JSON.stringify(profile_context): ${JSON.stringify(profile_context)}`);
-    console.log(`ClassScreen(): JSON.parse(JSON.stringify(profile_context.years[0])): ${JSON.stringify(profile_context.years[0])}`);
-    console.log(`ClassScreen(): JSON.parse(JSON.stringify(profile_context.years[1])): ${JSON.stringify(profile_context.years[1])}`);
-    console.log(`LOOP ~~~~~~~~~~~~~~~~~~~~~~~`);
-    profile_context.years.forEach((year) => {
-        console.log(`ClassScreen(): JSON.stringify(year): ${JSON.stringify(year)}`);
-    });
-    console.log(`END LOOP ~~~~~~~~~~~~~~~~~~~~~~~`);
-    console.log(`ClassScreen(): JSON.parse(JSON.stringify(profile_context.years)): ${JSON.parse(JSON.stringify(profile_context.years))}`);
-    console.log(`ClassScreen(): route.params: ${route.params}`)
+    const { profile_context } = useProfileContext();
     const { year, curr_class } = route.params;
-    // console.log(`ClassScreen(): year_id: ${year_id}`);
-    // console.log(`ClassScreen(): curr_class_id: ${curr_class_id}`);
-    // console.log(`ClassScreen(): year: ${year}`);
-    // console.log(`ClassScreen(): year.classes[0]: ${year.classes[0]}`);
     console.log(`ClassScreen(): curr_class.name: ${curr_class.name}`);
     console.log(`ClassScreen(): curr_class.sections: ${curr_class.sections}`);
-    // console.log(`ClassScreen(): years: ${years}`);
-    // const year = profile_context.years.find((year) => year.id === year_id);
-    // const curr_class = year.classes.find((c) => c.id === curr_class_id);
 
-
-    PrintClassesFromProfile();
-    // console.log(`ClassScreen(): profile_context.years: ${profile_context.years}`)
-    
-    // const[c_class, setc_class] = useState(profile_context.years.find(y => y.id === year_id)).fn;
-
-    // console.log('ClassScreen: c_class.sections:', c_class.sections);
+    // PrintClassesFromProfile();
     
     useEffect(() => {
         // Set the header title of the screen to the name of the class.
