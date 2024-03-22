@@ -69,8 +69,7 @@ function PrintSections(curr_class) {
 
 // The Profile context is passed in rather than called within this component as it led to inconsistent hook calls from the caller.
 export const PrintData = (profile_context) => {
-    // const profile_context = useProfileContext();
-    console.log('PrintData(): profile_context.profile_name:', profile_context.profile_name);
+    console.log('PrintData(): profile_context.years:', profile_context.years);
     let child_key = 0;
 
     return(

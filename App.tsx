@@ -38,24 +38,25 @@ import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
 import ClassScreen from './screens/ClassScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
-import { YearContent, ClassContent, ProfileContent, ProfileContext } from './shared/profile_context';
+// import { YearContent, ClassContent, ProfileContent, ProfileContext } from './shared/profile_context';
+import { ProfileProvider } from './shared/profile_context';
 
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
-  const[name, setName] = useState('UNINITIALIZED');
-  const[years, setYears] = useState([]);
-  // const[classes, setClasses] = useState([]);
+  // const[name, setName] = useState('UNINITIALIZED');
+  // const[years, setYears] = useState([]);
+  // // const[classes, setClasses] = useState([]);
 
-  let profile: ProfileContent = {
-    profile_name: name,
-    setProfile_name: setName,
-    years: years,
-    setYears: setYears
-  };
+  // let profile: ProfileContent = {
+  //   profile_name: name,
+  //   setProfile_name: setName,
+  //   years: years,
+  //   setYears: setYears
+  // };
 
   return (
-    <ProfileContext.Provider value={ profile }>
+    <ProfileProvider>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
@@ -134,7 +135,7 @@ function App(): React.JSX.Element {
               })}/>
         </Stack.Navigator>
       </NavigationContainer>
-    </ProfileContext.Provider>
+    </ProfileProvider>
   );
 }
 

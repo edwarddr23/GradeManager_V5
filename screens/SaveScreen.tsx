@@ -9,7 +9,8 @@ import { PrintData } from '../shared/profile_functions';
 import { useProfileContext } from '../shared/profile_context';
 
 const SaveScreen = ({navigation, route}) => {
-    const profile_context = useProfileContext();
+    const { profile_context } = useProfileContext();
+    console.log(`SaveScreen.tsx: profile_context.years: ${profile_context.years}`);
     // const {profile} = route.params;
     // const[documentsFolder, setDocumentsFolder] = useState('');
     const[saveFileName, setSaveFileName] = useState('');
@@ -19,18 +20,11 @@ const SaveScreen = ({navigation, route}) => {
     //     setDocumentsFolder(RNFS.DocumentDirectoryPath);
     // }, []);
 
-    // Sets state fileExists to true or false depending on if the file is found or not. Set to a state so that it can be actively displayed in View.
-    // function saveFileExists() {
-    //     let saveFilePath = documentsFolder + '/SaveFiles/' + saveFileName + '.txt';
-    //     RNFS.exists(saveFilePath)
-    //         .then((exists) => {
-    //             setFileExists(exists);
-    //         })
-    //         .catch((error => {
-    //             console.log('SaveScreen.tsx: saveToFileHandler(): Error saving to file.');
-    //         }))
-    //     return fileExists;
-    // }
+    // return(
+    //     <View>
+    //         <Text>Save Screen</Text>
+    //     </View>
+    // );
     
     const saveToFileHandler = (saveFileName) => {
         console.log('SaveScreen.tsx: saveToFileHandler():', saveFileName);

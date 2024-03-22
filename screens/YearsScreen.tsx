@@ -9,7 +9,7 @@ import InputWithLabel from '../shared/custom_text_Inputs'
 import { useProfileContext, ClassContent, YearContent } from '../shared/profile_context'
 
 const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
-    const profile_context = useProfileContext();
+    const { profile_context, updateClassInProfile } = useProfileContext();
     const[is_editingClass, setIs_editingClass] = useState(false);
     const[name, setName] = useState(curr_class.name);
 
@@ -63,12 +63,12 @@ const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
                     style={{marginLeft: 'auto', alignSelf: 'center'}}
                         activeOpacity={0.5}
                         onPress={() => {
-                            updateClasses(
-                                {
-                                    ...curr_class,
-                                    name: name
-                                }
-                            );
+                            const updated_class = {
+                                ...curr_class,
+                                name: name
+                            }
+                            updateClasses(updated_class);
+                            updateClassInProfile(year.id, curr_class.id, updated_class)
                             setIs_editingClass(!is_editingClass);
                         }}>
                         <AntDesign name="checkcircleo" size={40} color='green'/>
@@ -80,7 +80,7 @@ const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
 }
 
 const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
-    const profile_context = useProfileContext();
+    const { profile_context, addClassToProfile } = useProfileContext();
     // useStates for TextInputs:
     const[beg_year, setBeg_year] = useState(() => {
                                                 if(year.beg_year === -1) return ''
@@ -144,14 +144,18 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                             id: findNextID(classes),
                                             year_id: year.id,
                                             name: 'New Class',
-                                            setName: () => {},
-                                            sections: [],
-                                            setSections: () => {}
+                                            sections: []
                                         };
                                         const newClasses = [
                                             ...classes,
                                             new_class
                                         ]
+                                        console.log(`ADD BUTTON: year.id: ${year.id}`);
+                                        console.log(`ADD BUTTON: LOOP`);
+                                        newClasses.map((c) => {
+                                            console.log(`c.id: ${c.id}`);
+                                        });
+                                        addClassToProfile(year.id, new_class.id);
                                         // newClass = {
                                         //     ...newClass,
                                         //     id: findNextID(classes),
@@ -254,25 +258,26 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
 }
 
 const YearsScreen = ({navigation}) => {
-    const profile_context = useProfileContext();
+    const { profile_context, addYearToProfile } = useProfileContext();
     // console.log('YearsScreen.tsx: profile_context:', profile_context);
     // console.log('YearsScreen.tsx: profile_context.years:', profile_context.years);
     // console.log('YearsScreen.tsx: profile_context.years[0].classes:', profile_context.years[0].classes);
     
     const [years, setYears] = useState(initializeArrKeys(profile_context.years));
 
-    const [nextId, setNextId] = useState(() => {
-        if(years.length > 0){
-            return years[years.length - 1].id + 1;
-        }
-        return 0;
-    });
+    // const [nextId, setNextId] = useState(() => {
+    //     if(years.length > 0){
+    //         return years[years.length - 1].id + 1;
+    //     }
+    //     return 0;
+    // });
 
     useEffect(() => {
         // profile["academic_years"] = years;
         // console.log(`useEffect(): years: ${years}`);
         console.log('USEEFFECT()');
-        profile_context.setYears(years);
+        console.log(`useEffect(): profile_context.years: ${profile_context.years}`);
+        // profile_context.setYears(years);
         // console.log('useEffect(): profile_context years:');
         // profile_context.years.map(year => {
         //     console.log('useEffect(): year:', year);
@@ -289,11 +294,13 @@ const YearsScreen = ({navigation}) => {
     const renderYear = ((curr_year) => {
         // console.log('renderYear(): curr_year.item:', curr_year.item);
         const chgYrsHandler = (new_year) => {
-            setYears((yrs) => yrs.map((y) => {
+            const new_years = years.map((y) => {
                 console.log(`y.id: ${y.id}, new_year.id: ${new_year.id}`);
                 if(y.id != new_year.id) return y;
                 return new_year;
-            }))
+            })
+            setYears(new_years)
+            profile_context.setYears(new_years);
             console.log('chgYrsHandler(): new_year:', new_year)
             console.log('chgYrsHandler(): years:', years)
         }
@@ -333,7 +340,7 @@ const YearsScreen = ({navigation}) => {
                         // beg_year: Int32
                         // end_year: Int32
                         let new_year: YearContent ={
-                            id: nextId,
+                            id: findNextID(years),
                             classes: [],
                             setClasses: () => {},
                             beg_year: -1,
@@ -343,6 +350,8 @@ const YearsScreen = ({navigation}) => {
                             ...years,
                             new_year
                         ])
+                        addYearToProfile(new_year.id);
+                        console.log(`PROFILE AFTER ADDING: profile_context.years ${profile_context.years}`);
                         // setYears([
                         //     ...years,
                         //     {
@@ -354,7 +363,7 @@ const YearsScreen = ({navigation}) => {
                         //     },
                         // ])
                         // console.log('years after adding:', years);
-                        setNextId(nextId + 1);
+                        // setNextId(nextId + 1);
                     }}
                 >
                     <AntDesign name="pluscircleo" style={styles.plus_icon} size={80}/>

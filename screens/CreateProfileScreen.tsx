@@ -55,14 +55,15 @@ import { useProfileContext } from '../shared/profile_context';
 // }
 
 const CreateProfileScreen = ({navigation, route}) => {
-    const profile_context = useProfileContext();
+    const { profile_context } = useProfileContext();
+    // console.log(`CreateProfileScreen(): profile_context: ${profile_context}`);
     const [profile_name, setProfile_name] = useState('');
     // profile_context.profile_name = profile_name;
     // profile_context.setProfile_name = setProfile_name;
 
-    useEffect(() => {
-        console.log('useEffect(): profile_context.profile_name:', profile_context.profile_name);
-    });
+    // useEffect(() => {
+    //     console.log('useEffect(): profile_context.profile_name:', profile_context.profile_name);
+    // });
 
     function initializeProfile() {
         profile_context.setProfile_name(profile_name);
