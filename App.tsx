@@ -27,6 +27,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import FlatButton from './shared/custom_buttons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -37,9 +38,8 @@ import YearsScreen from './screens/YearsScreen';
 import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
 import ClassScreen from './screens/ClassScreen';
-import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
 // import { YearContent, ClassContent, ProfileContent, ProfileContext } from './shared/profile_context';
-import { ProfileProvider } from './shared/profile_context';
+import { ProfileProvider, useProfileContext } from './shared/profile_context';
 
 const Stack = createNativeStackNavigator();
 
@@ -95,23 +95,7 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="Class"
               component={ClassScreen}
-              options={({navigation}) => ({
-                headerRight: () => (
-                  <View style={{width: 100, height: 45}}>
-                    <FlatButton
-                      text="Save"
-                      onPress={() => {
-                        navigation.navigate("Save");
-                      }}
-                    />
-                  </View>
-                )
-              })}
-            />
-            <Stack.Screen
-              name="Sections"
-              component={ConfigureSectionsScreen}
-              options={({navigation}) => ({
+              options={({navigation, route}) => ({
                 headerRight: () => (
                   <View style={{width: 100, height: 45}}>
                     <FlatButton

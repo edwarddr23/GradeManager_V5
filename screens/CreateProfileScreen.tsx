@@ -72,7 +72,7 @@ const CreateProfileScreen = ({navigation, route}) => {
 
     const handleCreateProfile = () => {
         initializeProfile();
-        return navigation.navigate('Years');
+        return navigation.navigate('Years', {fromClassScreen: false});
     }
 
     return(

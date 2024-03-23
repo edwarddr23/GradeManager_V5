@@ -56,12 +56,18 @@ function PrintSections(curr_class) {
         <View>
             {curr_class.sections.map((s) => {
                 child_key++;
+                if(s.name != ''){
+                    return(
+                        <View key={child_key}>
+                            <Text>{'\t\t' + s.name + ': ' + s.weight * 100 + '%'}</Text>
+                        </View>
+                    );
+                }
                 return(
                     <View key={child_key}>
-                        <Text>{'\t\t'}A Section here</Text>
+                        <Text>{'\t\tNew Section'}</Text>
                     </View>
                 );
-                // {child_key++}
             })}
         </View>
     );

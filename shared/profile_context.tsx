@@ -1,5 +1,13 @@
 import React, { createContext, useContext, useState } from 'react';
-import { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
+import { Float, Int32 } from 'react-native/Libraries/Types/CodegenTypes';
+
+// Inspired by https://dev.to/madv/usecontext-with-typescript-23ln.
+export type ProfileContent = {
+    profile_name: string
+    setProfile_name: (value: string) => void
+    years: YearContent[]
+    setYears: (value: never[]) => void
+}
 
 export type YearContent = {
     id: Int32
@@ -19,17 +27,14 @@ export type SectionContent = {
     id: Int32
     class_id: Int32
     name: string
-    setName: (c: string) => void
-    section_weight: Int32
-    setSection_weight: (c: Int32) => void
+    weight: Float
+    average: Float
+    assignment: AssignmentContent[]
 }
 
-// Inspired by https://dev.to/madv/usecontext-with-typescript-23ln.
-export type ProfileContent = {
-    profile_name: string
-    setProfile_name: (value: string) => void
-    years: YearContent[]
-    setYears: (value: never[]) => void
+export type AssignmentContent = {
+    id: Int32
+    
 }
 
 // export const ProfileContext = createContext<ProfileContent>({
@@ -77,14 +82,14 @@ export function ProfileProvider({children}) {
         // setYears([])
     }
 
-    const addClassToProfile = (year_id, new_class_id) => {
-        const new_class: ClassContent = {
-            id: new_class_id,
-            year_id: year_id,
-            name: 'New Class',
-            sections: []
-        }
-        years.find((y) => y.id === year_id).classes.push(new_class);
+    const addClassToProfile = (new_class) => {
+        // const new_class: ClassContent = {
+        //     id: new_class_id,
+        //     year_id: year_id,
+        //     name: 'New Class',
+        //     sections: []
+        // }
+        years.find((y) => y.id === new_class.year_id).classes.push(new_class);
     }
 
     const updateClassInProfile = (year_id, class_id, new_class) => {

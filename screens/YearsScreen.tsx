@@ -23,10 +23,10 @@ const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
                         console.log('ClassView(): c.name:', c.name);
                     });
                 });
-                console.log('ClassView(): curr_class:', curr_class);
-                console.log('ClassView(): year:', year);
-                console.log(`profile_context.years: ${profile_context.years}`);
-                console.log(`profile_context.years[0]: ${profile_context.years[0]}`);
+                console.log(`ClassView: ${curr_class.name}.sections = ${curr_class.sections}`);
+                // console.log('ClassView(): year:', year);
+                // console.log(`profile_context.years: ${profile_context.years}`);
+                // console.log(`profile_context.years[0]: ${profile_context.years[0]}`);
                 navigation.navigate('Class', { year: year, curr_class: curr_class });
             }}>
             <View style={{flexDirection: 'row'}}>
@@ -42,7 +42,14 @@ const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
                             placeholder={curr_class.name} 
                             label={'Class Name:'}/>
                     )}
-                    <Text style={{fontSize: 18}}>Grade Type: {curr_class.type}</Text>
+                    {curr_class.sections.map((s) => {
+                        return(
+                            <View key={s.id}>
+                                <Text style={{fontSize: 18}}>{s.name}: {s.weight * 100}%</Text>
+                            </View>
+                        );
+                    })}
+                    {/* <Text style={{fontSize: 18}}>Grade Type: {curr_class.type}</Text> */}
                 </View>
                 {/* Button for editing name of a Class. */}
                 {is_editingClass == false && (
@@ -155,7 +162,7 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
                                         newClasses.map((c) => {
                                             console.log(`c.id: ${c.id}`);
                                         });
-                                        addClassToProfile(year.id, new_class.id);
+                                        addClassToProfile(new_class);
                                         // newClass = {
                                         //     ...newClass,
                                         //     id: findNextID(classes),
@@ -257,8 +264,11 @@ const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
     return(handleYearRender());
 }
 
-const YearsScreen = ({navigation}) => {
+const YearsScreen = ({navigation, route}) => {
     const { profile_context, addYearToProfile } = useProfileContext();
+    const fromClassScreen = route.params.fromClassScreen;
+    // if(fromClassScreen === undefined)
+
     // console.log('YearsScreen.tsx: profile_context:', profile_context);
     // console.log('YearsScreen.tsx: profile_context.years:', profile_context.years);
     // console.log('YearsScreen.tsx: profile_context.years[0].classes:', profile_context.years[0].classes);
@@ -273,10 +283,22 @@ const YearsScreen = ({navigation}) => {
     // });
 
     useEffect(() => {
+        console.log(`YearsScreen.tsx: UseEffect(): fromClassScreen: ${fromClassScreen}`);
+        if(fromClassScreen === true){
+            console.log(`YearsScreen.tsx: useEffect(): came back from ClassScreen!`);
+        }
+        else{
+            console.log(`YearsScreen.tsx: useEffect(): did not come back from ClassScreen.`)
+        }
         // profile["academic_years"] = years;
         // console.log(`useEffect(): years: ${years}`);
         console.log('USEEFFECT()');
-        console.log(`useEffect(): profile_context.years: ${profile_context.years}`);
+        console.log(`YearsScreen.tsx: UseEffect(): Updated sections:`);
+        // profile_context.years.find((y) => y.id === 0).classes.find((c) => c.id === 0).sections.map((s) => {
+        //     console.log(`${s.name}: ${s.weight}`);
+        // });
+        setYears(profile_context.years);
+        // console.log(`useEffect(): profile_context.years: ${profile_context.years}`);
         // profile_context.setYears(years);
         // console.log('useEffect(): profile_context years:');
         // profile_context.years.map(year => {
@@ -289,7 +311,7 @@ const YearsScreen = ({navigation}) => {
         // console.log('useEffect(): profile_context.years[0]:', profile_context.years[0]);
         // console.log('useEffect(): profile_context.years[1]:', profile_context.years[1]);
         // toggleExpand();
-    }, [years]);
+    }, [years, fromClassScreen]);
 
     const renderYear = ((curr_year) => {
         // console.log('renderYear(): curr_year.item:', curr_year.item);
@@ -372,9 +394,10 @@ const YearsScreen = ({navigation}) => {
             <Text style={{fontSize: 17, fontWeight: 'bold', paddingBottom: 5}}>Press the plus sign to add an academic year</Text>
             <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
                 <FlatList
-                    style={{width: '90%', flex: 1}}
+                    style={{width: '90%'}}
                     data={years}
                     keyExtractor={(item, index) => item.id}
+                    removeClippedSubviews={false}
                     renderItem={curr_year => {
                         return renderYear(curr_year);
                     }}
