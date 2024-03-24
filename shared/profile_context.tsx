@@ -51,8 +51,8 @@ export type AssignmentContent = {
     section_id: Int32
     name: string
     type: string
-    numerator: Float
-    denominator: Float
+    numerator: Int32
+    denominator: Int32
 }
 
 // export const ProfileContext = createContext<ProfileContent>({
@@ -138,6 +138,9 @@ export function ProfileProvider({children}) {
     const updateAssignmentInProfile = (new_assignment) => {
         let curr_assignment = years.find((y) => y.id === new_assignment.year_id).semesters.find((s) => s.id === new_assignment.semester_id).classes.find((c) => c.id === new_assignment.class_id).sections.find((s) => s.id === new_assignment.section_id).assignments.find((a) => a.id === new_assignment.id);
         curr_assignment.name = new_assignment.name;
+        curr_assignment.type = new_assignment.type;
+        curr_assignment.numerator = new_assignment.numerator;
+        curr_assignment.denominator = new_assignment.denominator;
     }
 
     return(

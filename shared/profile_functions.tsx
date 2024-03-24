@@ -117,12 +117,12 @@ function PrintAssignments(section) {
                             <Text key={child_key}>{'\t\t\t'}New Assignment</Text>
                         );
                     }
-                    else if(a.type === 'percentage'){
+                    else if(a.type === 'Percentage'){
                         return(
                             <Text key={child_key}>{'\t\t\t' + a.name}: {(a.numerator / a.denominator) * 100}%</Text>
                         );
                     }
-                    else{
+                    else if(a.type === 'Ratio'){
                         return(
                             <Text key={child_key}>{'\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
                         );
