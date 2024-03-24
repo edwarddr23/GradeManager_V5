@@ -20,19 +20,45 @@ export const PrintClassesFromProfile = () => {
 
 // Functions used for PrintData():
 
-function PrintClasses(year) {
+function PrintSemesters(year) {
     let child_key = 0;
-    // console.log('PrintClasses(): year:', year);
+    
+    return(
+        <View>
+            {year.semesters.map((s) => {
+                child_key++
+                return(
+                    <View key={s.id}>
+                        {(s.season === '') && (
+                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>New Semester</Text>
+                        )}
+                        {s.season !== '' && (
+                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>{s.season} {s.year}</Text>
+                        )}
+                        {PrintClasses(s)}
+                    </View>
+                );
+            })} 
+        </View>
+    );
+}
+
+function PrintClasses(semester) {
+    let child_key = 0;
 
     return(
-        // <Text>Class Here</Text>
         <View>
-            {year.classes.map((curr_class) => {
+            {semester.classes.map((c) => {
                 child_key++;
                 return(
                     <View key={child_key}>
-                        <Text style={{textDecorationLine: 'underline'}} key={child_key++}>{'\t' + curr_class["name"]}</Text>
-                        {PrintSections(curr_class)}
+                        {c.name !== '' && (
+                            <Text key={child_key++}>{'\t' + c.name}</Text>
+                        )}
+                        {c.name === '' && (
+                            <Text key={child_key++}>New Class</Text>
+                        )}
+                        {PrintSections(c)}
                     </View>
                 );
             })}
@@ -82,15 +108,21 @@ export const PrintData = (profile_context) => {
         <View>
             <Text style={{fontWeight: 'bold', textAlign: 'center'}}>Profile Data for "{profile_context.profile_name}":</Text>
             {profile_context.years.map((year) => {
-                    child_key++
-                    return(
-                        <View key={child_key}>
+                child_key++
+                // console.log(`PrintData(): year: ${year}`);
+                return(
+                    <View key={child_key}>
+                        {year.beg_year === -1 && (
+                            <Text style={{fontWeight: 'bold'}}>New Academic Year</Text>
+                        )}
+                        {year.beg_year !== -1 && (
                             <Text style={{fontWeight: 'bold'}}>Academic Year {year.beg_year}-{year.end_year}:</Text>
-                            {PrintClasses(year)}
-                        </View>
-                    );
-                }
-            )}
+                        )}
+                        { PrintSemesters(year) }
+                        {/* {PrintClasses(year)} */}
+                    </View>
+                );
+            })}
             {/* {PrintAcademicYrs(profile)} */}
         </View>
         // <Text>Hello</Text>

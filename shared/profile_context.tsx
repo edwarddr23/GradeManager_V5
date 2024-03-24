@@ -11,30 +11,43 @@ export type ProfileContent = {
 
 export type YearContent = {
     id: Int32
-    classes: ClassContent[]
+    semesters: SemesterContent[]
     beg_year: Int32
     end_year: Int32
+}
+
+export type SemesterContent = {
+    id: Int32
+    year_id: Int32
+    classes: ClassContent[]
+    season: string
+    year: Int32
 }
 
 export type ClassContent = {
     id: Int32
     year_id: Int32
+    semester_id: Int32
     name: string
     sections: SectionContent[]
 }
 
 export type SectionContent = {
-    id: Int32
+    id: Int32,
+    year_id: Int32
+    semester_id: Int32
     class_id: Int32
     name: string
     weight: Float
     average: Float
-    assignment: AssignmentContent[]
+    assignments: AssignmentContent[]
 }
 
 export type AssignmentContent = {
     id: Int32
-    
+    type: string
+    numerator: Float
+    denominator: Float
 }
 
 // export const ProfileContext = createContext<ProfileContent>({
@@ -71,7 +84,7 @@ export function ProfileProvider({children}) {
         // const[classes, setClasses] = useState<ClassContent>([]);
         let new_year: YearContent = {
             id: id,
-            classes: [],
+            semesters: [],
             beg_year: -1,
             end_year: -1
         }
@@ -82,36 +95,47 @@ export function ProfileProvider({children}) {
         // setYears([])
     }
 
-    const addClassToProfile = (new_class) => {
-        // const new_class: ClassContent = {
-        //     id: new_class_id,
-        //     year_id: year_id,
-        //     name: 'New Class',
-        //     sections: []
-        // }
-        years.find((y) => y.id === new_class.year_id).classes.push(new_class);
+    const addSemesterToProfile = (new_semester) => {
+        years.find((y) => y.id === new_semester.year_id).semesters.push(new_semester);
     }
 
-    const updateClassInProfile = (year_id, class_id, new_class) => {
-        console.log(`updateClassInProfile(): year_id: ${year_id}, class_id: ${class_id}, new_class: ${new_class}`);
-        let curr_class = years.find((y) => y.id === year_id)?.classes.find((c) => c.id === class_id);
+    const updateSemesterInProfile = (new_semester) => {
+        let curr_semester = years.find((y) => y.id === new_semester.year_id).semesters.find((s) => s.id === new_semester.id);
+        curr_semester.season = new_semester.season;
+        curr_semester.year = new_semester.year;
+    }
+
+    const addClassToProfile = (new_class) => {
+        years.find((y) => y.id === new_class.year_id).semesters.find((s) => s.id === new_class.semester_id).classes.push(new_class);
+    }
+
+    const updateClassInProfile = (new_class) => {
+        let curr_class = years.find((y) => y.id === new_class.year_id).semesters.find((s) => s.id === new_class.semester_id).classes.find((c) => c.id === new_class.id);
         curr_class.name = new_class.name;
         curr_class.sections = new_class.sections;
     }
 
-    // const addClassToYear = (year, new_class) => {
-    //     profile.years.find((y) => y.id === year.id).setClasses([
-    //         ...profile.years.find((y) => y.id === year.id)?.classes,
-    //         new_class
-    //     ])
-    // }
+    const addSectionToProfile = (new_section) => {
+        years.find((y) => y.id === new_section.year_id).semesters.find((s) => s.id === new_section.semester_id).classes.find((c) => c.id === new_section.class_id).sections.push(new_section);
+    }
+
+    const updateSectionInProfile = (new_section) => {
+        let curr_section = years.find((y) => y.id === new_section.year_id).semesters.find((s) => s.id === new_section.semester_id).classes.find((c) => c.id === new_section.class_id).sections.find((s) => s.id === new_section.id);
+        curr_section.name = new_section.name;
+        curr_section.weight = new_section.weight;
+        curr_section.average = new_section.average;
+    }
 
     return(
         <ProfileContext.Provider value={{
                 profile_context,
                 addYearToProfile,
+                addSemesterToProfile,
+                updateSemesterInProfile,
                 addClassToProfile,
-                updateClassInProfile}}>
+                updateClassInProfile,
+                addSectionToProfile,
+                updateSectionInProfile}}>
             {children}
         </ProfileContext.Provider>
     )

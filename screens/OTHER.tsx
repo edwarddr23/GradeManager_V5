@@ -6,98 +6,88 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
-import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
+import { useProfileContext, ClassContent, YearContent } from '../shared/profile_context'
 
-const SemesterView = ({ navigation, semester, updateSemesters }) => {
-    const { profile_context, updateSemesterInProfile } = useProfileContext();
-    const[is_editing, setIs_editing] = useState(false);
-    const[season, setSeason] = useState(semester.season);
-    const[year, setYear] = useState(semester.year);
+const ClassView = ({ navigation, curr_class, updateClasses, year }) => {
+    const { profile_context, updateClassInProfile } = useProfileContext();
+    const[is_editingClass, setIs_editingClass] = useState(false);
+    const[name, setName] = useState(curr_class.name);
 
     return(
         <TouchableOpacity 
-            style={{width: '100%', backgroundColor: '#b8b8b8', borderRadius: 10, padding: 15, marginVertical: 10}}
+            style={{width: '100%', backgroundColor: '#b8b8b8', borderRadius: 10, padding: 10, marginVertical: 10}}
             onPress={() => {
-                // console.log(semester);
-                // console.log(`${semester.season} ${semester.year}`);
-                navigation.navigate('Semester', {semester: semester});
+                profile_context.years.map(y => {
+                    console.log('ClassView(): y:', y);
+                    y.classes.map(c => {
+                        console.log('ClassView(): c.name:', c.name);
+                    });
+                });
+                console.log(`ClassView: ${curr_class.name}.sections = ${curr_class.sections}`);
+                // console.log('ClassView(): year:', year);
+                // console.log(`profile_context.years: ${profile_context.years}`);
+                // console.log(`profile_context.years[0]: ${profile_context.years[0]}`);
+                navigation.navigate('Class', { year: year, curr_class: curr_class });
             }}>
-            <View>
+            <View style={{flexDirection: 'row'}}>
                 <View style={{flexDirection: 'column'}}>
-                    {/* Viewing state for semester. */}
-                    {is_editing == false && (
-                        <View style={{flexDirection: 'row'}}>
-                            {is_editing == false && season === "" && (
-                                <Text style={{fontWeight: 'bold', fontSize: 25, alignSelf: 'center'}}>New Semester</Text>
-                            )}
-                             {is_editing == false && season !== "" && (
-                                <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}</Text>
-                            )}
-                            {/* Edit button that activates editing state for semester. */}
-                            <TouchableOpacity
-                                style={{marginLeft: 'auto', alignSelf: 'center'}}
-                                activeOpacity={0.5}
-                                onPress={() => {
-                                    setIs_editing(!is_editing);
-                                    // console.log('editing a class?')
-                                }}
-                            >
-                                <AntDesign name="edit" size={40} color="black"/>
-                            </TouchableOpacity>
-                        </View>
+                    {is_editingClass == false && (
+                        <Text style={{fontWeight: 'bold', fontSize: 22}}>{curr_class.name}:</Text>
                     )}
-                    {/* Editing state for semester */}
-                    {is_editing == true && (
-                        <View style={{flexDirection: 'row'}}>
-                            <TextInput
-                                style={styles.inputText}
-                                value={season}
-                                placeholder="Season"
-                                onChangeText={text => {
-                                    setSeason(text);
-                                }}
-                            />
-                            <TextInput
-                                style={styles.inputText}
-                                value={year}
-                                placeholder="Year"
-                                onChangeText={text => {
-                                    setYear(text);
-                                }}
-                            />
-                            {/* Done button for editing season and year for the semester. */}
-                            <TouchableOpacity
-                                style={{marginLeft: 'auto', paddingLeft: 20, alignSelf: 'center'}}
-                                activeOpacity={0.5}
-                                onPress={() => {
-                                    const updated_semester = {
-                                        ...semester,
-                                        season: season,
-                                        year: year
-                                    }
-                                    updateSemesters(updated_semester);
-                                    updateSemesterInProfile(updated_semester);
-                                    // const updated_class = {
-                                    //     ...semester,
-                                    //     name: name
-                                    // }
-                                    // updateSemesters(updated_class);
-                                    // updateClassInProfile(year.id, semester.id, updated_class)
-                                    setIs_editing(!is_editing);
-                                }}>
-                                <AntDesign name="checkcircleo" size={40} color='green'/>
-                            </TouchableOpacity>
-                        </View>
+                    {is_editingClass == true && (
+                        <InputWithLabel 
+                            value={name} 
+                            setValue={setName} 
+                            extraOnChangeText={() => {}}
+                            placeholder={curr_class.name} 
+                            label={'Class Name:'}/>
                     )}
+                    {curr_class.sections.map((s) => {
+                        return(
+                            <View key={s.id}>
+                                <Text style={{fontSize: 18}}>{s.name}: {s.weight * 100}%</Text>
+                            </View>
+                        );
+                    })}
+                    {/* <Text style={{fontSize: 18}}>Grade Type: {curr_class.type}</Text> */}
                 </View>
+                {/* Button for editing name of a Class. */}
+                {is_editingClass == false && (
+                    <TouchableOpacity
+                        style={{marginLeft: 'auto', alignSelf: 'center'}}
+                        activeOpacity={0.5}
+                        onPress={() => {
+                            setIs_editingClass(!is_editingClass);
+                            // console.log('editing a class?')
+                        }}
+                    >
+                        <AntDesign name="edit" size={40} color="black"/>
+                    </TouchableOpacity>
+                )}
+                {/* Done button for editing the name of a class. */}
+                {is_editingClass == true && (
+                    <TouchableOpacity
+                    style={{marginLeft: 'auto', alignSelf: 'center'}}
+                        activeOpacity={0.5}
+                        onPress={() => {
+                            const updated_class = {
+                                ...curr_class,
+                                name: name
+                            }
+                            updateClasses(updated_class);
+                            updateClassInProfile(year.id, curr_class.id, updated_class)
+                            setIs_editingClass(!is_editingClass);
+                        }}>
+                        <AntDesign name="checkcircleo" size={40} color='green'/>
+                    </TouchableOpacity>
+                )}
             </View>
         </TouchableOpacity>
     );
 }
 
-const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
-    // console.log(`YearView: year.id: ${year.id}`)
-    const { profile_context, addSemesterToProfile } = useProfileContext();
+const YearView = ({year, updateYears, updateClassesInYear, navigation}) => {
+    const { profile_context, addClassToProfile } = useProfileContext();
     // useStates for TextInputs:
     const[beg_year, setBeg_year] = useState(() => {
                                                 if(year.beg_year === -1) return ''
@@ -110,7 +100,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                                                     return year.end_year;
                                                 }});
     const[is_editing, setIs_editing] = useState(false);
-    const[semesters, setSemesters] = useState(year.semesters)
+    const[classes, setClasses] = useState(initializeArrKeys(year["classes"]))
     
     const[expanded, setExpanded] = useState(false);
 
@@ -137,7 +127,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                                 }}>
                                 <AntDesign name="edit" size={50} color="black"/>
                             </TouchableOpacity>
-                            {/* Expand Button to see semesters. */}
+                            {/* Expand Button to see classes. */}
                             <TouchableOpacity
                                 onPress={toggleExpand}>
                                 {!expanded && (<AntDesign name="downcircleo" size={50} color="black"/>)}
@@ -145,7 +135,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                             </TouchableOpacity>
                         </View>
                         {/* If the academic year is expanded... */}
-                        {/* The button that adds semesters to an academic year. */}
+                        {/* The button that adds classes to an academic year. */}
                         {expanded && (
                             <View>
                                 <TouchableOpacity
@@ -153,71 +143,71 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                                     onPress={() => {
                                         // id: Int32
                                         // year_id: Int32
-                                        // classes: ClassContent[]
-                                        // season: string
-                                        // year: Int32
-                                        let new_semester: SemesterContent = {
-                                            id: findNextID(semesters),
+                                        // name: string
+                                        // setName: (c: string) => void
+                                        // sections: SectionContent[]
+                                        // setSections: (value: never[]) => void
+                                        let new_class: ClassContent = {
+                                            id: findNextID(classes),
                                             year_id: year.id,
-                                            classes: [],
-                                            season: '',
-                                            year: -1
+                                            name: 'New Class',
+                                            sections: []
                                         };
-                                        const newSemesters = [
-                                            ...semesters,
-                                            new_semester
+                                        const newClasses = [
+                                            ...classes,
+                                            new_class
                                         ]
                                         console.log(`ADD BUTTON: year.id: ${year.id}`);
                                         console.log(`ADD BUTTON: LOOP`);
-                                        newSemesters.map((s) => {
-                                            console.log(`s.id: ${s.id}`);
+                                        newClasses.map((c) => {
+                                            console.log(`c.id: ${c.id}`);
                                         });
-                                        addSemesterToProfile(new_semester);
+                                        addClassToProfile(new_class);
                                         // newClass = {
                                         //     ...newClass,
-                                        //     id: findNextID(semesters),
+                                        //     id: findNextID(classes),
                                         //     name: "New Class"
                                         // }
-                                        // const newSemesters = [
-                                        //     ...semesters,
+                                        // const newClasses = [
+                                        //     ...classes,
                                         //     {
                                         //         name: "New Class",
-                                        //         id: findNextID(semesters)
+                                        //         id: findNextID(classes)
                                         //     }
                                         // ];
-                                        setSemesters(newSemesters);
-                                        updateSemestersInYear(year, newSemesters);
+                                        setClasses(newClasses);
+                                        updateClassesInYear(year, newClasses);
                                     }}>
                                     <AntDesign name="pluscircleo" size={50} color="black"/>
                                 </TouchableOpacity>
                             </View>
                         )}
-                        {/* If there's existing semesters, display them */}
-                        {expanded && semesters.length > 0 
+                        {/* If there's existing classes, display them */}
+                        {expanded && classes.length > 0 
                             && (
                                 <View>
-                                    {semesters.map((semester) => {
-                                        const chgSemesters = (new_semester) => {
-                                            console.log(`chgSemesters(): new_semester.name: ${new_semester.name}`);
-                                            console.log(`chgSemesters(): year: ${year}`)
-                                            const new_semesters = semesters.map((s) => {
-                                                if(s.id !== new_semester.id) return s;
-                                                return new_semester;
+                                    {classes.map((curr_class) => {
+                                        const chgClasses = (new_class) => {
+                                            console.log(`chgClasses(): new_class.name: ${new_class.name}`);
+                                            console.log(`chgClasses(): year: ${year}`)
+                                            const new_classes = classes.map((c) => {
+                                                if(c.id !== new_class.id) return c;
+                                                return new_class;
                                             });
-                                            setSemesters(new_semesters);
-                                            // console.log(`chgSemesters(): semesters[0].name: ${semesters[0].name}`);
-                                            updateSemestersInYear(year, new_semesters);
+                                            setClasses(new_classes);
+                                            // console.log(`chgClasses(): classes[0].name: ${classes[0].name}`);
+                                            updateClassesInYear(year, new_classes);
                                         }
-                                        // console.log('MAP: semester:', semester);
+                                        // console.log('MAP: curr_class:', curr_class);
                                         return(
-                                            <SemesterView key={semester.id} semester={semester} updateSemesters={chgSemesters} navigation={navigation}/>
+                                            <ClassView key={curr_class.id} navigation={navigation} curr_class={curr_class} updateClasses={chgClasses} year={year}/>
                                         );
                                     })}
                                 </View>
                         )}
-                        {/* If there are no existing semesters, let the user know that there are none yet.*/}
-                        {expanded && semesters.length == 0 && (
-                            <Text style={{textAlign: 'center', fontSize: 20}}>No semesters yet!</Text>
+                        {/* If there are no existing classes, let the user know that there are none yet.*/}
+                        {expanded && classes.length == 0 && (
+                            <Text style={{textAlign: 'center', fontSize: 20}}>No classes yet!</Text>
                         )}
                     </View>
                 </View>
@@ -281,9 +271,9 @@ const YearsScreen = ({navigation, route}) => {
 
     // console.log('YearsScreen.tsx: profile_context:', profile_context);
     // console.log('YearsScreen.tsx: profile_context.years:', profile_context.years);
-    // console.log('YearsScreen.tsx: profile_context.years[0].semesters:', profile_context.years[0].semesters);
+    // console.log('YearsScreen.tsx: profile_context.years[0].classes:', profile_context.years[0].classes);
     
-    const [years, setYears] = useState(profile_context.years);
+    const [years, setYears] = useState(initializeArrKeys(profile_context.years));
 
     // const [nextId, setNextId] = useState(() => {
     //     if(years.length > 0){
@@ -293,18 +283,18 @@ const YearsScreen = ({navigation, route}) => {
     // });
 
     useEffect(() => {
-        // console.log(`YearsScreen.tsx: UseEffect(): fromClassScreen: ${fromClassScreen}`);
-        // if(fromClassScreen === true){
-        //     console.log(`YearsScreen.tsx: useEffect(): came back from ClassScreen!`);
-        // }
-        // else{
-        //     console.log(`YearsScreen.tsx: useEffect(): did not come back from ClassScreen.`)
-        // }
+        console.log(`YearsScreen.tsx: UseEffect(): fromClassScreen: ${fromClassScreen}`);
+        if(fromClassScreen === true){
+            console.log(`YearsScreen.tsx: useEffect(): came back from ClassScreen!`);
+        }
+        else{
+            console.log(`YearsScreen.tsx: useEffect(): did not come back from ClassScreen.`)
+        }
         // profile["academic_years"] = years;
         // console.log(`useEffect(): years: ${years}`);
         // console.log('USEEFFECT()');
         // console.log(`YearsScreen.tsx: UseEffect(): Updated sections:`);
-        // profile_context.years.find((y) => y.id === 0).semesters.find((c) => c.id === 0).sections.map((s) => {
+        // profile_context.years.find((y) => y.id === 0).classes.find((c) => c.id === 0).sections.map((s) => {
         //     console.log(`${s.name}: ${s.weight}`);
         // });
         setYears(profile_context.years);
@@ -324,15 +314,15 @@ const YearsScreen = ({navigation, route}) => {
             console.log('chgYrsHandler(): years:', years)
         }
 
-        const chgSemestersInYrHandler = (new_year, new_semesters) => {
-            console.log(`chgSemestersInYrHandler(): new_year: ${new_year}`);
+        const chgClassesInYrHandler = (new_year, new_classes) => {
+            console.log(`chgClassesInYrHandler(): new_year: ${new_year}`);
             const new_years = years.map(y => {
                 console.log(`${y.id} == ${new_year.id}:`, (y.id == new_year.id));
                 if(y.id !== new_year.id) return y;
                 else{
                     return {
                         ...y,
-                        semesters: new_semesters
+                        classes: new_classes
                     }
                 }
             });
@@ -342,7 +332,7 @@ const YearsScreen = ({navigation, route}) => {
 
         return(
             // Render current semester in a custom SemesterView component
-            <YearView key={curr_year.item.id} year={curr_year.item} updateYears={chgYrsHandler} updateSemestersInYear={chgSemestersInYrHandler} navigation={navigation}/>
+            <YearView key={curr_year.item.id} year={curr_year.item} updateYears={chgYrsHandler} updateClassesInYear={chgClassesInYrHandler} navigation={navigation}/>
         );
     });
 
@@ -353,9 +343,15 @@ const YearsScreen = ({navigation, route}) => {
                 <TouchableOpacity 
                     activeOpacity={0.5} 
                     onPress={() => {
+                        // id: Int32
+                        // classes: ClassContent[]
+                        // setClasses: (value: never[]) => void
+                        // beg_year: Int32
+                        // end_year: Int32
                         let new_year: YearContent ={
                             id: findNextID(years),
-                            semesters: [],
+                            classes: [],
+                            setClasses: () => {},
                             beg_year: -1,
                             end_year: -1
                         }
@@ -364,6 +360,19 @@ const YearsScreen = ({navigation, route}) => {
                             new_year
                         ])
                         addYearToProfile(new_year.id);
+                        console.log(`PROFILE AFTER ADDING: profile_context.years ${profile_context.years}`);
+                        // setYears([
+                        //     ...years,
+                        //     {
+                        //         id: nextId,
+                        //         classes: [],
+                        //         setClasses: () => {},
+                        //         beg_year: '',
+                        //         end_year: ''
+                        //     },
+                        // ])
+                        // console.log('years after adding:', years);
+                        // setNextId(nextId + 1);
                     }}
                 >
                     <AntDesign name="pluscircleo" style={styles.plus_icon} size={80}/>

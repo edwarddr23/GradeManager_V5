@@ -51,7 +51,7 @@ const SaveScreen = ({navigation, route}) => {
                 />
                 <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
                 {/* <Text>"{saveFileName + '.txt'}" exists: {String(saveFileExists())}</Text> */}
-                <View style={{height: '15%', paddingTop: '5%'}}>
+                <View style={{height: 90, paddingTop: '5%'}}>
                     <FlatButton 
                         text='Save to File'
                         onPress={() => {
