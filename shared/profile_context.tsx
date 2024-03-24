@@ -129,6 +129,7 @@ export function ProfileProvider({children}) {
         curr_section.name = new_section.name;
         curr_section.weight = new_section.weight;
         curr_section.average = new_section.average;
+        console.log('updateSectionInProfile(): curr_section after editing:', curr_section);
     }
     
     const addAssignmentToProfile = (new_assignment) => {

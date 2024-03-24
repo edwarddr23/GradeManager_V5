@@ -81,10 +81,10 @@ const AssignmentView = ({assignment}) => {
                                     Toast.show('Please enter a name', Toast.SHORT);
                                     return false;
                                 }
-                                else if(type === ''){
-                                    Toast.show('Please enter a type', Toast.SHORT);
-                                    return false;
-                                }
+                                // else if(type === ''){
+                                //     Toast.show('Please enter a type', Toast.SHORT);
+                                //     return false;
+                                // }
                                 else if(type ==='Percentage'){
                                     if(numerator === -1 || numerator === ''){
                                         Toast.show('Please enter numerator', Toast.SHORT);
@@ -147,7 +147,7 @@ const AssignmentView = ({assignment}) => {
                                     denominator: denominator
                                 }
                                 setIs_editing(!is_editing);
-                                console.log(`new_assignment.id: ${new_assignment.id}`);
+                                console.log(`new_assignment.name: ${new_assignment.name}`);
                                 updateAssignmentInProfile(new_assignment);
                             }
                         }}>

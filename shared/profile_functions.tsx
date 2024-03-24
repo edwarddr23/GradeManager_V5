@@ -127,6 +127,11 @@ function PrintAssignments(section) {
                             <Text key={child_key}>{'\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
                         );
                     }
+                    else{
+                        return(
+                            <Text key={child_key}>{'\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
+                        );
+                    }
                 })}
             </View>
         );
