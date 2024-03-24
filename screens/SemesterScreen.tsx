@@ -19,7 +19,10 @@ const SectionView = ({section}) => {
         <View style={styles.section}>
             {/* Viewing state of section. */}
             {!is_editing && (
-                <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity style={{flexDirection: 'row'}}
+                    onPress={() => {
+
+                    }}>
                     {section.name === '' && (
                         <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
                     )}
@@ -31,7 +34,7 @@ const SectionView = ({section}) => {
                         onPress={() => setIs_editing(!is_editing)}>
                         <AntDesign name='edit' size={45} color='black'/>
                     </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
             )}
             {/* Editing state of section. */}
             {is_editing && (
@@ -44,44 +47,15 @@ const SectionView = ({section}) => {
                             setName(text);
                         }}
                     />
-                    {/* <TextInput
-                        style={styles.inputText}
-                        value={weight}
-                        placeholder="Weight"
-                        onChangeText={text => {
-                            setWeight(text);
-                        }}
-                        keyboardType='numeric'
-                    /> */}
                     {/* Done button to change the name of a section. */}
                     <TouchableOpacity
                         style={{marginLeft: 'auto', alignSelf: 'center'}}
                         onPress={() => {
                             const inputIsValid = () => {
                                 if(name === ''){
-                                    return true;
-                                }
-                                else if(name === ''){
                                     Toast.show('Please enter name', Toast.SHORT);
                                     return false;
                                 }
-                                // else if(weight === -1 || weight === ''){
-                                //     Toast.show('Please enter weight', Toast.SHORT);
-                                //     return false;
-                                // }
-                                // else if(isNaN(weight)){
-                                //     Toast.show('Please enter a numeric weight. Do not enter any punctuation', Toast.SHORT);
-                                //     return false;
-                                // }
-                                // else if(!!weight.toString().match(/[.]/) === true){
-                                //     // console.log(!!weight.match(/[.]/));
-                                //     Toast.show('Please enter an integer for a weight', Toast.SHORT);
-                                //     return false;
-                                // }
-                                // else if(weight < 0){
-                                //     Toast.show('Please enter a weight greater or equal to 0', Toast.SHORT);
-                                //     return false;
-                                // }
                                 return true;
                             }
 
@@ -119,11 +93,12 @@ const ClassView = ({curr_class, navigation}) => {
     // Viewing state for a class.
     if(!is_editing){
         return(
-            <TouchableOpacity style={styles.classStyle}
-                activeOpacity={0.5}
-                onPress={() => setIsExpanded(!is_expanded)}>
+            <View style={styles.classStyle}>
                 <View>
-                    <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity 
+                    style={{flexDirection: 'row'}}
+                    activeOpacity={0.5}
+                    onPress={() => setIsExpanded(!is_expanded)}>
                         {name !== '' && (
                             <Text style={{textAlignVertical: 'center', fontSize: 30}}>{name}</Text>
                         )}
@@ -145,7 +120,7 @@ const ClassView = ({curr_class, navigation}) => {
                         {is_expanded && (
                             <AntDesign style={{marginLeft: 10}} name="upcircleo" size={50} color='black'/>
                         )}
-                    </View>
+                    </TouchableOpacity>
                     {is_expanded && (
                         <View style={{marginVertical: 10, flex: 1, flexDirection: 'column'}}>
                             <View style={{height: 60, marginVertical: 20}}>
@@ -169,7 +144,7 @@ const ClassView = ({curr_class, navigation}) => {
                         </View>
                     )}
                 </View>
-            </TouchableOpacity>
+            </View>
         );
     }
     // Editing state for a class.
@@ -299,7 +274,7 @@ const styles= StyleSheet.create({
         borderWidth: 3,
         borderRadius: 10,
         padding: 10,
-        marginHorizontal: 5,
+        marginHorizontal: 10,
         flex: 1
     },
 
