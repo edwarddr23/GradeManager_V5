@@ -6,13 +6,14 @@ import { useProfileContext, ClassContent, SectionContent } from '../shared/profi
 import { findNextID } from '../shared/key_functions';
 import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
+import FlatButton from '../shared/custom_buttons';
 
 const SectionView = ({section}) => {
     const { updateSectionInProfile } = useProfileContext();
     const[is_editing, setIs_editing] = useState(false);
     // console.log(`SectionView(): section: ${section.name}`);
     const[name, setName] = useState(section.name);
-    const[weight, setWeight] = useState(section.weight);
+    // const[weight, setWeight] = useState(section.weight * 100);
 
     return(
         <View style={styles.section}>
@@ -43,7 +44,7 @@ const SectionView = ({section}) => {
                             setName(text);
                         }}
                     />
-                    <TextInput
+                    {/* <TextInput
                         style={styles.inputText}
                         value={weight}
                         placeholder="Weight"
@@ -51,44 +52,43 @@ const SectionView = ({section}) => {
                             setWeight(text);
                         }}
                         keyboardType='numeric'
-                    />
+                    /> */}
                     {/* Done button to change the name of a section. */}
                     <TouchableOpacity
                         style={{marginLeft: 'auto', alignSelf: 'center'}}
                         onPress={() => {
                             const inputIsValid = () => {
-                                if(name === '' && weight === -1 || weight === ''){
+                                if(name === ''){
                                     return true;
                                 }
                                 else if(name === ''){
                                     Toast.show('Please enter name', Toast.SHORT);
                                     return false;
                                 }
-                                else if(weight === -1 || weight === ''){
-                                    Toast.show('Please enter weight', Toast.SHORT);
-                                    return false;
-                                }
-                                else if(isNaN(weight)){
-                                    Toast.show('Please enter a numeric weight. Do not enter any punctuation', Toast.SHORT);
-                                    return false;
-                                }
-                                else if(!!weight.toString().match(/[.]/) === true){
-                                    // console.log(!!weight.match(/[.]/));
-                                    Toast.show('Please enter an integer for a weight', Toast.SHORT);
-                                    return false;
-                                }
-                                else if(weight < 0){
-                                    Toast.show('Please enter a weight greater or equal to 0', Toast.SHORT);
-                                    return false;
-                                }
+                                // else if(weight === -1 || weight === ''){
+                                //     Toast.show('Please enter weight', Toast.SHORT);
+                                //     return false;
+                                // }
+                                // else if(isNaN(weight)){
+                                //     Toast.show('Please enter a numeric weight. Do not enter any punctuation', Toast.SHORT);
+                                //     return false;
+                                // }
+                                // else if(!!weight.toString().match(/[.]/) === true){
+                                //     // console.log(!!weight.match(/[.]/));
+                                //     Toast.show('Please enter an integer for a weight', Toast.SHORT);
+                                //     return false;
+                                // }
+                                // else if(weight < 0){
+                                //     Toast.show('Please enter a weight greater or equal to 0', Toast.SHORT);
+                                //     return false;
+                                // }
                                 return true;
                             }
 
                             if(inputIsValid() === true){
                                 const new_section = {
                                     ...section,
-                                    name: name,
-                                    weight: weight / 100,
+                                    name: name
                                 };
                                 updateSectionInProfile(new_section);
                                 setIs_editing(!is_editing);
@@ -102,7 +102,7 @@ const SectionView = ({section}) => {
     );
 }
 
-const ClassView = ({curr_class}) => {
+const ClassView = ({curr_class, navigation}) => {
     // console.log(`ClassView: curr_class: ${curr_class.id}`);
     const { updateClassInProfile, addSectionToProfile } = useProfileContext();
     // id: findNextID(classes),
@@ -147,46 +147,21 @@ const ClassView = ({curr_class}) => {
                         )}
                     </View>
                     {is_expanded && (
-                        <View style={{marginVertical: 10}}>
-                            {/* Button that adds a section. */}
-                            <TouchableOpacity
-                                style={{marginBottom: 20, alignSelf: 'center'}}
-                                activeOpacity={0.5}
-                                onPress={() => {
-                                    // id: Int32,
-                                    // year_id: Int32
-                                    // semester_id: Int32
-                                    // class_id: Int32
-                                    // name: string
-                                    // weight: Float
-                                    // average: Float
-                                    // assignments: AssignmentContent[]
-                                    const new_section: SectionContent = {
-                                        id: findNextID(sections),
-                                        year_id: curr_class.year_id,
-                                        semester_id: curr_class.semester_id,
-                                        class_id: curr_class.id,
-                                        name: '',
-                                        weight: -1,
-                                        average: -1,
-                                        assignments: []
-                                    }
-                                    setSections([
-                                        ...sections,
-                                        new_section
-                                    ]);
-                                    addSectionToProfile(new_section);
-                                }}>
-                                <AntDesign name="pluscircleo" size={55} color='black'/>
-                            </TouchableOpacity>
-                            {sections.length === 0 && (
-                                <Text style={{textAlign: 'center'}}>Press this button to add sections</Text>
-                            )}
+                        <View style={{marginVertical: 10, flex: 1, flexDirection: 'column'}}>
+                            <View style={{height: 60, marginVertical: 20}}>
+                                <FlatButton
+                                    text='Configure Sections'
+                                    onPress={() => {
+                                        // console.log();
+                                        navigation.navigate('Sections', {curr_class: curr_class});
+                                    }}
+                                />
+                            </View>
                             {sections.length > 0 && (
-                                <View>
+                                <View style={{flex: 1}}>
                                     {sections.map((s) => {
                                         return(
-                                            <SectionView section={s}/>
+                                            <SectionView key={s.id} section={s}/>
                                         );
                                     })}
                                 </View>
@@ -254,7 +229,7 @@ const SemesterScreen = ({navigation, route}) => {
     return(
         <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
             {/* Button that adds a class to a semester */}
-            <TouchableOpacity style={{marginTop: 20, marginBottom: 5}}
+            <TouchableOpacity style={{ height: 75, marginTop: 20, marginBottom: 5}}
                 onPress={() => {
                     let new_class: ClassContent = {
                         id: findNextID(classes),
@@ -267,6 +242,7 @@ const SemesterScreen = ({navigation, route}) => {
                         ...classes,
                         new_class
                     ]
+                    setClasses(newClasses);
                     // console.log(`ADD BUTTON: year.id: ${year.id}`);
                     console.log(`ADD BUTTON: LOOP`);
                     newClasses.map((c) => {
@@ -287,7 +263,7 @@ const SemesterScreen = ({navigation, route}) => {
                     removeClippedSubviews={false}
                     renderItem={(curr_class) => {
                         return(
-                            <ClassView curr_class={curr_class.item}/>
+                            <ClassView curr_class={curr_class.item} navigation={navigation}/>
                         );
                     }}
                 />
@@ -325,12 +301,12 @@ const styles= StyleSheet.create({
         padding: 10,
         marginHorizontal: 5,
         flex: 1
-      },
+    },
 
-      section: {
+    section: {
         padding: 20,
         backgroundColor: '#BEBEBE',
         borderRadius: 20,
         marginBottom: 20
-      }
+    }
 });

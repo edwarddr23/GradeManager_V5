@@ -41,21 +41,11 @@ import ClassScreen from './screens/ClassScreen';
 // import { YearContent, ClassContent, ProfileContent, ProfileContext } from './shared/profile_context';
 import { ProfileProvider, useProfileContext } from './shared/profile_context';
 import SemesterScreen from './screens/SemesterScreen';
+import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
 
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
-  // const[name, setName] = useState('UNINITIALIZED');
-  // const[years, setYears] = useState([]);
-  // // const[classes, setClasses] = useState([]);
-
-  // let profile: ProfileContent = {
-  //   profile_name: name,
-  //   setProfile_name: setName,
-  //   years: years,
-  //   setYears: setYears
-  // };
-
   return (
     <ProfileProvider>
       <NavigationContainer>
@@ -97,6 +87,21 @@ function App(): React.JSX.Element {
               name="Semester"
               component={SemesterScreen}
               options={({navigation}) => ({
+                headerRight: () => (
+                  <View style={{width: 100, height: 45}}>
+                    <FlatButton
+                      text="Save"
+                      onPress={() => {
+                        navigation.navigate("Save");
+                      }}
+                    />
+                  </View>
+                )
+              })}/>
+            <Stack.Screen
+              name="Sections"
+              component={ConfigureSectionsScreen}
+              options={({navigation, route}) => ({
                 headerRight: () => (
                   <View style={{width: 100, height: 45}}>
                     <FlatButton
