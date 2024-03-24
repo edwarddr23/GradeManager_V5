@@ -119,12 +119,12 @@ function PrintAssignments(section) {
                     }
                     else if(a.type === 'percentage'){
                         return(
-                            <Text key={child_key}>{a.name}: {(a.numerator / a.denominator) * 100}%</Text>
+                            <Text key={child_key}>{'\t\t\t' + a.name}: {(a.numerator / a.denominator) * 100}%</Text>
                         );
                     }
                     else{
                         return(
-                            <Text key={child_key}>{a.name}: {a.numerator} / {a.denominator}</Text>
+                            <Text key={child_key}>{'\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
                         );
                     }
                 })}

@@ -8,7 +8,6 @@ const AssignmentView = ({assignment}) => {
     const { updateAssignmentInProfile } = useProfileContext();
     const[is_editing, setIs_editing] = useState(false);
     const[name, setName] = useState(assignment.name);
-    // const[grade, setGrade] = useState(assignment.grade);
     
     // Viewing state for assignment.
     if(!is_editing){
@@ -47,14 +46,6 @@ const AssignmentView = ({assignment}) => {
                             setName(text);
                         }}
                     />
-                    {/* <TextInput
-                        style={styles.inputText}
-                        value={grade}
-                        placeholder="Grade"
-                        onChangeText={(text) => {
-                            setGrade(text);
-                        }}
-                    /> */}
                     {/* Done button to update name for assignment. */}
                     <TouchableOpacity
                         style={{marginLeft: 'auto', alignSelf: 'center'}}
@@ -65,6 +56,7 @@ const AssignmentView = ({assignment}) => {
                                 name: name
                             }
                             setIs_editing(!is_editing);
+                            console.log(`new_assignment.id: ${new_assignment.id}`);
                             updateAssignmentInProfile(new_assignment);
                         }}>
                         <AntDesign name="checkcircleo" size={40} color='green'/>

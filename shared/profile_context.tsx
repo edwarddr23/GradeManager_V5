@@ -135,9 +135,9 @@ export function ProfileProvider({children}) {
         years.find((y) => y.id === new_assignment.year_id).semesters.find((s) => s.id === new_assignment.semester_id).classes.find((c) => c.id === new_assignment.class_id).sections.find((s) => s.id === new_assignment.section_id).assignments.push(new_assignment);
     }
 
-    const updateAssignmentInProfile = (new_assignemnt) => {
-        let curr_assignment = years.find((y) => y.id === new_assignemnt.year_id).semesters.find((s) => s.id === new_assignemnt.semester_id).classes.find((c) => c.id === new_assignemnt.class_id).sections.find((s) => s.id === new_assignemnt.id).assignments.find((a) => a.id === new_assignemnt.id);
-        curr_assignment.name = new_assignemnt.name;
+    const updateAssignmentInProfile = (new_assignment) => {
+        let curr_assignment = years.find((y) => y.id === new_assignment.year_id).semesters.find((s) => s.id === new_assignment.semester_id).classes.find((c) => c.id === new_assignment.class_id).sections.find((s) => s.id === new_assignment.section_id).assignments.find((a) => a.id === new_assignment.id);
+        curr_assignment.name = new_assignment.name;
     }
 
     return(
