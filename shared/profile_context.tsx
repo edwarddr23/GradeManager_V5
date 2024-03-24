@@ -45,6 +45,11 @@ export type SectionContent = {
 
 export type AssignmentContent = {
     id: Int32
+    year_id: Int32
+    semester_id: Int32
+    class_id: Int32
+    section_id: Int32
+    name: string
     type: string
     numerator: Float
     denominator: Float
@@ -125,6 +130,15 @@ export function ProfileProvider({children}) {
         curr_section.weight = new_section.weight;
         curr_section.average = new_section.average;
     }
+    
+    const addAssignmentToProfile = (new_assignment) => {
+        years.find((y) => y.id === new_assignment.year_id).semesters.find((s) => s.id === new_assignment.semester_id).classes.find((c) => c.id === new_assignment.class_id).sections.find((s) => s.id === new_assignment.section_id).assignments.push(new_assignment);
+    }
+
+    const updateAssignmentInProfile = (new_assignemnt) => {
+        let curr_assignment = years.find((y) => y.id === new_assignemnt.year_id).semesters.find((s) => s.id === new_assignemnt.semester_id).classes.find((c) => c.id === new_assignemnt.class_id).sections.find((s) => s.id === new_assignemnt.id).assignments.find((a) => a.id === new_assignemnt.id);
+        curr_assignment.name = new_assignemnt.name;
+    }
 
     return(
         <ProfileContext.Provider value={{
@@ -135,7 +149,9 @@ export function ProfileProvider({children}) {
                 addClassToProfile,
                 updateClassInProfile,
                 addSectionToProfile,
-                updateSectionInProfile}}>
+                updateSectionInProfile,
+                addAssignmentToProfile,
+                updateAssignmentInProfile}}>
             {children}
         </ProfileContext.Provider>
     )

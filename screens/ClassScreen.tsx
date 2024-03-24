@@ -128,14 +128,13 @@ const SectionView = ({section, updateSections}) => {
 const ClassScreen = ({route, navigation}) => {
     const { profile_context, updateClassInProfile } = useProfileContext();
     console.log(`ConfigureSectionsScreen(): route.params: ${route.params}`);
-    const { year, curr_class } = route.params;
+    const { section } = route.params;
+    const year = profile_context.years.find((y) => y.id === section.year_id);
+    const curr_class = year.classes.find((c) => c.id === section.class_id);
     console.log(`ConfigureSectionsScreen(): year: ${year}`);
     console.log(`ConfigureSectionsScreen(): curr_class.sections: ${curr_class.sections}`);
 
-    const[sections, setSections] = useState(() => {
-        if(curr_class.sections === undefined) return [];
-        return initializeArrKeys(curr_class.sections);
-    });
+    const[sections, setSections] = useState(curr_class.sections);
 
     const[total_weight, setTotal_weight] = useState<Float>(-1);
 

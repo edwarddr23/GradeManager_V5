@@ -8,7 +8,7 @@ import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
 import FlatButton from '../shared/custom_buttons';
 
-const SectionView = ({section}) => {
+const SectionView = ({section, navigation}) => {
     const { updateSectionInProfile } = useProfileContext();
     const[is_editing, setIs_editing] = useState(false);
     // console.log(`SectionView(): section: ${section.name}`);
@@ -21,7 +21,9 @@ const SectionView = ({section}) => {
             {!is_editing && (
                 <TouchableOpacity style={{flexDirection: 'row'}}
                     onPress={() => {
-
+                        console.log(`Clicked on a section!`);
+                        console.log(`section.assignments.length: ${section.assignments.length}`);
+                        navigation.navigate('Section', {section: section});
                     }}>
                     {section.name === '' && (
                         <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
@@ -136,7 +138,7 @@ const ClassView = ({curr_class, navigation}) => {
                                 <View style={{flex: 1}}>
                                     {sections.map((s) => {
                                         return(
-                                            <SectionView key={s.id} section={s}/>
+                                            <SectionView key={s.id} section={s} navigation={navigation}/>
                                         );
                                     })}
                                 </View>
@@ -253,7 +255,7 @@ const SemesterScreen = ({navigation, route}) => {
 
 export default SemesterScreen;
 
-const styles= StyleSheet.create({
+const styles = StyleSheet.create({
     classStyle: { 
         //   alignItems: 'center',
         borderWidth: 4,

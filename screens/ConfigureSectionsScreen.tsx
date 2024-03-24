@@ -185,6 +185,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                             average: -1,
                             assignments: []
                         }
+                        // console.log(`new_section.assignments.length: ${new_section.assignments.length}`);
                         setSections([
                             ...sections,
                             new_section

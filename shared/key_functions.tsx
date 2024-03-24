@@ -3,7 +3,7 @@ import React from 'react'
 // Initializes an array's elements so that each one has a unique id.
 export const initializeArrKeys = (arr) => {
     if(arr.length > 0) return arr;
-    let initArr = [...arr];
+    // let initArr = [...arr];
     let tmp_nextId = 0;
     return(arr.map(element => {
         let tmpElement ={

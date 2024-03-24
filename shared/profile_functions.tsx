@@ -73,7 +73,6 @@ function PrintSections(curr_class) {
         return(
             <View>
                 <Text>{'\t\t'}No sections yet!</Text>
-                {/* {child_key++} */}
             </View>
         );
     }
@@ -86,6 +85,7 @@ function PrintSections(curr_class) {
                     return(
                         <View key={child_key}>
                             <Text>{'\t\t' + s.name + ': ' + s.weight * 100 + '%'}</Text>
+                            { PrintAssignments(s) }
                         </View>
                     );
                 }
@@ -97,6 +97,40 @@ function PrintSections(curr_class) {
             })}
         </View>
     );
+}
+
+function PrintAssignments(section) {
+    let child_key = 0;
+    if(section.assignments.length === 0){
+        return(
+            <Text>{'\t\t\t'}No assignments yet!</Text>
+        );
+    }
+    else{
+        return(
+            <View>
+                {/* <Text>Listing assignments...</Text> */}
+                {section.assignments.map((a) => {
+                    child_key++;
+                    if(a.name === ''){
+                        return(
+                            <Text key={child_key}>{'\t\t\t'}New Assignment</Text>
+                        );
+                    }
+                    else if(a.type === 'percentage'){
+                        return(
+                            <Text key={child_key}>{a.name}: {(a.numerator / a.denominator) * 100}%</Text>
+                        );
+                    }
+                    else{
+                        return(
+                            <Text key={child_key}>{a.name}: {a.numerator} / {a.denominator}</Text>
+                        );
+                    }
+                })}
+            </View>
+        );
+    }
 }
 
 // The Profile context is passed in rather than called within this component as it led to inconsistent hook calls from the caller.
