@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, ClassContent, SectionContent } from '../shared/profile_context';
 
 import { findNextID } from '../shared/key_functions';
-import { calculateAverage } from '../shared/state_functions';
+import { calculateSectionAverage, calculateClassAverage } from '../shared/calculation_functions';
 
 import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
@@ -31,15 +31,15 @@ const SectionView = ({section, navigation}) => {
                         {section.name === '' && (
                             <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
                         )}
-                        {section.name !== '' && calculateAverage(assignments) === 'N/A' && (
+                        {section.name !== '' && calculateSectionAverage(assignments) === 'N/A' && (
                             <View>
-                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {calculateAverage(assignments)}</Text>
+                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {calculateSectionAverage(assignments)}</Text>
                                 <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
                             </View>
                         )}
-                        {section.name !== '' && calculateAverage(assignments) !== 'N/A' && (
+                        {section.name !== '' && calculateSectionAverage(assignments) !== 'N/A' && (
                             <View>
-                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {calculateAverage(assignments) * 100}%</Text>
+                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {calculateSectionAverage(assignments) * 100}%</Text>
                                 <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
                             </View>
                         )}
@@ -64,17 +64,6 @@ const SectionView = ({section, navigation}) => {
                             </View>
                         )}
                     </View>
-                    {/* {section.name !== '' && assignments.length === 0 && (
-                        <Text style={{fontSize: 20}}>No assignments yet!</Text>
-                    )}
-                    {section.name !== '' && assignments.length > 0 && (
-                        <View>
-                            <Text style={{fontSize: 20}}>assignments here</Text>
-                            {assignments.map((a) => (
-                                <View>{a.name}</View>
-                            ))}
-                        </View>
-                    )} */}
                     {/* Edit button for section. */}
                     <TouchableOpacity
                         style={{marginLeft: 'auto'}}
@@ -168,13 +157,20 @@ const ClassView = ({curr_class, navigation}) => {
                             <AntDesign style={{marginLeft: 10}} name="upcircleo" size={50} color='black'/>
                         )}
                     </TouchableOpacity>
+                    {/* If the ClassView is expanded, display the class info: class grade, sections, section weights, section grades, assignments, and assignment grades.*/}
                     {is_expanded && (
                         <View style={{marginVertical: 10, flex: 1, flexDirection: 'column'}}>
+                            {sections.length > 0 && calculateClassAverage(sections) === 'N/A' && (
+                                <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
+                            )}
+                            {sections.length > 0 && calculateClassAverage(sections) !== 'N/A' && (
+                                <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections) * 100}%</Text>
+                            )}
+                            {/* Button to add sections and their weights */}
                             <View style={{height: 60, marginVertical: 20}}>
                                 <FlatButton
                                     text='Configure Sections'
                                     onPress={() => {
-                                        // console.log();
                                         navigation.navigate('Sections', {curr_class: curr_class});
                                     }}
                                 />
@@ -254,11 +250,24 @@ const SemesterScreen = ({navigation, route}) => {
             {/* Button that adds a class to a semester */}
             <TouchableOpacity style={{ height: 75, marginTop: 20, marginBottom: 5}}
                 onPress={() => {
+                    // id: Int32
+                    // year_id: Int32
+                    // semester_id: Int32
+                    // name: string
+                    // letter_grading: {}
+                    // sections: SectionContent[]
                     let new_class: ClassContent = {
                         id: findNextID(classes),
                         year_id: semester.year_id,
                         semester_id: semester.id,
                         name: '',
+                        letter_grading: {
+                            'A': [90, 100],
+                            'B': [80, 89],
+                            'C': [70, 79],
+                            'D': [65, 69],
+                            'F': [0-65]
+                        },
                         sections: []
                     };
                     const newClasses = [

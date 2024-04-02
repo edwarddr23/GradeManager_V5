@@ -29,6 +29,7 @@ export type ClassContent = {
     year_id: Int32
     semester_id: Int32
     name: string
+    letter_grading: {}
     sections: SectionContent[]
 }
 
