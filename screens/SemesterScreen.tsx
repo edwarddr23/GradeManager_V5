@@ -4,16 +4,18 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, ClassContent, SectionContent } from '../shared/profile_context';
 
 import { findNextID } from '../shared/key_functions';
+import { calculateAverage } from '../shared/state_functions';
+
 import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
 import FlatButton from '../shared/custom_buttons';
 
 const SectionView = ({section, navigation}) => {
-    const { updateSectionInProfile } = useProfileContext();
+    const { profile_context, updateSectionInProfile, getSectionAverageFromProfile } = useProfileContext();
     const[is_editing, setIs_editing] = useState(false);
-    // console.log(`SectionView(): section: ${section.name}`);
+    console.log(`SectionView(): section.assignments: ${section.assignments}`);
     const[name, setName] = useState(section.name);
-    // const[weight, setWeight] = useState(section.weight * 100);
+    const[assignments, setAssignments] = useState(section.assignments);
 
     return(
         <View style={styles.section}>
@@ -25,12 +27,55 @@ const SectionView = ({section, navigation}) => {
                         console.log(`section.assignments.length: ${section.assignments.length}`);
                         navigation.navigate('Section', {section: section});
                     }}>
-                    {section.name === '' && (
-                        <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
+                    <View style={{flexDirection: 'column'}}>
+                        {section.name === '' && (
+                            <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
+                        )}
+                        {section.name !== '' && calculateAverage(assignments) === 'N/A' && (
+                            <View>
+                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {calculateAverage(assignments)}</Text>
+                                <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
+                            </View>
+                        )}
+                        {section.name !== '' && calculateAverage(assignments) !== 'N/A' && (
+                            <View>
+                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {calculateAverage(assignments) * 100}%</Text>
+                                <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
+                            </View>
+                        )}
+                        {assignments.length === 0 && (
+                            <Text style={{fontSize: 20}}>No assignments yet!</Text>
+                        )}
+                        {assignments.length > 0 && (
+                            <View>
+                                <Text>Number of assignments: {assignments.length}</Text>
+                                {assignments.map((a) => {
+                                    console.log(`SectionView(): a.type: ${a.type}`);
+                                    if(a.type === 'Ratio') return(
+                                        <Text>{a.name}: {a.numerator} / {a.denominator}</Text>
+                                    );
+                                    else if(a.type === 'Percentage') return(
+                                        <Text>{a.name}: {a.numerator}% / {a.denominator}%</Text>
+                                    );
+                                    else return(
+                                        <Text>{a.name}</Text>
+                                    );
+                                })}
+                            </View>
+                        )}
+                    </View>
+                    {/* {section.name !== '' && assignments.length === 0 && (
+                        <Text style={{fontSize: 20}}>No assignments yet!</Text>
                     )}
-                    {section.name !== '' && (
-                        <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {section.weight * 100}%</Text>
-                    )}
+                    {section.name !== '' && assignments.length > 0 && (
+                        <View>
+                            <Text style={{fontSize: 20}}>assignments here</Text>
+                            {assignments.map((a) => (
+                                <View>{a.name}</View>
+                            ))}
+                        </View>
+                    )} */}
+                    {/* Edit button for section. */}
                     <TouchableOpacity
                         style={{marginLeft: 'auto'}}
                         onPress={() => setIs_editing(!is_editing)}>
@@ -183,10 +228,11 @@ const ClassView = ({curr_class, navigation}) => {
 }
 
 const SemesterScreen = ({navigation, route}) => {
-    const { addClassToProfile } = useProfileContext();
+    const { profile_context, addClassToProfile } = useProfileContext();
     const { semester } = route.params;
 
     const[classes, setClasses] = useState(semester.classes);
+    // const[classes, setClasses] = useState(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
 
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
@@ -201,7 +247,7 @@ const SemesterScreen = ({navigation, route}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
-    });
+    }, [classes]);
 
     return(
         <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>

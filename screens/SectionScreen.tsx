@@ -198,7 +198,7 @@ const AssignmentView = ({assignment}) => {
 }
 
 const SectionScreen = ({navigation, route}) => {
-    const { profile_context, addAssignmentToProfile } = useProfileContext();
+    const { profile_context, updateSectionInProfile, addAssignmentToProfile } = useProfileContext();
     const { section } = route.params;
     const curr_class = profile_context.years.find((y) => y.id === section.year_id).semesters.find((s) => s.id === section.semester_id).classes.find((c) => c.id === section.class_id);
 
@@ -206,7 +206,26 @@ const SectionScreen = ({navigation, route}) => {
 
     useEffect(() => {
         navigation.setOptions({
-            title: `${section.name} in ${curr_class.name}`
+            title: `${section.name} in ${curr_class.name}`,
+            headerLeft: () => (
+                <View style={{marginRight: 20}}>
+                    <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => {
+                        console.log('SectionScreen.tsx: CUSTOM BACK BUTTON');
+                        // updateSectionInProfile(
+                        //     {
+                        //         ...section,
+                        //         average: 0.7
+                        //     }
+                        // )
+                        // navigation.goBack();
+                        navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
+                    }}>
+                    <AntDesign name="arrowleft" size={25} color='black'/>
+                    </TouchableOpacity>
+                </View>
+            )
         });
         console.log(`SectionScreen(): section.assignments.length: ${section.assignments.length}`);
         console.log(`SectionScreen(): assignments: ${assignments}`);
@@ -214,6 +233,7 @@ const SectionScreen = ({navigation, route}) => {
 
     return(
         <View style={{flex: 1, alignItems: 'center'}}>
+            {/* Button that adds an assignment to a section */}
             <TouchableOpacity style={{ height: 75, marginTop: 20, marginBottom: 5}}
                 onPress={() => {
                     // let new_class: ClassContent = {

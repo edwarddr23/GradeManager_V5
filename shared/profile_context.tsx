@@ -144,6 +144,34 @@ export function ProfileProvider({children}) {
         curr_assignment.denominator = new_assignment.denominator;
     }
 
+    // const getValidAssignmentsFromSection = (section) => {
+    //     // return section.assignments.map((a) => {
+    //     //     console.log(`getValidAssignmentsFromSection(): a.numerator / a.denominator: ${a.numerator} / ${a.denominator}`);
+    //     //     if(a.numerator != -1 && a.denominator != -1) return a;
+    //     // })
+    //     return section.assignments.filter((a) => {
+    //         console.log(`getValidAssignmentsFromSection(): a.numerator / a.denominator: ${a.numerator} / ${a.denominator}`);
+    //         if(a.numerator != -1 && a.denominator != -1) return a;
+    //     })
+    // }
+
+    // const getSectionAverageFromProfile = (section) => {
+    //     console.log(`getSectionAverageFromProfile(): This ran!`);
+    //     const valid_assignments = getValidAssignmentsFromSection(section);
+    //     console.log(`getSectionAverageFromProfile(): valid_assignments: ${valid_assignments}`);
+    //     if(valid_assignments.length > 0) {
+    //         let total = 0;
+    //         valid_assignments.map((v) => {
+    //             total += (v.numerator / v.denominator);
+    //         });
+    //         return (total / valid_assignments.length);
+    //     }
+    //     return 'N/A';
+    //     // const total = section.assignments.map((a) => a.numerator / a.denominator).reduce((x, y) => x + y, 0);
+    //     // return total / section.assignments.length;
+    //     // return 5;
+    // }
+
     return(
         <ProfileContext.Provider value={{
                 profile_context,
@@ -155,7 +183,7 @@ export function ProfileProvider({children}) {
                 addSectionToProfile,
                 updateSectionInProfile,
                 addAssignmentToProfile,
-                updateAssignmentInProfile}}>
+                updateAssignmentInProfile,}}>
             {children}
         </ProfileContext.Provider>
     )
