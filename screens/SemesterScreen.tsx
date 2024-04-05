@@ -126,6 +126,7 @@ const ClassView = ({curr_class, navigation}) => {
     const[is_editing, setIs_editing] = useState(false);
     const[is_expanded, setIsExpanded] = useState(false);
     const[grading_expanded, setGrading_expanded] = useState(false);
+    const[sections_expanded, setSections_expanded] = useState(false);
 
     // Viewing state for a class.
     if(!is_editing){
@@ -141,8 +142,11 @@ const ClassView = ({curr_class, navigation}) => {
                         {name !== '' && (
                             <Text style={{textAlignVertical: 'center', fontSize: 30}}>{name}: {calculateClassLetterGrade(curr_class)}</Text>
                         )}
-                        {name === '' && (
+                        {name === '' && calculateClassLetterGrade(curr_class) === 'N/A' && (
                             <Text style={{textAlignVertical: 'center', fontSize: 30}}>New Class</Text>
+                        )}
+                        {name === '' && calculateClassLetterGrade(curr_class) !== 'N/A' && (
+                            <Text style={{textAlignVertical: 'center', fontSize: 30}}>New Class: {calculateClassLetterGrade(curr_class)}</Text>
                         )}
                         {/* Edit button for class. */}
                         <TouchableOpacity
@@ -170,32 +174,32 @@ const ClassView = ({curr_class, navigation}) => {
                             {sections.length > 0 && calculateClassAverage(sections) !== 'N/A' && (
                                 <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections) * 100}%</Text>
                             )}
-                            {/* Button to configure letter grades and their thresholds.*/}
-                            <View style={{height: 60}}>
-                                <FlatButton
-                                    text='Configure Letter Grading'
+                            {/* Letter grading pane. */}
+                            <View style={{backgroundColor: '#BEBEBE', borderRadius: 10, padding: 20}}>
+                                <TouchableOpacity style={{flexDirection: 'row', flex: 1}}
                                     onPress={() => {
-                                        navigation.navigate('Configure Letter Grading', {curr_class: curr_class});
+                                        setGrading_expanded(!grading_expanded);
                                     }}
-                                />
-                            </View>
-                            {/* Expandable Letter Grading. */}
-                            <TouchableOpacity style={{backgroundColor: '#BEBEBE', borderRadius: 10, flexDirection: 'row', padding: 20}}
-                                onPress={() => {
-                                    setGrading_expanded(!grading_expanded);
-                                }}>
-                                {!grading_expanded && (
-                                    <View style={{flexDirection: 'row', flex: 1}}>
-                                        <Text style={{fontSize: 30, textAlignVertical: 'center'}}>Letter Grading:</Text>
-                                        <AntDesign style={{marginLeft: 'auto'}} name="downcircleo" size={50} color="black"/>
-                                    </View>
-                                )}
+                                    activeOpacity={0.5}>
+                                    <Text style={{fontSize: 28, textAlignVertical: 'center', flex: 1}}>Letter Grading:</Text>
+                                    {/* Button to configure letter grades and their thresholds.*/}
+                                    <TouchableOpacity
+                                        style={{marginRight: 15}}
+                                        onPress={() => {
+                                            navigation.navigate('Configure Letter Grading', {curr_class: curr_class});
+                                        }}>
+                                        <AntDesign name="edit" size={45} color='black'/>
+                                    </TouchableOpacity>
+                                    {!grading_expanded && (
+                                        <AntDesign style={{marginLeft: 'auto'}} name="downcircleo" size={45} color="black"/>
+                                    )}
+                                    {grading_expanded && (
+                                        <AntDesign style={{marginLeft: 'auto'}} name="upcircleo" size={45} color="black"/>
+                                    )}
+                                </TouchableOpacity>
                                 {grading_expanded && (
                                     <View style={{flexDirection: 'column', flex: 1}}>
-                                        <View style={{flexDirection: 'row', flex: 1}}>
-                                            <Text style={{fontSize: 30, textAlignVertical: 'center'}}>Letter Grading:</Text>
-                                            <AntDesign style={{marginLeft: 'auto'}} name="upcircleo" size={50} color="black"/>
-                                        </View>
+                                        <Text style={{fontSize: 15}}>(Last number is non-inclusive.)</Text>
                                         {curr_class.letter_grading.map((l) => {
                                             return(
                                                 <Text style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
@@ -203,7 +207,7 @@ const ClassView = ({curr_class, navigation}) => {
                                         })}
                                     </View>
                                 )}
-                            </TouchableOpacity>
+                            </View>
                             {/* Button to add sections and their weights */}
                             <View style={{height: 60}}>
                                 <FlatButton
@@ -322,7 +326,7 @@ const SemesterScreen = ({navigation, route}) => {
                                 semester_id: semester.id,
                                 class_id: findNextID(classes),
                                 letter: "A",
-                                beg: 90,
+                                beg: 94,
                                 end: 100
                             },
                             {
@@ -330,30 +334,84 @@ const SemesterScreen = ({navigation, route}) => {
                                 year_id: semester.year_id,
                                 semester_id: semester.id,
                                 class_id: findNextID(classes),
-                                letter: "B",
-                                beg: 80,
-                                end: 89
+                                letter: "A-",
+                                beg: 90,
+                                end: 94
                             },
                             {
                                 id: 2,
                                 year_id: semester.year_id,
                                 semester_id: semester.id,
                                 class_id: findNextID(classes),
-                                letter: "C",
-                                beg: 70,
-                                end: 79
+                                letter: "B+",
+                                beg: 87,
+                                end: 90
                             },
                             {
                                 id: 3,
                                 year_id: semester.year_id,
                                 semester_id: semester.id,
                                 class_id: findNextID(classes),
-                                letter: "D",
-                                beg: 65,
-                                end: 69
+                                letter: "B",
+                                beg: 84,
+                                end: 87
                             },
                             {
                                 id: 4,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "B-",
+                                beg: 80,
+                                end: 84
+                            },
+                            {
+                                id: 5,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "C+",
+                                beg: 77,
+                                end: 80
+                            },
+                            {
+                                id: 6,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "C",
+                                beg: 74,
+                                end: 77
+                            },
+                            {
+                                id: 7,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "C-",
+                                beg: 70,
+                                end: 74
+                            },
+                            {
+                                id: 8,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "D+",
+                                beg: 67,
+                                end: 70
+                            },
+                            {
+                                id: 9,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "D",
+                                beg: 65,
+                                end: 67
+                            },
+                            {
+                                id: 10,
                                 year_id: semester.year_id,
                                 semester_id: semester.id,
                                 class_id: findNextID(classes),
