@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Keyboard, StyleSheet, TextInput } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign'
-import { useProfileContext, ClassContent, SectionContent } from '../shared/profile_context';
+import { useProfileContext, ClassContent, SectionContent, LetterGradeContent } from '../shared/profile_context';
 
 import { findNextID } from '../shared/key_functions';
 import { calculateSectionAverage, calculateClassAverage } from '../shared/calculation_functions';
@@ -125,6 +125,7 @@ const ClassView = ({curr_class, navigation}) => {
 
     const[is_editing, setIs_editing] = useState(false);
     const[is_expanded, setIsExpanded] = useState(false);
+    const[grading_expanded, setGrading_expanded] = useState(false);
 
     // Viewing state for a class.
     if(!is_editing){
@@ -159,19 +160,54 @@ const ClassView = ({curr_class, navigation}) => {
                     </TouchableOpacity>
                     {/* If the ClassView is expanded, display the class info: class grade, sections, section weights, section grades, assignments, and assignment grades.*/}
                     {is_expanded && (
-                        <View style={{marginVertical: 10, flex: 1, flexDirection: 'column'}}>
+                        <View style={{marginVertical: 10, flex: 1, flexDirection: 'column', gap: 20}}>
+                            {/* Print out class average if one can be calculated. */}
                             {sections.length > 0 && calculateClassAverage(sections) === 'N/A' && (
                                 <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
                             )}
                             {sections.length > 0 && calculateClassAverage(sections) !== 'N/A' && (
                                 <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections) * 100}%</Text>
                             )}
+                            {/* Button to configure letter grades and their thresholds.*/}
+                            <View style={{height: 60}}>
+                                <FlatButton
+                                    text='Configure Letter Grading'
+                                    onPress={() => {
+                                        navigation.navigate('Configure Letter Grading', {curr_class: curr_class});
+                                    }}
+                                />
+                            </View>
+                            {/* Expandable Letter Grading. */}
+                            <TouchableOpacity style={{backgroundColor: '#BEBEBE', borderRadius: 10, flexDirection: 'row', padding: 20}}
+                                onPress={() => {
+                                    setGrading_expanded(!grading_expanded);
+                                }}>
+                                {!grading_expanded && (
+                                    <View style={{flexDirection: 'row', flex: 1}}>
+                                        <Text style={{fontSize: 30, textAlignVertical: 'center'}}>Letter Grading:</Text>
+                                        <AntDesign style={{marginLeft: 'auto'}} name="downcircleo" size={50} color="black"/>
+                                    </View>
+                                )}
+                                {grading_expanded && (
+                                    <View style={{flexDirection: 'column', flex: 1}}>
+                                        <View style={{flexDirection: 'row', flex: 1}}>
+                                            <Text style={{fontSize: 30, textAlignVertical: 'center'}}>Letter Grading:</Text>
+                                            <AntDesign style={{marginLeft: 'auto'}} name="upcircleo" size={50} color="black"/>
+                                        </View>
+                                        {curr_class.letter_grading.map((l) => {
+                                            return(
+                                                <Text style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
+                                            );
+                                        })}
+                                    </View>
+                                )}
+                            </TouchableOpacity>
                             {/* Button to add sections and their weights */}
-                            <View style={{height: 60, marginVertical: 20}}>
+                            <View style={{height: 60}}>
                                 <FlatButton
                                     text='Configure Sections'
                                     onPress={() => {
-                                        navigation.navigate('Sections', {curr_class: curr_class});
+                                        navigation.navigate('Configure Sections', {curr_class: curr_class});
                                     }}
                                 />
                             </View>
@@ -250,24 +286,85 @@ const SemesterScreen = ({navigation, route}) => {
             {/* Button that adds a class to a semester */}
             <TouchableOpacity style={{ height: 75, marginTop: 20, marginBottom: 5}}
                 onPress={() => {
+                    // Class Data Info:
                     // id: Int32
                     // year_id: Int32
                     // semester_id: Int32
                     // name: string
-                    // letter_grading: {}
+                    // letter_grading: LetterGradeContent[]
                     // sections: SectionContent[]
+                    // Letter Grading Info:
+                    // id: Int32,
+                    // year_id: Int32
+                    // semester_id: Int32
+                    // class_id: Int32
+                    // letter: string
+                    // beg: Int32
+                    // end: Int32
+                    // const a_grade: LetterGradeContent = {
+                    //     id: 0,
+                    //     year_id: semester.year_id,
+                    //     semester_id: semester.id,
+                    //     class_id
+                    // }
+
                     let new_class: ClassContent = {
                         id: findNextID(classes),
                         year_id: semester.year_id,
                         semester_id: semester.id,
                         name: '',
-                        letter_grading: {
-                            'A': [90, 100],
-                            'B': [80, 89],
-                            'C': [70, 79],
-                            'D': [65, 69],
-                            'F': [0-65]
-                        },
+                        letter_grading: [
+                            {
+                                id: 0,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "A",
+                                beg: 90,
+                                end: 100
+                            },
+                            {
+                                id: 1,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "B",
+                                beg: 80,
+                                end: 89
+                            },
+                            {
+                                id: 2,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "C",
+                                beg: 70,
+                                end: 79
+                            },
+                            {
+                                id: 3,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "D",
+                                beg: 65,
+                                end: 69
+                            },
+                            {
+                                id: 4,
+                                year_id: semester.year_id,
+                                semester_id: semester.id,
+                                class_id: findNextID(classes),
+                                letter: "F",
+                                beg: 0,
+                                end: 65
+                            }
+                            // 'A': [90, 100],
+                            // 'B': [80, 89],
+                            // 'C': [70, 79],
+                            // 'D': [65, 69],
+                            // 'F': [0, 65]
+                        ],
                         sections: []
                     };
                     const newClasses = [

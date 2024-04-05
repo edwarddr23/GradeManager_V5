@@ -49,6 +49,7 @@ function PrintClasses(semester) {
     return(
         <View>
             {semester.classes.map((c) => {
+                console.log(`PrintClasses(): c.letter_grading: ${c.letter_grading}`);
                 child_key++;
                 return(
                     <View key={child_key}>
@@ -56,8 +57,9 @@ function PrintClasses(semester) {
                             <Text key={child_key++}>{'\t' + c.name}</Text>
                         )}
                         {c.name === '' && (
-                            <Text key={child_key++}>New Class</Text>
+                            <Text key={child_key++}>{'\t'}New Class</Text>
                         )}
+                        {PrintLetterGrading(c)}
                         {PrintSections(c)}
                     </View>
                 );
@@ -67,11 +69,29 @@ function PrintClasses(semester) {
     // return(<Text>Class here</Text>)
 }
 
+function PrintLetterGrading(curr_class) {
+    // console.log(`PrintLetterGrading(): curr_class.letter_grading:`);
+    // {Object.keys(curr_class.letter_grading).map((key) => (
+    //     console.log(`'\t\t\t' ${key}, ${curr_class.letter_grading[key][0]}% - ${curr_class.letter_grading[key][1]}%`)
+    // ))}
+    return(
+        <View>
+            <Text>{'\t\t'}Letter Grading</Text>
+            {curr_class.letter_grading.map((l) => {
+                return(
+                    <Text>{'\t\t\t' + l.letter}: {l.beg}-{l.end}</Text>
+                )
+            })}
+        </View>
+    );
+}
+
 function PrintSections(curr_class) {
     let child_key = 0;
     if(curr_class.sections === undefined || curr_class.sections.length == 0){
         return(
             <View>
+                <Text>{'\t\t'}Sections:</Text>
                 <Text>{'\t\t'}No sections yet!</Text>
             </View>
         );
@@ -79,6 +99,7 @@ function PrintSections(curr_class) {
 
     return(
         <View>
+            <Text>{'\t'}Sections:</Text>
             {curr_class.sections.map((s) => {
                 child_key++;
                 if(s.name != ''){

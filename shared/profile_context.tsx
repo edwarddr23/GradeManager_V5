@@ -29,8 +29,18 @@ export type ClassContent = {
     year_id: Int32
     semester_id: Int32
     name: string
-    letter_grading: {}
+    letter_grading: LetterGradeContent[]
     sections: SectionContent[]
+}
+
+export type LetterGradeContent = {
+    id: Int32,
+    year_id: Int32
+    semester_id: Int32
+    class_id: Int32
+    letter: string
+    beg: Int32
+    end: Int32
 }
 
 export type SectionContent = {
@@ -121,6 +131,13 @@ export function ProfileProvider({children}) {
         curr_class.sections = new_class.sections;
     }
 
+    const updateLetterGradeInProfile = (new_letter_grade) => {
+        // console.log(`updateLetterGradeInProfile(): This ran.`);
+        let curr_letter_grade = years.find((y) => y.id === new_letter_grade.year_id).semesters.find((s) => s.id === new_letter_grade.semester_id).classes.find((c) => c.id === new_letter_grade.class_id)?.letter_grading.find((l) => l.id === new_letter_grade.id);
+        curr_letter_grade.beg = new_letter_grade.beg;
+        curr_letter_grade.end = new_letter_grade.end;
+    }
+
     const addSectionToProfile = (new_section) => {
         years.find((y) => y.id === new_section.year_id).semesters.find((s) => s.id === new_section.semester_id).classes.find((c) => c.id === new_section.class_id).sections.push(new_section);
     }
@@ -181,6 +198,7 @@ export function ProfileProvider({children}) {
                 updateSemesterInProfile,
                 addClassToProfile,
                 updateClassInProfile,
+                updateLetterGradeInProfile,
                 addSectionToProfile,
                 updateSectionInProfile,
                 addAssignmentToProfile,

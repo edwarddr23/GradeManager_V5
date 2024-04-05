@@ -43,6 +43,7 @@ import { ProfileProvider, useProfileContext } from './shared/profile_context';
 import SemesterScreen from './screens/SemesterScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
 import SectionScreen from './screens/SectionScreen';
+import ConfigureLetterGradingScreen from './screens/ConfigureLetterGradingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -100,7 +101,7 @@ function App(): React.JSX.Element {
                 )
               })}/>
             <Stack.Screen
-              name="Sections"
+              name="Configure Sections"
               component={ConfigureSectionsScreen}
               options={({navigation, route}) => ({
                 headerRight: () => (
@@ -114,6 +115,23 @@ function App(): React.JSX.Element {
                   </View>
                 )
               })}/>
+            <Stack.Screen
+              name="Configure Letter Grading"
+              component={ConfigureLetterGradingScreen}
+              options={({navigation, route}) => ({
+                // title: ''
+                headerRight: () => (
+                  <View style={{width: 100, height: 45}}>
+                    <FlatButton
+                      text="Save"
+                      onPress={() => {
+                        navigation.navigate("Save");
+                      }}
+                    />
+                  </View>
+                )
+              })}
+            />
             {/* <Stack.Screen
               name="Class"
               component={ClassScreen}
