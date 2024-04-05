@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, ClassContent, SectionContent, LetterGradeContent } from '../shared/profile_context';
 
 import { findNextID } from '../shared/key_functions';
-import { calculateSectionAverage, calculateClassAverage } from '../shared/calculation_functions';
+import { calculateSectionAverage, calculateClassAverage, calculateClassLetterGrade } from '../shared/calculation_functions';
 
 import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
@@ -132,12 +132,14 @@ const ClassView = ({curr_class, navigation}) => {
         return(
             <View style={styles.classStyle}>
                 <View>
+                    {/* Top section of SectionView for dropdown functionality and showing class name and class letter grade. */}
                     <TouchableOpacity 
-                    style={{flexDirection: 'row'}}
-                    activeOpacity={0.5}
-                    onPress={() => setIsExpanded(!is_expanded)}>
+                        style={{flexDirection: 'row'}}
+                        activeOpacity={0.5}
+                        onPress={() => setIsExpanded(!is_expanded)}>
+                        {/* Display class name and letter grade, if possible. */}
                         {name !== '' && (
-                            <Text style={{textAlignVertical: 'center', fontSize: 30}}>{name}</Text>
+                            <Text style={{textAlignVertical: 'center', fontSize: 30}}>{name}: {calculateClassLetterGrade(curr_class)}</Text>
                         )}
                         {name === '' && (
                             <Text style={{textAlignVertical: 'center', fontSize: 30}}>New Class</Text>

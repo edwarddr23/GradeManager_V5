@@ -39,3 +39,17 @@ export function calculateClassAverage(sections) {
 
     return (total_averages / total_weights).toFixed(4);
 }
+
+export function calculateClassLetterGrade(curr_class) {
+    const class_average = calculateClassAverage(curr_class.sections) * 100;
+    console.log(`calculateClassLetterGrade(): class_average: ${class_average}`);
+    let result = 'N/A';
+    curr_class.letter_grading.forEach((l) => {
+        // console.log(`THING: ${l.letter}: ${l.beg}-${l.end}`);
+        if(class_average >= l.beg && class_average <= l.end){
+            console.log(`THING found to be within range: ${l.letter}: ${l.beg}-${l.end}`);
+            result = l.letter;
+        }
+    });
+    return result;
+}
