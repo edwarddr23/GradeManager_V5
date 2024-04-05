@@ -6,6 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
+import { calculateSemesterGPA } from '../shared/calculation_functions'
 import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
 
 const SemesterView = ({ navigation, semester, updateSemesters }) => {
@@ -27,11 +28,14 @@ const SemesterView = ({ navigation, semester, updateSemesters }) => {
                     {/* Viewing state for semester. */}
                     {is_editing == false && (
                         <View style={{flexDirection: 'row'}}>
-                            {is_editing == false && season === "" && (
+                            {is_editing == false && season === "" && calculateSemesterGPA(semester) === 'N/A' && (
                                 <Text style={{fontWeight: 'bold', fontSize: 25, alignSelf: 'center'}}>New Semester</Text>
                             )}
+                            {is_editing == false && season === "" && calculateSemesterGPA(semester) !== 'N/A' && (
+                                <Text style={{fontWeight: 'bold', fontSize: 25, alignSelf: 'center'}}>New Semester: {calculateSemesterGPA(semester)}</Text>
+                            )}
                              {is_editing == false && season !== "" && (
-                                <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}</Text>
+                                <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}: {calculateSemesterGPA(semester)}</Text>
                             )}
                             {/* Edit button that activates editing state for semester. */}
                             <TouchableOpacity

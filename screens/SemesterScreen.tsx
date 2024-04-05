@@ -276,7 +276,19 @@ const SemesterScreen = ({navigation, route}) => {
 
     useEffect(() => {
         navigation.setOptions({
-            title: `${semester.season} ${semester.year}`
+            title: `${semester.season} ${semester.year}`,
+            headerLeft: () => (
+                <View style={{marginRight: 20}}>
+                    <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => {
+                        console.log('SemesterScreen.tsx: CUSTOM BACK BUTTON');
+                        navigation.navigate('Years', {fromClassScreen: true});
+                    }}>
+                    <AntDesign name="arrowleft" size={25} color='black'/>
+                    </TouchableOpacity>
+                </View>
+            )
         })
         // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
         const showSubscription = Keyboard.addListener('keyboardDidShow', () => {

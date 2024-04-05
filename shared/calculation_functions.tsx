@@ -46,10 +46,61 @@ export function calculateClassLetterGrade(curr_class) {
     let result = 'N/A';
     curr_class.letter_grading.forEach((l) => {
         // console.log(`THING: ${l.letter}: ${l.beg}-${l.end}`);
+        if(class_average === 100) result = 'A';
         if(class_average >= l.beg && class_average < l.end){
-            console.log(`THING found to be within range: ${l.letter}: ${l.beg}-${l.end}`);
             result = l.letter;
         }
     });
     return result;
+}
+
+export function calculateSemesterGPA(semester) {
+    let letter_grades = [];
+    // console.log(`calculateSemesterGPA(): semester: ${JSON.stringify(semester)}`);
+    if(semester.classes.length === 0) return 'N/A';
+    semester.classes.forEach((c) => {
+        letter_grades.push(calculateClassLetterGrade(c));
+    })
+    const valid_letter_grades = letter_grades.filter((l) => {
+        if(l !== 'N/A') return l;
+    });
+    let total = 0.0;
+    valid_letter_grades.forEach((l) => {
+        switch(l){
+            case 'A':
+                total += 4.0;
+                break;
+            case 'A-':
+                total += 3.7;
+                break;
+            case 'B+':
+                total += 3.3;
+                break;
+            case 'B':
+                total += 3.0;
+                break;
+            case 'B-':
+                total += 2.7;
+                break;
+            case 'C+':
+                total += 2.3;
+                break;
+            case 'C':
+                total += 2.0;
+                break;
+            case 'C-':
+                total += 1.7;
+                break;
+            case 'D+':
+                total += 1.3;
+                break;
+            case 'D':
+                total += 1.0;
+                break;
+            case 'F':
+                total += 0.0;
+                break;
+        }
+    });
+    return (total / valid_letter_grades.length).toFixed(2);
 }
