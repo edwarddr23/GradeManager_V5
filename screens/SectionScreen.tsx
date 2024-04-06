@@ -34,7 +34,7 @@ const AssignmentView = ({assignment}) => {
                             <Text style={{fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}}>{name}:{'\t\t'}</Text>
                         )}
                         {type === 'Percentage' && (
-                            <Text style={{fontSize: 25, textAlignVertical: 'center'}}>Grade: {(numerator / denominator) * 100}%</Text>
+                            <Text style={{fontSize: 25, textAlignVertical: 'center'}}>Grade: {((numerator / denominator) * 100).toFixed(2)}%</Text>
                         )}
                         {type === 'Ratio' && (
                             <Text style={{fontSize: 25, textAlignVertical: 'center'}}>Grade: {numerator}/{denominator}</Text>
@@ -146,8 +146,9 @@ const AssignmentView = ({assignment}) => {
                                     numerator: numerator,
                                     denominator: denominator
                                 }
+                                console.log(`new_assignment: ${JSON.stringify(new_assignment)}`);
                                 setIs_editing(!is_editing);
-                                console.log(`new_assignment.name: ${new_assignment.name}`);
+                                // console.log(`new_assignment.name: ${new_assignment.name}`);
                                 updateAssignmentInProfile(new_assignment);
                             }
                         }}>

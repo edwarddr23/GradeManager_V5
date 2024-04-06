@@ -6,7 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
-import { calculateSemesterGPA } from '../shared/calculation_functions'
+import { calculateYearGPA, calculateSemesterGPA } from '../shared/calculation_functions'
 import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
 
 const SemesterView = ({ navigation, semester, updateSemesters }) => {
@@ -19,8 +19,6 @@ const SemesterView = ({ navigation, semester, updateSemesters }) => {
         <TouchableOpacity 
             style={{width: '100%', backgroundColor: '#b8b8b8', borderRadius: 10, padding: 15, marginVertical: 10}}
             onPress={() => {
-                // console.log(semester);
-                // console.log(`${semester.season} ${semester.year}`);
                 navigation.navigate('Semester', {semester: semester});
             }}>
             <View>
@@ -28,15 +26,15 @@ const SemesterView = ({ navigation, semester, updateSemesters }) => {
                     {/* Viewing state for semester. */}
                     {is_editing == false && (
                         <View style={{flexDirection: 'row'}}>
-                            {is_editing == false && season === "" && calculateSemesterGPA(semester) === 'N/A' && (
-                                <Text style={{fontWeight: 'bold', fontSize: 25, alignSelf: 'center'}}>New Semester</Text>
-                            )}
-                            {is_editing == false && season === "" && calculateSemesterGPA(semester) !== 'N/A' && (
-                                <Text style={{fontWeight: 'bold', fontSize: 25, alignSelf: 'center'}}>New Semester: {calculateSemesterGPA(semester)}</Text>
-                            )}
-                             {is_editing == false && season !== "" && (
-                                <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}: {calculateSemesterGPA(semester)}</Text>
-                            )}
+                            <View style={{flexDirection: 'column'}}>
+                                {is_editing == false && season === "" && (
+                                    <Text style={{fontWeight: 'bold', fontSize: 25, alignSelf: 'center'}}>New Semester</Text>
+                                )}
+                                {is_editing == false && season !== "" && (
+                                    <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}</Text>
+                                )}
+                                <Text style={{fontSize: 20}}>Semester GPA: {calculateSemesterGPA(semester)}</Text>
+                            </View>
                             {/* Edit button that activates editing state for semester. */}
                             <TouchableOpacity
                                 style={{marginLeft: 'auto', alignSelf: 'center'}}
@@ -81,12 +79,6 @@ const SemesterView = ({ navigation, semester, updateSemesters }) => {
                                     }
                                     updateSemesters(updated_semester);
                                     updateSemesterInProfile(updated_semester);
-                                    // const updated_class = {
-                                    //     ...semester,
-                                    //     name: name
-                                    // }
-                                    // updateSemesters(updated_class);
-                                    // updateClassInProfile(year.id, semester.id, updated_class)
                                     setIs_editing(!is_editing);
                                 }}>
                                 <AntDesign name="checkcircleo" size={40} color='green'/>
@@ -130,7 +122,15 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                 <View style={{paddingBottom: 10}}>
                     <View style={styles.year}>
                         <View style={{flexDirection: 'row'}}>
-                            <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Academic Year {beg_year}-{end_year}</Text>
+                            <View style={{flexDirection: 'column'}}>
+                                {beg_year !== '' && end_year !== '' && (
+                                    <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Academic Year {beg_year}-{end_year}</Text>
+                                )}
+                                {beg_year === '' && end_year === '' && (
+                                    <Text style={{textAlignVertical: 'center', fontSize: 20, flex: 1}}>New Academic Year</Text>
+                                )}
+                                <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Year GPA: {calculateYearGPA(year)}</Text>
+                            </View>
                             {/* Edit Button to change the years range */}
                             <TouchableOpacity 
                                 style={{marginRight: 20}}
@@ -171,24 +171,12 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                                             ...semesters,
                                             new_semester
                                         ]
-                                        console.log(`ADD BUTTON: year.id: ${year.id}`);
-                                        console.log(`ADD BUTTON: LOOP`);
-                                        newSemesters.map((s) => {
-                                            console.log(`s.id: ${s.id}`);
-                                        });
+                                        // console.log(`ADD BUTTON: year.id: ${year.id}`);
+                                        // console.log(`ADD BUTTON: LOOP`);
+                                        // newSemesters.map((s) => {
+                                        //     console.log(`s.id: ${s.id}`);
+                                        // });
                                         addSemesterToProfile(new_semester);
-                                        // newClass = {
-                                        //     ...newClass,
-                                        //     id: findNextID(semesters),
-                                        //     name: "New Class"
-                                        // }
-                                        // const newSemesters = [
-                                        //     ...semesters,
-                                        //     {
-                                        //         name: "New Class",
-                                        //         id: findNextID(semesters)
-                                        //     }
-                                        // ];
                                         setSemesters(newSemesters);
                                         updateSemestersInYear(year, newSemesters);
                                     }}>

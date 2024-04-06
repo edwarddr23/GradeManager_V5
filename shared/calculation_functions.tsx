@@ -17,7 +17,8 @@ export function calculateSectionAverage(assignments) {
     valid_assignments.map((a) => {
         total += a.numerator / a.denominator;
     });
-    return (total / valid_assignments.length).toFixed(4);
+    console.log(`calculateSectionAverage(): (total / valid_assignments.length).toFixed(4): ${(total / valid_assignments.length).toFixed(4)}`);
+    return (total / valid_assignments.length);
 }
 
 export function calculateClassAverage(sections) {
@@ -37,7 +38,7 @@ export function calculateClassAverage(sections) {
         total_weights += parseFloat(v[1]);
     });
 
-    return (total_averages / total_weights).toFixed(4);
+    return (total_averages / total_weights);
 }
 
 export function calculateClassLetterGrade(curr_class) {
@@ -103,4 +104,21 @@ export function calculateSemesterGPA(semester) {
         }
     });
     return (total / valid_letter_grades.length).toFixed(2);
+}
+
+export function calculateYearGPA(year) {
+    let semester_gpas = [];
+    if(year.semesters.length === 0) return 'N/A';
+    year.semesters.forEach((s) => {
+        semester_gpas.push(parseFloat(calculateSemesterGPA(s)));
+    })
+    const valid_semester_gpas = semester_gpas.filter((l) => {
+        if(l !== 'N/A') return l;
+    });
+    console.log(`calculateYearGPA(): semester_gpas: ${valid_semester_gpas}`);
+    let total = 0;
+    valid_semester_gpas.forEach((v) => {
+        total += v;
+    });
+    return (total / valid_semester_gpas.length).toFixed(2);
 }

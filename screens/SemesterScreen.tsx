@@ -32,17 +32,18 @@ const SectionView = ({section, navigation}) => {
                             <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
                         )}
                         {section.name !== '' && calculateSectionAverage(assignments) === 'N/A' && (
-                            <View>
-                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {calculateSectionAverage(assignments)}</Text>
-                                <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
-                            </View>
+                            <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}</Text>
                         )}
                         {section.name !== '' && calculateSectionAverage(assignments) !== 'N/A' && (
-                            <View>
-                                <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {calculateSectionAverage(assignments) * 100}%</Text>
-                                <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
-                            </View>
+                            <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}</Text>
                         )}
+                        {calculateSectionAverage(assignments) === 'N/A' && (
+                            <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {calculateSectionAverage(assignments)}</Text>
+                        )}
+                        {calculateSectionAverage(assignments) !== 'N/A' && (
+                            <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {(calculateSectionAverage(assignments) * 100).toFixed(2)}%</Text>
+                        )}
+                        <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
                         {assignments.length === 0 && (
                             <Text style={{fontSize: 20}}>No assignments yet!</Text>
                         )}
@@ -172,7 +173,7 @@ const ClassView = ({curr_class, navigation}) => {
                                 <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
                             )}
                             {sections.length > 0 && calculateClassAverage(sections) !== 'N/A' && (
-                                <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections) * 100}%</Text>
+                                <Text style={{fontSize: 20}}>Class Average%: {(calculateClassAverage(sections) * 100).toFixed(2)}%</Text>
                             )}
                             {/* Letter grading pane. */}
                             <View style={{backgroundColor: '#BEBEBE', borderRadius: 10, padding: 20}}>
