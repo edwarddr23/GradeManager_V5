@@ -6,7 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
-import { calculateYearGPA, calculateSemesterGPA } from '../shared/calculation_functions'
+import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA } from '../shared/calculation_functions'
 import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
 
 const SemesterView = ({ navigation, semester, updateSemesters }) => {
@@ -372,6 +372,9 @@ const YearsScreen = ({navigation, route}) => {
                         return renderYear(curr_year);
                     }}
                 />
+            </View>
+            <View style={{backgroundColor: '#c6e3ba', padding: 20, maxWidth: 'auto', marginVertical: 10, borderRadius: 30}}>
+                <Text style={{fontSize: 30}}>Cumulative GPA: {calculateCumulativeGPA(years)}</Text>
             </View>
             {/* FOOTER */}
             <Footer/>

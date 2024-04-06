@@ -107,18 +107,37 @@ export function calculateSemesterGPA(semester) {
 }
 
 export function calculateYearGPA(year) {
-    let semester_gpas = [];
     if(year.semesters.length === 0) return 'N/A';
+
+    let semester_gpas = [];
     year.semesters.forEach((s) => {
         semester_gpas.push(parseFloat(calculateSemesterGPA(s)));
     })
     const valid_semester_gpas = semester_gpas.filter((l) => {
         if(l !== 'N/A') return l;
     });
-    console.log(`calculateYearGPA(): semester_gpas: ${valid_semester_gpas}`);
+    // console.log(`calculateYearGPA(): semester_gpas: ${valid_semester_gpas}`);
     let total = 0;
     valid_semester_gpas.forEach((v) => {
         total += v;
     });
+    if(total === 0) return parseFloat('0').toFixed(2)
     return (total / valid_semester_gpas.length).toFixed(2);
+}
+
+export function calculateCumulativeGPA(years) {
+    if(years.length === 0) return 'N/A';
+
+    let year_gpas = [];
+    years.forEach((y) => {
+        year_gpas.push(calculateYearGPA(y));
+    })
+    const valid_year_gpas = year_gpas.filter((y) => {
+        if(y !== 'N/A') return y;
+    });
+    let total = 0;
+    valid_year_gpas.forEach((v) => {
+        total += v;
+    });
+    return (total / valid_year_gpas.length).toFixed(2);
 }
