@@ -18,19 +18,85 @@ export function calculateSectionAverage(assignments) {
     return (total / valid_assignments.length);
 }
 
-export function calculateExpectedSectionAverage(assignments) {
-    const assignments_avg = calculateSectionAverage(assignments);
-    if(assignments_avg === 'N/A') return 'N/A';
-    let total = 0;
-    const adj_assignments = assignments.map((a) => {
-        if(a.numerator === -1 && a.denominator === -1){
-            total += assignments_avg;
-            return assignments_avg;
-        }
-        total += a.numerator / a.denominator;
-        return a;
+// Algorithm for simple linear regression taken from here: https://www.youtube.com/watch?v=YC0bvIxR6t4
+export function simpleLinearRegression(dataset) {
+    // Use simple linear regression to find b and a in y = mx + b, where m is the slope and b is the y-intercept.
+    let x_idx = 1;
+    const x = dataset.map((d) => {
+        return x_idx++; 
     });
-    return total / adj_assignments.length;
+    const sum_x = x.reduce((a, b) => a + b, 0);
+
+    const y = dataset.map((d) => {
+        return d.numerator / d.denominator;
+    });
+    const sum_y = y.reduce((a, b) => a + b, 0);
+
+    const x_sqr = x.map((x) => {
+        return x * x;
+    });
+    // console.log(`x_sqr: ${x_sqr}`)
+    const sum_x_sqr = x_sqr.reduce((a, b) => a + b, 0);
+
+    const y_sqr = y.map((y) => {
+        return y * y;
+    });
+    const sum_y_sqr = y_sqr.reduce((a, b) => a + b, 0);
+    
+    const xy = x.map((element, idx) => {
+        // console.log(`forEach: x[${idx}]: ${x[idx]}`)
+        // console.log(`forEach: y[${idx}]: ${y[idx].numerator / y[idx].denominator}`)
+        return x[idx] * y[idx];
+    });
+    // console.log(`simpleLinearRegression(): xy: ${xy}`);
+    const sum_xy = xy.reduce((a, b) => a + b, 0);
+
+    // console.log(`simpleLinearRegression(): sum_xy: ${sum_xy}`);
+    // console.log(`simpleLinearRegression(): sum_x: ${sum_x}`);
+    // console.log(`simpleLinearRegression(): sum_x_sqr: ${sum_x_sqr}`);
+    // console.log(`simpleLinearRegression(): sum_y: ${sum_y}`);
+    // console.log(`simpleLinearRegression(): sum_y_sqr: ${sum_y_sqr}`);
+    // console.log(`simpleLinearRegression(): x.length: ${x.length}`);
+    // console.log(`simpleLinearRegression(): top thing: ${(sum_xy - ((sum_x * sum_y) / x.length))}`);
+    // console.log(`simpleLinearRegression(): bottom thing: ${(sum_x_sqr - ((sum_x * sum_x) / x.length))}`);
+    const m = (sum_xy - ((sum_x * sum_y) / x.length)) / (sum_x_sqr - ((sum_x * sum_x) / x.length))
+    // console.log(`simpleLinearRegression(): m: ${m}`);
+    const b = (sum_y - (m * sum_x)) / x.length;
+    // console.log(`simpleLinearRegression(): b: ${b}`);
+    return [m, b];
+}
+
+export function calculateExpectedSectionAverage(assignments) {
+    if(calculateSectionAverage(assignments) === 'N/A') return 'N/A';
+    
+    const [m, b] = simpleLinearRegression(getValidAssignments(assignments));
+
+    if(getValidAssignments(assignments).length > 1){
+        let assignment_num = 0;
+        let total = 0;
+        const expected_assignment_grades = assignments.map((a) => {
+            assignment_num++;
+            if(a.numerator === -1 && a.denominator === -1){
+                total += m * assignment_num + b;
+                return m * assignment_num + b;
+            }
+            total += a.numerator / a.denominator;
+            return a.numerator / a.denominator;
+        });
+
+        return (total / expected_assignment_grades.length);
+    }
+    else if(getValidAssignments(assignments).length === 1) {
+        const valid_assignment = getValidAssignments(assignments)[0];
+        const valid_grade = valid_assignment.numerator / valid_assignment.denominator;
+        // console.log(`valid_grade: ${valid_grade}`);
+        let total = 0;
+        assignments.map((a) => {
+            total += valid_grade; 
+        });
+        console.log(`total: ${total}`);
+        return total / assignments.length;
+    }
 }
 
 export function calculateClassAverage(sections) {
@@ -51,6 +117,24 @@ export function calculateClassAverage(sections) {
     });
 
     return (total_averages / total_weights);
+}
+
+export function calculateExpectedClassAverage(sections) {
+    if(calculateClassAverage(sections) === 'N/A') return 'N/A';
+    // return 69;
+    const exp_section_averages = sections.map((s) => {
+        return calculateExpectedSectionAverage(s.assignments);
+    });
+    const valid_exp_section_averages = exp_section_averages.filter((e) => {
+        if(e !== 'N/A') return e;
+    });
+    let total = 0;
+    valid_exp_section_averages.map((v) => {
+        total += parseFloat(v);
+    });
+    console.log(`calculateExpectedClassAverage(): valid_exp_section_averages: ${valid_exp_section_averages}`);
+    console.log(`calculateExpectedClassAverage(): total / valid_exp_section_averages.length: ${total / valid_exp_section_averages.length}`);
+    return (total / valid_exp_section_averages.length);
 }
 
 export function calculateClassLetterGrade(curr_class) {
