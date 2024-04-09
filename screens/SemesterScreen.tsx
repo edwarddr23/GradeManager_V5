@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, ClassContent, SectionContent, LetterGradeContent } from '../shared/profile_context';
 
 import { findNextID } from '../shared/key_functions';
-import { calculateSectionAverage, calculateClassAverage, calculateClassLetterGrade } from '../shared/calculation_functions';
+import { calculateSectionAverage, calculateClassAverage, calculateClassLetterGrade, calculateExpectedSectionAverage } from '../shared/calculation_functions';
 
 import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
@@ -42,6 +42,12 @@ const SectionView = ({section, navigation}) => {
                         )}
                         {calculateSectionAverage(assignments) !== 'N/A' && (
                             <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {(calculateSectionAverage(assignments) * 100).toFixed(2)}%</Text>
+                        )}
+                        {calculateExpectedSectionAverage(assignments) === 'N/A' && (
+                            <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {calculateExpectedSectionAverage(assignments)}</Text>
+                        )}
+                        {calculateExpectedSectionAverage(assignments) !== 'N/A' && (
+                            <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {(calculateExpectedSectionAverage(assignments) * 100).toFixed(2)}%</Text>
                         )}
                         <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
                         {assignments.length === 0 && (

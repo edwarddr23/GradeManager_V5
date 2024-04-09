@@ -2,23 +2,35 @@ import React from 'react'
 
 const getValidAssignments = (assignments) => {
     return assignments.filter((a) => {
-        // console.log(`getValidAssignments(): a.numerator / a.denominator: ${a.numerator} / ${a.denominator}`);
-        if(a.numerator != -1 && a.denominator != -1) return a;
+        if(a.numerator !== -1 && a.denominator !== -1) return a;
     })
 }
 
 export function calculateSectionAverage(assignments) {
     let total = 0;
     const valid_assignments = getValidAssignments(assignments);
-    // console.log(`calculateAverage(): valid_assignments: ${valid_assignments}`);
     
     if(valid_assignments.length === 0) return 'N/A';
     
     valid_assignments.map((a) => {
         total += a.numerator / a.denominator;
     });
-    // console.log(`calculateSectionAverage(): (total / valid_assignments.length).toFixed(4): ${(total / valid_assignments.length).toFixed(4)}`);
     return (total / valid_assignments.length);
+}
+
+export function calculateExpectedSectionAverage(assignments) {
+    const assignments_avg = calculateSectionAverage(assignments);
+    if(assignments_avg === 'N/A') return 'N/A';
+    let total = 0;
+    const adj_assignments = assignments.map((a) => {
+        if(a.numerator === -1 && a.denominator === -1){
+            total += assignments_avg;
+            return assignments_avg;
+        }
+        total += a.numerator / a.denominator;
+        return a;
+    });
+    return total / adj_assignments.length;
 }
 
 export function calculateClassAverage(sections) {
