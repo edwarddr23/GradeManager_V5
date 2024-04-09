@@ -17,7 +17,7 @@ export function calculateSectionAverage(assignments) {
     valid_assignments.map((a) => {
         total += a.numerator / a.denominator;
     });
-    console.log(`calculateSectionAverage(): (total / valid_assignments.length).toFixed(4): ${(total / valid_assignments.length).toFixed(4)}`);
+    // console.log(`calculateSectionAverage(): (total / valid_assignments.length).toFixed(4): ${(total / valid_assignments.length).toFixed(4)}`);
     return (total / valid_assignments.length);
 }
 
@@ -43,7 +43,7 @@ export function calculateClassAverage(sections) {
 
 export function calculateClassLetterGrade(curr_class) {
     const class_average = calculateClassAverage(curr_class.sections) * 100;
-    console.log(`calculateClassLetterGrade(): class_average: ${class_average}`);
+    // console.log(`calculateClassLetterGrade(): class_average: ${class_average}`);
     let result = 'N/A';
     curr_class.letter_grading.forEach((l) => {
         // console.log(`THING: ${l.letter}: ${l.beg}-${l.end}`);
@@ -65,6 +65,7 @@ export function calculateSemesterGPA(semester) {
     const valid_letter_grades = letter_grades.filter((l) => {
         if(l !== 'N/A') return l;
     });
+    if(valid_letter_grades.length === 0) return 'N/A';
     let total = 0.0;
     valid_letter_grades.forEach((l) => {
         switch(l){
@@ -108,20 +109,18 @@ export function calculateSemesterGPA(semester) {
 
 export function calculateYearGPA(year) {
     if(year.semesters.length === 0) return 'N/A';
-
     let semester_gpas = [];
     year.semesters.forEach((s) => {
-        semester_gpas.push(parseFloat(calculateSemesterGPA(s)));
+        semester_gpas.push(calculateSemesterGPA(s));
     })
     const valid_semester_gpas = semester_gpas.filter((l) => {
         if(l !== 'N/A') return l;
     });
-    // console.log(`calculateYearGPA(): semester_gpas: ${valid_semester_gpas}`);
+    if(valid_semester_gpas.length === 0) return 'N/A';
     let total = 0;
     valid_semester_gpas.forEach((v) => {
-        total += v;
+        total += parseFloat(v);
     });
-    if(total === 0) return parseFloat('0').toFixed(2)
     return (total / valid_semester_gpas.length).toFixed(2);
 }
 
@@ -135,6 +134,7 @@ export function calculateCumulativeGPA(years) {
     const valid_year_gpas = year_gpas.filter((y) => {
         if(y !== 'N/A') return y;
     });
+    if(valid_year_gpas.length === 0) return 'N/A';
     let total = 0;
     valid_year_gpas.forEach((v) => {
         total += v;
