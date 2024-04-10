@@ -92,7 +92,7 @@ const SemesterView = ({ navigation, semester, updateSemesters }) => {
     );
 }
 
-const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
+const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigation}) => {
     // console.log(`YearView: year.id: ${year.id}`)
     const { profile_context, addSemesterToProfile } = useProfileContext();
     // useStates for TextInputs:
@@ -245,161 +245,15 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                             <AntDesign name="checkcircleo" size={50} color={'green'}/>
                         </TouchableOpacity>
                     </View>
+                    <TouchableOpacity
+                        activeOpacity={0.5}
+                        onPress={() => deleteYear(year)}>
+                        <AntDesign name="delete" size={50} color={'black'}/>
+                    </TouchableOpacity>
                 </View>
             )}
         </View>
     );
-
-    const handleYearRender = () => {
-        // Viewing state of Academic Year.
-        if (!is_editing) {
-            return(
-                <View style={{paddingBottom: 10}}>
-                    <View style={styles.year}>
-                        <View style={{flexDirection: 'row'}}>
-                            <View style={{flexDirection: 'column'}}>
-                                {beg_year !== '' && end_year !== '' && (
-                                    <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Academic Year {beg_year}-{end_year}</Text>
-                                )}
-                                {beg_year === '' && end_year === '' && (
-                                    <Text style={{textAlignVertical: 'center', fontSize: 20, flex: 1}}>New Academic Year</Text>
-                                )}
-                                <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Year GPA: {calculateYearGPA(year)}</Text>
-                                <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Expected Year GPA: {calculateExpectedYearGPA(year)}</Text>
-                            </View>
-                            {/* Edit Button to change the years range */}
-                            <TouchableOpacity 
-                                style={{marginRight: 20}}
-                                activeOpacity={0.5} 
-                                onPress={() => {
-                                    // console.log('edit button: years:', years);
-                                    setIs_editing(true);
-                                }}>
-                                <AntDesign name="edit" size={50} color="black"/>
-                            </TouchableOpacity>
-                            {/* Expand Button to see semesters. */}
-                            <TouchableOpacity
-                                onPress={toggleExpand}>
-                                {!expanded && (<AntDesign name="downcircleo" size={50} color="black"/>)}
-                                {expanded && (<AntDesign name="upcircleo" size={50} color="black"/>)}
-                            </TouchableOpacity>
-                        </View>
-                        {/* If the academic year is expanded... */}
-                        {/* The button that adds semesters to an academic year. */}
-                        {expanded && (
-                            <View>
-                                <TouchableOpacity
-                                    style={{alignSelf: 'center'}}
-                                    onPress={() => {
-                                        // id: Int32
-                                        // year_id: Int32
-                                        // classes: ClassContent[]
-                                        // season: string
-                                        // year: Int32
-                                        let new_semester: SemesterContent = {
-                                            id: findNextID(semesters),
-                                            year_id: year.id,
-                                            classes: [],
-                                            season: '',
-                                            year: -1
-                                        };
-                                        const newSemesters = [
-                                            ...semesters,
-                                            new_semester
-                                        ]
-                                        // console.log(`ADD BUTTON: year.id: ${year.id}`);
-                                        // console.log(`ADD BUTTON: LOOP`);
-                                        // newSemesters.map((s) => {
-                                        //     console.log(`s.id: ${s.id}`);
-                                        // });
-                                        addSemesterToProfile(new_semester);
-                                        setSemesters(newSemesters);
-                                        updateSemestersInYear(year, newSemesters);
-                                    }}>
-                                    <AntDesign name="pluscircleo" size={50} color="black"/>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                        {/* If there's existing semesters, display them */}
-                        {expanded && semesters.length > 0 
-                            && (
-                                <View>
-                                    {semesters.map((semester) => {
-                                        const chgSemesters = (new_semester) => {
-                                            console.log(`chgSemesters(): new_semester.name: ${new_semester.name}`);
-                                            console.log(`chgSemesters(): year: ${year}`)
-                                            const new_semesters = semesters.map((s) => {
-                                                if(s.id !== new_semester.id) return s;
-                                                return new_semester;
-                                            });
-                                            setSemesters(new_semesters);
-                                            // console.log(`chgSemesters(): semesters[0].name: ${semesters[0].name}`);
-                                            updateSemestersInYear(year, new_semesters);
-                                        }
-                                        // console.log('MAP: semester:', semester);
-                                        return(
-                                            <SemesterView key={semester.id} semester={semester} updateSemesters={chgSemesters} navigation={navigation}/>
-                                        );
-                                    })}
-                                </View>
-                        )}
-                        {/* If there are no existing semesters, let the user know that there are none yet.*/}
-                        {expanded && semesters.length == 0 && (
-                            <Text style={{textAlign: 'center', fontSize: 20}}>No semesters yet!</Text>
-                        )}
-                    </View>
-                </View>
-            );
-        }
-        else if(is_editing){
-            // Editing state of Academic Year.
-            return(
-                <View style={{paddingBottom: 10}}>
-                    <View style={styles.year}>
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style={{textAlignVertical: 'center', fontSize: 17}}>Academic Year:</Text>
-                            {/*Beg Year Number */}
-                            <TextInput
-                                style={styles.inputText}
-                                value={beg_year}
-                                placeholder="Start"
-                                onChangeText={text => {
-                                    setBeg_year(text);
-                                }}
-                                keyboardType="numeric"
-                            />
-                            {/*End Year Number */}
-                            <TextInput
-                                style={styles.inputText}
-                                value={end_year}
-                                placeholder="End"
-                                onChangeText={text => {
-                                    setEnd_year(text);
-                                }}
-                                keyboardType="numeric"
-                            />
-                            {/* Done Button, which saves the changes to the state years array by editing only the year with the current id. */}
-                            <TouchableOpacity 
-                                onPress={() => {
-                                    updateYears(
-                                        {
-                                            ...year,
-                                            beg_year: beg_year,
-                                            end_year: end_year
-                                        }
-                                    );
-                                    setIs_editing(!is_editing);
-                                }}>
-                                <AntDesign name="checkcircleo" size={50} color={'green'}/>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            );
-        }
-    }
-
-    return(handleYearRender());
 }
 
 const YearsScreen = ({navigation, route}) => {
@@ -466,10 +320,14 @@ const YearsScreen = ({navigation, route}) => {
                             });
                             setYears(new_years);
                         }
+
+                        const deleteYearFromYears = (year) => {
+                            return setYears(years.splice(years.indexOf(year), 1));
+                        }
                 
                         return(
                             // Render current semester in a custom SemesterView component
-                            <YearView key={curr_year.item.id} year={curr_year.item} updateYears={chgYrsHandler} updateSemestersInYear={chgSemestersInYrHandler} navigation={navigation}/>
+                            <YearView key={curr_year.item.id} year={curr_year.item} updateYears={chgYrsHandler} updateSemestersInYear={chgSemestersInYrHandler} deleteYear={deleteYearFromYears} navigation={navigation}/>
                         );
                     }}
                 />
@@ -536,7 +394,8 @@ const styles = StyleSheet.create({
       borderRadius: 30,
       padding: 15,
     //   flexDirection: 'row',
-      gap: 10
+      gap: 20,
+      alignItems: 'center'
       // backgroundColor: 'purple',
       // width: '95%'
     },
