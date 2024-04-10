@@ -132,38 +132,36 @@ export function calculateExpectedClassAverage(sections) {
     valid_exp_section_averages.map((v) => {
         total += parseFloat(v);
     });
-    console.log(`calculateExpectedClassAverage(): valid_exp_section_averages: ${valid_exp_section_averages}`);
-    console.log(`calculateExpectedClassAverage(): total / valid_exp_section_averages.length: ${total / valid_exp_section_averages.length}`);
+    // console.log(`calculateExpectedClassAverage(): valid_exp_section_averages: ${valid_exp_section_averages}`);
+    // console.log(`calculateExpectedClassAverage(): total / valid_exp_section_averages.length: ${total / valid_exp_section_averages.length}`);
     return (total / valid_exp_section_averages.length);
 }
 
-export function calculateClassLetterGrade(curr_class) {
-    const class_average = calculateClassAverage(curr_class.sections) * 100;
-    // console.log(`calculateClassLetterGrade(): class_average: ${class_average}`);
+function determineLetterGrade(letter_grading, class_average) {
     let result = 'N/A';
-    curr_class.letter_grading.forEach((l) => {
-        // console.log(`THING: ${l.letter}: ${l.beg}-${l.end}`);
+    letter_grading.forEach((l) => {
         if(class_average === 100) result = 'A';
         if(class_average >= l.beg && class_average < l.end){
             result = l.letter;
         }
-    });
+    })
     return result;
 }
 
-export function calculateSemesterGPA(semester) {
-    let letter_grades = [];
-    // console.log(`calculateSemesterGPA(): semester: ${JSON.stringify(semester)}`);
-    if(semester.classes.length === 0) return 'N/A';
-    semester.classes.forEach((c) => {
-        letter_grades.push(calculateClassLetterGrade(c));
-    })
-    const valid_letter_grades = letter_grades.filter((l) => {
-        if(l !== 'N/A') return l;
-    });
-    if(valid_letter_grades.length === 0) return 'N/A';
+export function calculateClassLetterGrade(curr_class) {
+    const class_average = calculateClassAverage(curr_class.sections) * 100;
+    return determineLetterGrade(curr_class.letter_grading, class_average);
+}
+
+export function calculateExpectedClassLetterGrade(curr_class) {
+    if(calculateClassLetterGrade(curr_class) === 'N/A') return 'N/A';
+    const expected_class_average = calculateExpectedClassAverage(curr_class.sections) * 100;
+    return determineLetterGrade(curr_class.letter_grading, expected_class_average);
+}
+
+function determineGPAWithLetterGrades(letter_grades) {
     let total = 0.0;
-    valid_letter_grades.forEach((l) => {
+    letter_grades.forEach((l) => {
         switch(l){
             case 'A':
                 total += 4.0;
@@ -200,7 +198,75 @@ export function calculateSemesterGPA(semester) {
                 break;
         }
     });
-    return (total / valid_letter_grades.length).toFixed(2);
+    return (total / letter_grades.length).toFixed(2);
+}
+
+export function calculateSemesterGPA(semester) {
+    let letter_grades = [];
+    // console.log(`calculateSemesterGPA(): semester: ${JSON.stringify(semester)}`);
+    if(semester.classes.length === 0) return 'N/A';
+    semester.classes.forEach((c) => {
+        letter_grades.push(calculateClassLetterGrade(c));
+    })
+    const valid_letter_grades = letter_grades.filter((l) => {
+        if(l !== 'N/A') return l;
+    });
+    if(valid_letter_grades.length === 0) return 'N/A';
+    return determineGPAWithLetterGrades(valid_letter_grades);
+    // let total = 0.0;
+    // valid_letter_grades.forEach((l) => {
+    //     switch(l){
+    //         case 'A':
+    //             total += 4.0;
+    //             break;
+    //         case 'A-':
+    //             total += 3.7;
+    //             break;
+    //         case 'B+':
+    //             total += 3.3;
+    //             break;
+    //         case 'B':
+    //             total += 3.0;
+    //             break;
+    //         case 'B-':
+    //             total += 2.7;
+    //             break;
+    //         case 'C+':
+    //             total += 2.3;
+    //             break;
+    //         case 'C':
+    //             total += 2.0;
+    //             break;
+    //         case 'C-':
+    //             total += 1.7;
+    //             break;
+    //         case 'D+':
+    //             total += 1.3;
+    //             break;
+    //         case 'D':
+    //             total += 1.0;
+    //             break;
+    //         case 'F':
+    //             total += 0.0;
+    //             break;
+    //     }
+    // });
+    // return (total / valid_letter_grades.length).toFixed(2);
+}
+
+export function calculateExpectedSemesterGPA(semester) {
+    if(calculateSemesterGPA(semester) === 'N/A') return 'N/A';
+    let expected_letter_grades = [];
+    semester.classes.forEach((c) => {
+        expected_letter_grades.push(calculateExpectedClassLetterGrade(c));
+    })
+    const valid_expected_letter_grades = expected_letter_grades.filter((l) => {
+        if(l !== 'N/A') return l;
+    });
+    return determineGPAWithLetterGrades(valid_expected_letter_grades);
+    // console.log(`calculateExpectedSemesterGPA(): valid_expected_letter_grades: ${valid_expected_letter_grades}`);
+    // return 'hehe';
+    // return null;
 }
 
 export function calculateYearGPA(year) {

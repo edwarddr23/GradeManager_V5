@@ -6,7 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
-import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA } from '../shared/calculation_functions'
+import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA } from '../shared/calculation_functions'
 import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
 
 const SemesterView = ({ navigation, semester, updateSemesters }) => {
@@ -28,12 +28,13 @@ const SemesterView = ({ navigation, semester, updateSemesters }) => {
                         <View style={{flexDirection: 'row'}}>
                             <View style={{flexDirection: 'column'}}>
                                 {is_editing == false && season === "" && (
-                                    <Text style={{fontWeight: 'bold', fontSize: 25, alignSelf: 'center'}}>New Semester</Text>
+                                    <Text style={{fontWeight: 'bold', fontSize: 25}}>New Semester</Text>
                                 )}
                                 {is_editing == false && season !== "" && (
                                     <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}</Text>
                                 )}
                                 <Text style={{fontSize: 20}}>Semester GPA: {calculateSemesterGPA(semester)}</Text>
+                                <Text style={{fontSize: 20}}>Expected Semester GPA: {calculateExpectedSemesterGPA(semester)}</Text>
                             </View>
                             {/* Edit button that activates editing state for semester. */}
                             <TouchableOpacity

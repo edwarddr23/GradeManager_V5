@@ -4,7 +4,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, ClassContent, SectionContent, LetterGradeContent } from '../shared/profile_context';
 
 import { findNextID } from '../shared/key_functions';
-import { calculateSectionAverage, calculateClassAverage, calculateClassLetterGrade, calculateExpectedSectionAverage, calculateExpectedClassAverage } from '../shared/calculation_functions';
+import { calculateSectionAverage, calculateClassAverage, calculateClassLetterGrade, calculateExpectedSectionAverage, calculateExpectedClassAverage, calculateExpectedClassLetterGrade } from '../shared/calculation_functions';
 
 import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
@@ -181,12 +181,20 @@ const ClassView = ({curr_class, navigation}) => {
                             {sections.length > 0 && calculateClassAverage(sections) !== 'N/A' && (
                                 <Text style={{fontSize: 20}}>Class Average%: {(calculateClassAverage(sections) * 100).toFixed(2)}%</Text>
                             )}
-                            {sections.length > 0 && calculateExpectedClassAverage(sections) === 'N/A' && (
-                                <Text style={{fontSize: 20}}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
-                            )}
-                            {sections.length > 0 && calculateExpectedClassAverage(sections) !== 'N/A' && (
-                                <Text style={{fontSize: 20}}>Expected Average%: {(calculateExpectedClassAverage(sections) * 100).toFixed(2)}%</Text>
-                            )}
+                            <View>
+                                {calculateExpectedClassLetterGrade(curr_class) === 'N/A' && (
+                                    <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
+                                )}
+                                {calculateExpectedClassLetterGrade(curr_class) !== 'N/A' && (
+                                    <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
+                                )}
+                                {sections.length > 0 && calculateExpectedClassAverage(sections) === 'N/A' && (
+                                    <Text style={{fontSize: 20}}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
+                                )}
+                                {sections.length > 0 && calculateExpectedClassAverage(sections) !== 'N/A' && (
+                                    <Text style={{fontSize: 20}}>Expected Average%: {(calculateExpectedClassAverage(sections) * 100).toFixed(2)}%</Text>
+                                )}
+                            </View>
                             {/* Letter grading pane. */}
                             <View style={{backgroundColor: '#BEBEBE', borderRadius: 10, padding: 20}}>
                                 <TouchableOpacity style={{flexDirection: 'row', flex: 1}}
