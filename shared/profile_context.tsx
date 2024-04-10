@@ -111,6 +111,10 @@ export function ProfileProvider({children}) {
         // setYears([])
     }
 
+    const updateYearsInProfile = (new_years) => {
+        setYears(new_years);
+    }
+
     const addSemesterToProfile = (new_semester) => {
         years.find((y) => y.id === new_semester.year_id).semesters.push(new_semester);
     }
@@ -194,6 +198,7 @@ export function ProfileProvider({children}) {
         <ProfileContext.Provider value={{
                 profile_context,
                 addYearToProfile,
+                updateYearsInProfile,
                 addSemesterToProfile,
                 updateSemesterInProfile,
                 addClassToProfile,

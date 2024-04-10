@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, SectionList } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, SectionList, Keyboard } from 'react-native'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Feather from 'react-native-vector-icons/Feather'
 import Footer from '../shared/custom_footer'
@@ -9,7 +9,7 @@ import InputWithLabel from '../shared/custom_text_Inputs'
 import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA, calculateExpectedYearGPA, calculateExpectedCumulativeGPA } from '../shared/calculation_functions'
 import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
 
-const SemesterView = ({ navigation, semester, updateSemesters }) => {
+const SemesterView = ({ navigation, semester, updateSemesters, deleteSemester }) => {
     const { profile_context, updateSemesterInProfile } = useProfileContext();
     const[is_editing, setIs_editing] = useState(false);
     const[season, setSeason] = useState(semester.season);
@@ -85,7 +85,8 @@ const SemesterView = ({ navigation, semester, updateSemesters }) => {
                         </View>
                         {/* Button that deletes a semester from a year. */}
                         <TouchableOpacity
-                            activeOpacity={0.5}>
+                            activeOpacity={0.5}
+                            onPress={() => deleteSemester(semester)}>
                             <AntDesign name="delete" size={50} color={'black'}/>
                         </TouchableOpacity>
                     </View>
@@ -196,9 +197,15 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                                         // console.log(`chgSemesters(): semesters[0].name: ${semesters[0].name}`);
                                         updateSemestersInYear(year, new_semesters);
                                     }
+
+                                    const deleteSemesterInYear = (semester) => {
+                                        const new_semesters = semesters.filter((s) => s.id !== semester.id);
+                                        setSemesters(new_semesters);
+                                        updateSemestersInYear(year, new_semesters);
+                                    }
                                     // console.log('MAP: semester:', semester);
                                     return(
-                                        <SemesterView key={semester.id} semester={semester} updateSemesters={chgSemesters} navigation={navigation}/>
+                                        <SemesterView key={semester.id} semester={semester} updateSemesters={chgSemesters} deleteSemester={deleteSemesterInYear} navigation={navigation}/>
                                     );
                                 })}
                             </View>
@@ -261,13 +268,22 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
 }
 
 const YearsScreen = ({navigation, route}) => {
-    const { profile_context, addYearToProfile } = useProfileContext();
+    const { profile_context, updateYearsInProfile, addYearToProfile } = useProfileContext();
     const fromClassScreen = route.params.fromClassScreen;
     
     const [years, setYears] = useState(profile_context.years);
 
+    const[keyboard_showing, setKeyboard_showing] = useState(false);
+
     useEffect(() => {
         setYears(profile_context.years);
+        // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboard_showing(true);
+        })
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboard_showing(false)
+        })
     }, [years, fromClassScreen]);
 
     return(
@@ -308,7 +324,7 @@ const YearsScreen = ({navigation, route}) => {
                                 return new_year;
                             })
                             setYears(new_years)
-                            profile_context.setYears(new_years);
+                            updateYearsInProfile(new_years);
                         }
                 
                         const chgSemestersInYrHandler = (new_year, new_semesters) => {
@@ -323,10 +339,12 @@ const YearsScreen = ({navigation, route}) => {
                                 }
                             });
                             setYears(new_years);
+                            updateYearsInProfile(new_years);
                         }
 
                         const deleteYearFromYears = (year) => {
-                            return setYears(years.splice(years.indexOf(year), 1));
+                            setYears(years.filter((y) => y.id !== year.id));
+                            updateYearsInProfile(years.filter((y) => y.id !== year.id));
                         }
                 
                         return(
@@ -336,12 +354,16 @@ const YearsScreen = ({navigation, route}) => {
                     }}
                 />
             </View>
-            <View style={{backgroundColor: '#c6e3ba', padding: 20, maxWidth: 'auto', marginVertical: 10, borderRadius: 30}}>
-                <Text style={{fontSize: 30, textAlign: 'center'}}>Cumulative GPA: {calculateCumulativeGPA(years)}</Text>
-                <Text style={{fontSize: 25, textAlign: 'center'}}>Expected Cumulative GPA: {calculateExpectedCumulativeGPA(years)}</Text>
-            </View>
-            {/* FOOTER */}
-            <Footer/>
+            {!keyboard_showing && (
+                <View style={{width: '100%'}}>
+                    <View style={{backgroundColor: '#c6e3ba', padding: 20, marginVertical: 10, borderRadius: 30}}>
+                        <Text style={{fontSize: 30, textAlign: 'center'}}>Cumulative GPA: {calculateCumulativeGPA(years)}</Text>
+                        <Text style={{fontSize: 25, textAlign: 'center'}}>Expected Cumulative GPA: {calculateExpectedCumulativeGPA(years)}</Text>
+                    </View>
+                    {/* FOOTER */}
+                    <Footer/>
+                </View>
+            )}
         </View>
     );
 }

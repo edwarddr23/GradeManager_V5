@@ -30,10 +30,10 @@ function PrintSemesters(year) {
                 return(
                     <View key={s.id}>
                         {(s.season === '') && (
-                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>New Semester</Text>
+                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>{'\t'}New Semester</Text>
                         )}
                         {s.season !== '' && (
-                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>{s.season} {s.year}</Text>
+                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>{'\t'}{s.season} {s.year}</Text>
                         )}
                         {PrintClasses(s)}
                     </View>
@@ -59,7 +59,7 @@ function PrintClasses(semester) {
                         {c.name === '' && (
                             <Text key={child_key++}>{'\t'}New Class</Text>
                         )}
-                        {PrintLetterGrading(c)}
+                        {/* {PrintLetterGrading(c)} */}
                         {PrintSections(c)}
                     </View>
                 );
