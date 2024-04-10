@@ -277,13 +277,24 @@ export function calculateCumulativeGPA(years) {
         if(y !== 'N/A') return y;
     });
     if(valid_year_gpas.length === 0) return 'N/A';
-    let total = 0;
-    valid_year_gpas.forEach((v) => {
-        total += v;
-    });
-    return (total / valid_year_gpas.length).toFixed(2);
+    return floatAverage(valid_year_gpas);
+    // return 'hehe';
+    // let total = 0;
+    // valid_year_gpas.forEach((v) => {
+    //     total += v;
+    // });
+    // return (total / valid_year_gpas.length).toFixed(2);
 }
 
 export function calculateExpectedCumulativeGPA(years) {
-    return 'hehe';
+    if(calculateCumulativeGPA(years) === 'N/A') return 'N/A';
+    let expected_year_gpas = [];
+    years.forEach((y) => {
+        expected_year_gpas.push(calculateExpectedYearGPA(y));
+    })
+    const valid_expected_year_gpas = expected_year_gpas.filter((e) => {
+        if(e !== 'N/A') return e;
+    });
+    return floatAverage(valid_expected_year_gpas);
+    // return 'hehe';
 }

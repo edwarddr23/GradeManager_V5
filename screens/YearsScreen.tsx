@@ -6,7 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
-import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA, calculateExpectedYearGPA } from '../shared/calculation_functions'
+import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA, calculateExpectedYearGPA, calculateExpectedCumulativeGPA } from '../shared/calculation_functions'
 import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
 
 const SemesterView = ({ navigation, semester, updateSemesters }) => {
@@ -131,6 +131,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                                     <Text style={{textAlignVertical: 'center', fontSize: 20, flex: 1}}>New Academic Year</Text>
                                 )}
                                 <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Year GPA: {calculateYearGPA(year)}</Text>
+                                <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Expected Year GPA: {calculateExpectedYearGPA(year)}</Text>
                             </View>
                             {/* Edit Button to change the years range */}
                             <TouchableOpacity 
@@ -153,7 +154,6 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                         {/* The button that adds semesters to an academic year. */}
                         {expanded && (
                             <View>
-                                <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Expected Year GPA: {calculateExpectedYearGPA(year)}</Text>
                                 <TouchableOpacity
                                     style={{alignSelf: 'center'}}
                                     onPress={() => {
@@ -376,7 +376,8 @@ const YearsScreen = ({navigation, route}) => {
                 />
             </View>
             <View style={{backgroundColor: '#c6e3ba', padding: 20, maxWidth: 'auto', marginVertical: 10, borderRadius: 30}}>
-                <Text style={{fontSize: 30}}>Cumulative GPA: {calculateCumulativeGPA(years)}</Text>
+                <Text style={{fontSize: 30, textAlign: 'center'}}>Cumulative GPA: {calculateCumulativeGPA(years)}</Text>
+                <Text style={{fontSize: 25, textAlign: 'center'}}>Expected Cumulative GPA: {calculateExpectedCumulativeGPA(years)}</Text>
             </View>
             {/* FOOTER */}
             <Footer/>
