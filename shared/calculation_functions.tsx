@@ -213,45 +213,6 @@ export function calculateSemesterGPA(semester) {
     });
     if(valid_letter_grades.length === 0) return 'N/A';
     return determineGPAWithLetterGrades(valid_letter_grades);
-    // let total = 0.0;
-    // valid_letter_grades.forEach((l) => {
-    //     switch(l){
-    //         case 'A':
-    //             total += 4.0;
-    //             break;
-    //         case 'A-':
-    //             total += 3.7;
-    //             break;
-    //         case 'B+':
-    //             total += 3.3;
-    //             break;
-    //         case 'B':
-    //             total += 3.0;
-    //             break;
-    //         case 'B-':
-    //             total += 2.7;
-    //             break;
-    //         case 'C+':
-    //             total += 2.3;
-    //             break;
-    //         case 'C':
-    //             total += 2.0;
-    //             break;
-    //         case 'C-':
-    //             total += 1.7;
-    //             break;
-    //         case 'D+':
-    //             total += 1.3;
-    //             break;
-    //         case 'D':
-    //             total += 1.0;
-    //             break;
-    //         case 'F':
-    //             total += 0.0;
-    //             break;
-    //     }
-    // });
-    // return (total / valid_letter_grades.length).toFixed(2);
 }
 
 export function calculateExpectedSemesterGPA(semester) {
@@ -264,9 +225,14 @@ export function calculateExpectedSemesterGPA(semester) {
         if(l !== 'N/A') return l;
     });
     return determineGPAWithLetterGrades(valid_expected_letter_grades);
-    // console.log(`calculateExpectedSemesterGPA(): valid_expected_letter_grades: ${valid_expected_letter_grades}`);
-    // return 'hehe';
-    // return null;
+}
+
+function floatAverage(arr) {
+    let total = 0;
+    arr.forEach((a) => {
+        total += parseFloat(a);
+    });
+    return (total / arr.length).toFixed(2);
 }
 
 export function calculateYearGPA(year) {
@@ -279,11 +245,25 @@ export function calculateYearGPA(year) {
         if(l !== 'N/A') return l;
     });
     if(valid_semester_gpas.length === 0) return 'N/A';
-    let total = 0;
-    valid_semester_gpas.forEach((v) => {
-        total += parseFloat(v);
+    return floatAverage(valid_semester_gpas);
+    // let total = 0;
+    // valid_semester_gpas.forEach((v) => {
+    //     total += parseFloat(v);
+    // });
+    // return (total / valid_semester_gpas.length).toFixed(2);
+}
+
+export function calculateExpectedYearGPA(year) {
+    if(calculateYearGPA(year) === 'N/A') return 'N/A';
+    let expected_semester_gpas = [];
+    year.semesters.forEach((s) => {
+        expected_semester_gpas.push(calculateExpectedSemesterGPA(s));
+    })
+    const valid_expected_semester_gpas = expected_semester_gpas.filter((e) => {
+        if(e !== 'N/A') return e;
     });
-    return (total / valid_semester_gpas.length).toFixed(2);
+    return floatAverage(valid_expected_semester_gpas);
+    // return 'hehe';
 }
 
 export function calculateCumulativeGPA(years) {
@@ -302,4 +282,8 @@ export function calculateCumulativeGPA(years) {
         total += v;
     });
     return (total / valid_year_gpas.length).toFixed(2);
+}
+
+export function calculateExpectedCumulativeGPA(years) {
+    return 'hehe';
 }

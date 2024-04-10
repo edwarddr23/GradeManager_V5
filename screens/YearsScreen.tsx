@@ -6,7 +6,7 @@ import Footer from '../shared/custom_footer'
 
 import { initializeArrKeys, findNextID } from '../shared/key_functions'
 import InputWithLabel from '../shared/custom_text_Inputs'
-import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA } from '../shared/calculation_functions'
+import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA, calculateExpectedYearGPA } from '../shared/calculation_functions'
 import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
 
 const SemesterView = ({ navigation, semester, updateSemesters }) => {
@@ -153,6 +153,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, navigation}) => {
                         {/* The button that adds semesters to an academic year. */}
                         {expanded && (
                             <View>
+                                <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Expected Year GPA: {calculateExpectedYearGPA(year)}</Text>
                                 <TouchableOpacity
                                     style={{alignSelf: 'center'}}
                                     onPress={() => {
