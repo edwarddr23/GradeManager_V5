@@ -30,10 +30,10 @@ function PrintSemesters(year) {
                 return(
                     <View key={s.id}>
                         {(s.season === '') && (
-                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>{'\t'}New Semester</Text>
+                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>New Semester</Text>
                         )}
                         {s.season !== '' && (
-                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>{'\t'}{s.season} {s.year}</Text>
+                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>{s.season} {s.year}</Text>
                         )}
                         {PrintClasses(s)}
                     </View>
@@ -92,20 +92,20 @@ function PrintSections(curr_class) {
         return(
             <View>
                 <Text>{'\t\t'}Sections:</Text>
-                <Text>{'\t\t'}No sections yet!</Text>
+                <Text>{'\t\t\t'}No sections yet!</Text>
             </View>
         );
     }
 
     return(
         <View>
-            <Text>{'\t'}Sections:</Text>
+            <Text>{'\t\t'}Sections:</Text>
             {curr_class.sections.map((s) => {
                 child_key++;
                 if(s.name != ''){
                     return(
                         <View key={child_key}>
-                            <Text>{'\t\t' + s.name + ': ' + s.weight * 100 + '%'}</Text>
+                            <Text>{'\t\t\t' + s.name + ': ' + s.weight * 100 + '%'}</Text>
                             { PrintAssignments(s) }
                         </View>
                     );
@@ -124,13 +124,13 @@ function PrintAssignments(section) {
     let child_key = 0;
     if(section.assignments.length === 0){
         return(
-            <Text>{'\t\t\t'}No assignments yet!</Text>
+            <Text>{'\t\t'}No assignments yet!</Text>
         );
     }
     else{
         return(
             <View>
-                {/* <Text>Listing assignments...</Text> */}
+                <Text>{'\t\t'}Assignments:</Text>
                 {section.assignments.map((a) => {
                     child_key++;
                     if(a.name === ''){

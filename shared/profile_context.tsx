@@ -134,9 +134,13 @@ export function ProfileProvider({children}) {
         curr_class.name = new_class.name;
         curr_class.sections = new_class.sections;
     }
+    
+    const updateSemesterClassesInProfile = (semester, new_classes) => {
+        let curr_semester = years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id);
+        curr_semester.classes = new_classes;
+    }
 
     const updateLetterGradeInProfile = (new_letter_grade) => {
-        // console.log(`updateLetterGradeInProfile(): This ran.`);
         let curr_letter_grade = years.find((y) => y.id === new_letter_grade.year_id).semesters.find((s) => s.id === new_letter_grade.semester_id).classes.find((c) => c.id === new_letter_grade.class_id)?.letter_grading.find((l) => l.id === new_letter_grade.id);
         curr_letter_grade.beg = new_letter_grade.beg;
         curr_letter_grade.end = new_letter_grade.end;
@@ -203,6 +207,7 @@ export function ProfileProvider({children}) {
                 updateSemesterInProfile,
                 addClassToProfile,
                 updateClassInProfile,
+                updateSemesterClassesInProfile,
                 updateLetterGradeInProfile,
                 addSectionToProfile,
                 updateSectionInProfile,

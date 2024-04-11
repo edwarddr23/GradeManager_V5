@@ -119,7 +119,7 @@ const SectionView = ({section, navigation}) => {
     );
 }
 
-const ClassView = ({curr_class, navigation}) => {
+const ClassView = ({curr_class, deleteClass, navigation}) => {
     // console.log(`ClassView: curr_class: ${curr_class.id}`);
     const { updateClassInProfile, addSectionToProfile } = useProfileContext();
     // id: findNextID(classes),
@@ -133,123 +133,120 @@ const ClassView = ({curr_class, navigation}) => {
     const[is_editing, setIs_editing] = useState(false);
     const[is_expanded, setIsExpanded] = useState(false);
     const[grading_expanded, setGrading_expanded] = useState(false);
-    const[sections_expanded, setSections_expanded] = useState(false);
 
     // Viewing state for a class.
     if(!is_editing){
         return(
             <View style={styles.classStyle}>
-                <View>
-                    {/* Top section of SectionView for dropdown functionality and showing class name and class letter grade. */}
-                    <TouchableOpacity 
-                        style={{flexDirection: 'row'}}
+                {/* Top section of SectionView for dropdown functionality and showing class name and class letter grade. */}
+                <TouchableOpacity 
+                    style={{flexDirection: 'row'}}
+                    activeOpacity={0.5}
+                    onPress={() => setIsExpanded(!is_expanded)}>
+                    {/* Display class name and letter grade, if possible. */}
+                    {name !== '' && (
+                        <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>{name}: {calculateClassLetterGrade(curr_class)}</Text>
+                    )}
+                    {name === '' && calculateClassLetterGrade(curr_class) === 'N/A' && (
+                        <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class</Text>
+                    )}
+                    {name === '' && calculateClassLetterGrade(curr_class) !== 'N/A' && (
+                        <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class: {calculateClassLetterGrade(curr_class)}</Text>
+                    )}
+                    {/* Edit button for class. */}
+                    <TouchableOpacity
+                        style={{marginLeft: 'auto'}}
                         activeOpacity={0.5}
-                        onPress={() => setIsExpanded(!is_expanded)}>
-                        {/* Display class name and letter grade, if possible. */}
-                        {name !== '' && (
-                            <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>{name}: {calculateClassLetterGrade(curr_class)}</Text>
-                        )}
-                        {name === '' && calculateClassLetterGrade(curr_class) === 'N/A' && (
-                            <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class</Text>
-                        )}
-                        {name === '' && calculateClassLetterGrade(curr_class) !== 'N/A' && (
-                            <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class: {calculateClassLetterGrade(curr_class)}</Text>
-                        )}
-                        {/* Edit button for class. */}
-                        <TouchableOpacity
-                            style={{marginLeft: 'auto'}}
-                            activeOpacity={0.5}
-                            onPress={() => {
-                                setIs_editing(true);
-                            }}>
-                            <AntDesign name="edit" size={50} color='black'/>
-                        </TouchableOpacity>
-                        {!is_expanded && (
-                            <AntDesign style={{marginLeft: 10}} name="downcircleo" size={50} color='black'/>
-                        )}
-                        {is_expanded && (
-                            <AntDesign style={{marginLeft: 10}} name="upcircleo" size={50} color='black'/>
-                        )}
+                        onPress={() => {
+                            setIs_editing(true);
+                        }}>
+                        <AntDesign name="edit" size={50} color='black'/>
                     </TouchableOpacity>
-                    {/* If the ClassView is expanded, display the class info: class grade, sections, section weights, section grades, assignments, and assignment grades.*/}
+                    {!is_expanded && (
+                        <AntDesign style={{marginLeft: 10}} name="downcircleo" size={50} color='black'/>
+                    )}
                     {is_expanded && (
-                        <View style={{marginVertical: 10, flex: 1, flexDirection: 'column', gap: 20}}>
-                            {/* Print out class average if one can be calculated. */}
-                            {sections.length > 0 && calculateClassAverage(sections) === 'N/A' && (
-                                <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
+                        <AntDesign style={{marginLeft: 10}} name="upcircleo" size={50} color='black'/>
+                    )}
+                </TouchableOpacity>
+                {/* If the ClassView is expanded, display the class info: class grade, sections, section weights, section grades, assignments, and assignment grades.*/}
+                {is_expanded && (
+                    <View style={{marginVertical: 10, flex: 1, flexDirection: 'column', gap: 20}}>
+                        {/* Print out class average if one can be calculated. */}
+                        {sections.length > 0 && calculateClassAverage(sections) === 'N/A' && (
+                            <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
+                        )}
+                        {sections.length > 0 && calculateClassAverage(sections) !== 'N/A' && (
+                            <Text style={{fontSize: 20}}>Class Average%: {(calculateClassAverage(sections) * 100).toFixed(2)}%</Text>
+                        )}
+                        <View>
+                            {calculateExpectedClassLetterGrade(curr_class) === 'N/A' && (
+                                <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
                             )}
-                            {sections.length > 0 && calculateClassAverage(sections) !== 'N/A' && (
-                                <Text style={{fontSize: 20}}>Class Average%: {(calculateClassAverage(sections) * 100).toFixed(2)}%</Text>
+                            {calculateExpectedClassLetterGrade(curr_class) !== 'N/A' && (
+                                <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
                             )}
-                            <View>
-                                {calculateExpectedClassLetterGrade(curr_class) === 'N/A' && (
-                                    <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
-                                )}
-                                {calculateExpectedClassLetterGrade(curr_class) !== 'N/A' && (
-                                    <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
-                                )}
-                                {sections.length > 0 && calculateExpectedClassAverage(sections) === 'N/A' && (
-                                    <Text style={{fontSize: 20}}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
-                                )}
-                                {sections.length > 0 && calculateExpectedClassAverage(sections) !== 'N/A' && (
-                                    <Text style={{fontSize: 20}}>Expected Average%: {(calculateExpectedClassAverage(sections) * 100).toFixed(2)}%</Text>
-                                )}
-                            </View>
-                            {/* Letter grading pane. */}
-                            <View style={{backgroundColor: '#BEBEBE', borderRadius: 10, padding: 20}}>
-                                <TouchableOpacity style={{flexDirection: 'row', flex: 1}}
+                            {sections.length > 0 && calculateExpectedClassAverage(sections) === 'N/A' && (
+                                <Text style={{fontSize: 20}}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
+                            )}
+                            {sections.length > 0 && calculateExpectedClassAverage(sections) !== 'N/A' && (
+                                <Text style={{fontSize: 20}}>Expected Average%: {(calculateExpectedClassAverage(sections) * 100).toFixed(2)}%</Text>
+                            )}
+                        </View>
+                        {/* Letter grading pane. */}
+                        <View style={{backgroundColor: '#BEBEBE', borderRadius: 10, padding: 20}}>
+                            <TouchableOpacity style={{flexDirection: 'row'}}
+                                onPress={() => {
+                                    setGrading_expanded(!grading_expanded);
+                                }}
+                                activeOpacity={0.5}>
+                                <Text style={{fontSize: 28, textAlignVertical: 'center'}}>Letter Grading:</Text>
+                                {/* Button to configure letter grades and their thresholds.*/}
+                                <TouchableOpacity
+                                    style={{marginRight: 15}}
                                     onPress={() => {
-                                        setGrading_expanded(!grading_expanded);
-                                    }}
-                                    activeOpacity={0.5}>
-                                    <Text style={{fontSize: 28, textAlignVertical: 'center', flex: 1}}>Letter Grading:</Text>
-                                    {/* Button to configure letter grades and their thresholds.*/}
-                                    <TouchableOpacity
-                                        style={{marginRight: 15}}
-                                        onPress={() => {
-                                            navigation.navigate('Configure Letter Grading', {curr_class: curr_class});
-                                        }}>
-                                        <AntDesign name="edit" size={45} color='black'/>
-                                    </TouchableOpacity>
-                                    {!grading_expanded && (
-                                        <AntDesign style={{marginLeft: 'auto'}} name="downcircleo" size={45} color="black"/>
-                                    )}
-                                    {grading_expanded && (
-                                        <AntDesign style={{marginLeft: 'auto'}} name="upcircleo" size={45} color="black"/>
-                                    )}
+                                        navigation.navigate('Configure Letter Grading', {curr_class: curr_class});
+                                    }}>
+                                    <AntDesign name="edit" size={45} color='black'/>
                                 </TouchableOpacity>
-                                {grading_expanded && (
-                                    <View style={{flexDirection: 'column', flex: 1}}>
-                                        <Text style={{fontSize: 15}}>(Last number is non-inclusive.)</Text>
-                                        {curr_class.letter_grading.map((l) => {
-                                            return(
-                                                <Text style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
-                                            );
-                                        })}
-                                    </View>
+                                {!grading_expanded && (
+                                    <AntDesign style={{marginLeft: 'auto'}} name="downcircleo" size={45} color="black"/>
                                 )}
-                            </View>
-                            {/* Button to add sections and their weights */}
-                            <View style={{height: 60}}>
-                                <FlatButton
-                                    text='Configure Sections'
-                                    onPress={() => {
-                                        navigation.navigate('Configure Sections', {curr_class: curr_class});
-                                    }}
-                                />
-                            </View>
-                            {sections.length > 0 && (
-                                <View style={{flex: 1}}>
-                                    {sections.map((s) => {
+                                {grading_expanded && (
+                                    <AntDesign style={{marginLeft: 'auto'}} name="upcircleo" size={45} color="black"/>
+                                )}
+                            </TouchableOpacity>
+                            {grading_expanded && (
+                                <View style={{flexDirection: 'column'}}>
+                                    <Text style={{fontSize: 15}}>(Last number is non-inclusive.)</Text>
+                                    {curr_class.letter_grading.map((l) => {
                                         return(
-                                            <SectionView key={s.id} section={s} navigation={navigation}/>
+                                            <Text style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
                                         );
                                     })}
                                 </View>
                             )}
                         </View>
-                    )}
-                </View>
+                        {/* Button to add sections and their weights */}
+                        <View style={{height: 60}}>
+                            <FlatButton
+                                text='Configure Sections'
+                                onPress={() => {
+                                    navigation.navigate('Configure Sections', {curr_class: curr_class});
+                                }}
+                            />
+                        </View>
+                        {sections.length > 0 && (
+                            <View style={{flex: 1}}>
+                                {sections.map((s) => {
+                                    return(
+                                        <SectionView key={s.id} section={s} navigation={navigation}/>
+                                    );
+                                })}
+                            </View>
+                        )}
+                    </View>
+                )}
             </View>
         );
     }
@@ -281,13 +278,19 @@ const ClassView = ({curr_class, navigation}) => {
                         <AntDesign name="checkcircleo" size={50} color='green'/>
                     </TouchableOpacity>
                 </View>
+                {/* Button that deletes a year from a semester. */}
+                <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => deleteClass(curr_class)}>
+                    <AntDesign name="delete" size={50} color={'black'}/>
+                </TouchableOpacity>
             </View>
         )
     }
 }
 
 const SemesterScreen = ({navigation, route}) => {
-    const { profile_context, addClassToProfile } = useProfileContext();
+    const { profile_context, addClassToProfile, updateSemesterClassesInProfile } = useProfileContext();
     const { semester } = route.params;
 
     const[classes, setClasses] = useState(semester.classes);
@@ -466,10 +469,10 @@ const SemesterScreen = ({navigation, route}) => {
                     ]
                     setClasses(newClasses);
                     // console.log(`ADD BUTTON: year.id: ${year.id}`);
-                    console.log(`ADD BUTTON: LOOP`);
-                    newClasses.map((c) => {
-                        console.log(`c.id: ${c.id}`);
-                    });
+                    // console.log(`ADD BUTTON: LOOP`);
+                    // newClasses.map((c) => {
+                    //     console.log(`c.id: ${c.id}`);
+                    // });
                     addClassToProfile(new_class);
                 }}>
                 <AntDesign name="pluscircleo" size={70} color={'black'}/>
@@ -484,8 +487,14 @@ const SemesterScreen = ({navigation, route}) => {
                     keyExtractor={(item, index) => item.id}
                     removeClippedSubviews={false}
                     renderItem={(curr_class) => {
+                        const deleteClassInSemester = (class_to_remove) => {
+                            const new_classes = classes.filter((c) => c.id !== class_to_remove.id);
+                            setClasses(new_classes);
+                            updateSemesterClassesInProfile(semester, new_classes);
+                            // updateSemestersInYear(year, new_semesters);
+                        }
                         return(
-                            <ClassView curr_class={curr_class.item} navigation={navigation}/>
+                            <ClassView curr_class={curr_class.item} deleteClass={deleteClassInSemester} navigation={navigation}/>
                         );
                     }}
                 />
@@ -506,7 +515,9 @@ const styles = StyleSheet.create({
         borderWidth: 4,
         borderRadius: 30,
         padding: 10,
-        marginBottom: 10
+        marginBottom: 10,
+        alignItems: 'center',
+        gap: 15
         //   flexDirection: 'row',
         // gap: 10
         // backgroundColor: 'purple',
