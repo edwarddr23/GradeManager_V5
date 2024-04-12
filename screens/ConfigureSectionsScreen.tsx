@@ -8,7 +8,7 @@ import { findNextID } from '../shared/key_functions';
 import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import Footer from '../shared/custom_footer';
 
-const SectionView = ({section}) => {
+const SectionView = ({section, deleteSection}) => {
     const { updateSectionInProfile } = useProfileContext();
     const[is_editing, setIs_editing] = useState(false);
     // console.log(`SectionView(): section: ${section.name}`);
@@ -35,66 +35,74 @@ const SectionView = ({section}) => {
             )}
             {/* Editing state of section. */}
             {is_editing && (
-                <View style={{flexDirection: 'row'}}>
-                    <TextInput
-                        style={styles.inputText}
-                        value={name}
-                        placeholder="Name"
-                        onChangeText={text => {
-                            setName(text);
-                        }}
-                    />
-                    <TextInput
-                        style={styles.inputText}
-                        value={weight}
-                        placeholder="Weight"
-                        onChangeText={text => {
-                            setWeight(parseInt(text));
-                        }}
-                        keyboardType='numeric'
-                    />
-                    {/* Done button to change the name of a section. */}
-                    <TouchableOpacity
-                        style={{marginLeft: 'auto', alignSelf: 'center'}}
-                        onPress={() => {
-                            const inputIsValid = () => {
-                                if(name === ''){
+                <View style={{alignItems: 'center', gap: 15}}>
+                    <View style={{flexDirection: 'row'}}>
+                        <TextInput
+                            style={styles.inputText}
+                            value={name}
+                            placeholder="Name"
+                            onChangeText={text => {
+                                setName(text);
+                            }}
+                        />
+                        <TextInput
+                            style={styles.inputText}
+                            value={weight}
+                            placeholder="Weight"
+                            onChangeText={text => {
+                                setWeight(parseInt(text));
+                            }}
+                            keyboardType='numeric'
+                        />
+                        {/* Done button to change the name of a section. */}
+                        <TouchableOpacity
+                            style={{marginLeft: 'auto', alignSelf: 'center'}}
+                            onPress={() => {
+                                const inputIsValid = () => {
+                                    if(name === ''){
+                                        return true;
+                                    }
+                                    if(weight === -1 || weight === ''){
+                                        Toast.show('Please enter weight', Toast.SHORT);
+                                        return false;
+                                    }
+                                    else if(isNaN(weight)){
+                                        Toast.show('Please enter a numeric weight. Do not enter any punctuation', Toast.SHORT);
+                                        return false;
+                                    }
+                                    else if(!!weight.toString().match(/[.]/) === true){
+                                        // console.log(!!weight.match(/[.]/));
+                                        Toast.show('Please enter an integer for a weight', Toast.SHORT);
+                                        return false;
+                                    }
+                                    else if(weight < 0){
+                                        Toast.show('Please enter a weight greater or equal to 0', Toast.SHORT);
+                                        return false;
+                                    }
                                     return true;
                                 }
-                                if(weight === -1 || weight === ''){
-                                    Toast.show('Please enter weight', Toast.SHORT);
-                                    return false;
-                                }
-                                else if(isNaN(weight)){
-                                    Toast.show('Please enter a numeric weight. Do not enter any punctuation', Toast.SHORT);
-                                    return false;
-                                }
-                                else if(!!weight.toString().match(/[.]/) === true){
-                                    // console.log(!!weight.match(/[.]/));
-                                    Toast.show('Please enter an integer for a weight', Toast.SHORT);
-                                    return false;
-                                }
-                                else if(weight < 0){
-                                    Toast.show('Please enter a weight greater or equal to 0', Toast.SHORT);
-                                    return false;
-                                }
-                                return true;
-                            }
-                            
-                            console.log('this was pressed')
+                                
+                                console.log('this was pressed')
 
-                            if(inputIsValid() === true){
-                                const new_section = {
-                                    ...section,
-                                    name: name,
-                                    weight: weight / 100
-                                };
-                                console.log('new_section:', new_section);
-                                updateSectionInProfile(new_section);
-                                setIs_editing(!is_editing);
-                            }
-                        }}>
-                        <AntDesign name='checkcircleo' size={45} color='green'/>
+                                if(inputIsValid() === true){
+                                    const new_section = {
+                                        ...section,
+                                        name: name,
+                                        weight: weight / 100
+                                    };
+                                    console.log('new_section:', new_section);
+                                    updateSectionInProfile(new_section);
+                                    setIs_editing(!is_editing);
+                                }
+                            }}>
+                            <AntDesign name='checkcircleo' size={45} color='green'/>
+                        </TouchableOpacity>
+                    </View>
+                    {/* Button that deletes a year from a semester. */}
+                    <TouchableOpacity
+                        activeOpacity={0.5}
+                        onPress={() => deleteSection(section)}>
+                        <AntDesign name="delete" size={50} color={'black'}/>
                     </TouchableOpacity>
                 </View>
             )}
@@ -103,14 +111,16 @@ const SectionView = ({section}) => {
 }
 
 const ConfigureSectionsScreen = ({navigation, route}) => {
-    const { profile_context, addSectionToProfile } = useProfileContext();
+    const { profile_context, addSectionToProfile, updateClassSectionsInProfile } = useProfileContext();
     const { curr_class } = route.params;
     console.log(`ConfigureSectionsScreen(): curr_class: ${curr_class}`);
 
-    const[sections, setSections] = useState(curr_class.sections);
+    // const[sections, setSections] = useState(curr_class.sections);
+    const[sections, setSections] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
     const[total_weight, setTotal_weight] = useState<Float>(-1);
 
     useEffect(() => {
+        // updateClassSectionsInProfile(curr_class, sections);
         let class_name;
         if(curr_class.name === ''){
             class_name = 'New Class';
@@ -149,6 +159,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                             //     sections: sections
                             // }
                             // updateClassInProfile(year.id, curr_class.id, new_class);
+                            // navigation.goBack();
                             navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
                         }
                     }}>
@@ -208,8 +219,16 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                             //     const new_sections = 
                             //     setSections();
                             // }
+                            const deleteSectionFromClass = (section) => {
+                                console.log(`deleteSectionFromClass(): This ran`);
+                                const new_sections = sections.filter((s) => s.id !== section.id);
+                                setSections(new_sections);
+                                updateClassSectionsInProfile(curr_class, new_sections);
+                                // updateSemesterClassesInProfile(semester, new_classes);
+                            }
+
                             return(
-                                <SectionView section={section.item}/>
+                                <SectionView section={section.item} deleteSection={deleteSectionFromClass}/>
                             );
                         }}
                     />

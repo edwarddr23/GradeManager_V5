@@ -157,6 +157,11 @@ export function ProfileProvider({children}) {
         curr_section.average = new_section.average;
         console.log('updateSectionInProfile(): curr_section after editing:', curr_section);
     }
+
+    const updateClassSectionsInProfile = (curr_class, new_sections) => {
+        years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections = new_sections;
+        // console.log(`updateClassSectionsInProfile(): c_class.sections: ${c_class.sections}`);
+    }
     
     const addAssignmentToProfile = (new_assignment) => {
         years.find((y) => y.id === new_assignment.year_id).semesters.find((s) => s.id === new_assignment.semester_id).classes.find((c) => c.id === new_assignment.class_id).sections.find((s) => s.id === new_assignment.section_id).assignments.push(new_assignment);
@@ -211,6 +216,7 @@ export function ProfileProvider({children}) {
                 updateLetterGradeInProfile,
                 addSectionToProfile,
                 updateSectionInProfile,
+                updateClassSectionsInProfile,
                 addAssignmentToProfile,
                 updateAssignmentInProfile,}}>
             {children}

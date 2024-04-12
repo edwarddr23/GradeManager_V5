@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Keyboard, StyleSheet, TextInput } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, ClassContent, SectionContent, LetterGradeContent } from '../shared/profile_context';
 
@@ -55,7 +56,8 @@ const SectionView = ({section, navigation}) => {
                         )}
                         {assignments.length > 0 && (
                             <View>
-                                <Text>Number of assignments: {assignments.length}</Text>
+                                {/* <Text>Number of assignments: {assignments.length}</Text> */}
+                                <Text style={{fontSize: 20}}>Assignments:</Text>
                                 {assignments.map((a) => {
                                     console.log(`SectionView(): a.type: ${a.type}`);
                                     if(a.type === 'Ratio') return(
@@ -63,6 +65,9 @@ const SectionView = ({section, navigation}) => {
                                     );
                                     else if(a.type === 'Percentage') return(
                                         <Text key={a.id}>{a.name}: {a.numerator}% / {a.denominator}%</Text>
+                                    );
+                                    else if(a.name !== '') return (
+                                        <Text key={a.id}>{a.name}: N/A</Text>
                                     );
                                     else if(a.name === '') return (
                                         <Text key={a.id}>New Assignment</Text>
@@ -121,18 +126,33 @@ const SectionView = ({section, navigation}) => {
 
 const ClassView = ({curr_class, deleteClass, navigation}) => {
     // console.log(`ClassView: curr_class: ${curr_class.id}`);
-    const { updateClassInProfile, addSectionToProfile } = useProfileContext();
+    const { profile_context, updateClassInProfile, addSectionToProfile } = useProfileContext();
     // id: findNextID(classes),
     // year_id: semester.year_id,
     // semester_id: semester.id,
     // name: 'New Class',
     // sections: []
     const[name, setName] = useState(curr_class.name);
-    const[sections, setSections] = useState(curr_class.sections);
+    // const[sections, setSections] = useState(curr_class.sections);
+    const[sections, setSections] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
 
     const[is_editing, setIs_editing] = useState(false);
     const[is_expanded, setIsExpanded] = useState(false);
     const[grading_expanded, setGrading_expanded] = useState(false);
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            console.log('THIS RAN');
+            setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+        })
+    }, [])
+
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+    //         return null;
+    //     })
+    // );
 
     // Viewing state for a class.
     if(!is_editing){
@@ -299,6 +319,8 @@ const SemesterScreen = ({navigation, route}) => {
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
     useEffect(() => {
+        console.log(`SemesterScreen(): useEffect() ran`);
+        setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
         navigation.setOptions({
             title: `${semester.season} ${semester.year}`,
             headerLeft: () => (
@@ -491,7 +513,6 @@ const SemesterScreen = ({navigation, route}) => {
                             const new_classes = classes.filter((c) => c.id !== class_to_remove.id);
                             setClasses(new_classes);
                             updateSemesterClassesInProfile(semester, new_classes);
-                            // updateSemestersInYear(year, new_semesters);
                         }
                         return(
                             <ClassView curr_class={curr_class.item} deleteClass={deleteClassInSemester} navigation={navigation}/>

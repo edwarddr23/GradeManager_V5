@@ -112,7 +112,7 @@ function PrintSections(curr_class) {
                 }
                 return(
                     <View key={child_key}>
-                        <Text>{'\t\tNew Section'}</Text>
+                        <Text>{'\t\t\tNew Section'}</Text>
                     </View>
                 );
             })}
@@ -124,33 +124,33 @@ function PrintAssignments(section) {
     let child_key = 0;
     if(section.assignments.length === 0){
         return(
-            <Text>{'\t\t'}No assignments yet!</Text>
+            <Text>{'\t\t\t\t'}No assignments yet!</Text>
         );
     }
     else{
         return(
             <View>
-                <Text>{'\t\t'}Assignments:</Text>
+                <Text>{'\t\t\t\t'}Assignments:</Text>
                 {section.assignments.map((a) => {
                     child_key++;
                     if(a.name === ''){
                         return(
-                            <Text key={child_key}>{'\t\t\t'}New Assignment</Text>
+                            <Text key={child_key}>{'\t\t\t\t\t'}New Assignment</Text>
                         );
                     }
                     else if(a.type === 'Percentage'){
                         return(
-                            <Text key={child_key}>{'\t\t\t' + a.name}: {(a.numerator / a.denominator) * 100}%</Text>
+                            <Text key={child_key}>{'\t\t\t\t\t' + a.name}: {(a.numerator / a.denominator) * 100}%</Text>
                         );
                     }
                     else if(a.type === 'Ratio'){
                         return(
-                            <Text key={child_key}>{'\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
+                            <Text key={child_key}>{'\t\t\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
                         );
                     }
                     else{
                         return(
-                            <Text key={child_key}>{'\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
+                            <Text key={child_key}>{'\t\t\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
                         );
                     }
                 })}

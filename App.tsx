@@ -103,18 +103,19 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="Configure Sections"
               component={ConfigureSectionsScreen}
-              options={({navigation, route}) => ({
-                headerRight: () => (
-                  <View style={{width: 100, height: 45}}>
-                    <FlatButton
-                      text="Save"
-                      onPress={() => {
-                        navigation.navigate("Save");
-                      }}
-                    />
-                  </View>
-                )
-              })}/>
+              // options={({navigation, route}) => ({
+              //   headerRight: () => (
+              //     <View style={{width: 100, height: 45}}>
+              //       <FlatButton
+              //         text="Save"
+              //         onPress={() => {
+              //           navigation.navigate("Save");
+              //         }}
+              //       />
+              //     </View>
+              //   )
+              // })}
+            />
             <Stack.Screen
               name="Configure Letter Grading"
               component={ConfigureLetterGradingScreen}
