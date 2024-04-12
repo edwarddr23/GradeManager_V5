@@ -30,6 +30,7 @@ import FlatButton from './shared/custom_buttons';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import HomeScreen from './screens/HomeScreen';
 import CreateProfileScreen from './screens/CreateProfileScreen';
@@ -45,6 +46,7 @@ import ConfigureLetterGradingScreen from './screens/ConfigureLetterGradingScreen
 const Stack = createNativeStackNavigator();
 
 function App(): React.JSX.Element {
+  // Define the navigation stack that allows the navigation between screens through different components. Structure and flow taken from official guide: https://reactnative.dev/docs/navigation.
   return (
     <ProfileProvider>
       <NavigationContainer>
@@ -116,17 +118,60 @@ function App(): React.JSX.Element {
               name="Configure Letter Grading"
               component={ConfigureLetterGradingScreen}
               options={({navigation, route}) => ({
-                // title: ''
-                headerRight: () => (
-                  <View style={{width: 100, height: 45}}>
-                    <FlatButton
-                      text="Save"
+                header: () => (
+                  <View style={{width: '100%', height: 55, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
+                    {/* Back button */}
+                    <View style={{marginRight: 20}}>
+                      <TouchableOpacity
+                      activeOpacity={0.5}
                       onPress={() => {
-                        navigation.navigate("Save");
-                      }}
-                    />
+                        const { curr_class, semester } = route.params;
+                        // const { profile_context } = useProfileContext();
+                        navigation.navigate('Semester', {semester: semester});
+                        // navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
+                      }}>
+                        <AntDesign name="arrowleft" size={25} color='black'/>
+                      </TouchableOpacity>
+                    </View>
+                    {/* Title */}
+                    <View style={{flex: 1}}>
+                      <Text style={{flexWrap: 'wrap'}}>Letter Grading in {route.params.curr_class.name}</Text>
+                    </View>
+                    {/* Save Button */}
+                    <View style={{width: 100, height: 45, marginLeft: 'auto'}}>
+                      <FlatButton
+                        text="Save"
+                        onPress={() => {
+                          navigation.navigate("Save");
+                        }}
+                      />
+                    </View>
                   </View>
-                )
+                ),
+                // headerLeft: () => (
+                //   <View style={{marginRight: 20}}>
+                //     <TouchableOpacity
+                //     activeOpacity={0.5}
+                //     onPress={() => {
+                //       const { curr_class, semester } = route.params;
+                //       // const { profile_context } = useProfileContext();
+                //       navigation.navigate('Semester', {semester: semester});
+                //       // navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
+                //     }}>
+                //       <AntDesign name="arrowleft" size={25} color='black'/>
+                //     </TouchableOpacity>
+                //   </View>
+                // ),
+                // headerRight: () => (
+                //   <View style={{width: 100, height: 45}}>
+                //     <FlatButton
+                //       text="Save"
+                //       onPress={() => {
+                //         navigation.navigate("Save");
+                //       }}
+                //     />
+                //   </View>
+                // )
               })}
             />
             {/* <Stack.Screen

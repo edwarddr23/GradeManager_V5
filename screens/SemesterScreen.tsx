@@ -123,7 +123,7 @@ const SectionView = ({section, navigation}) => {
     );
 }
 
-const ClassView = ({curr_class, deleteClass, navigation}) => {
+const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     // console.log(`ClassView: curr_class: ${curr_class.id}`);
     const { profile_context, updateClassInProfile, addSectionToProfile } = useProfileContext();
     // id: findNextID(classes),
@@ -134,15 +134,20 @@ const ClassView = ({curr_class, deleteClass, navigation}) => {
     const[name, setName] = useState(curr_class.name);
     // const[sections, setSections] = useState(curr_class.sections);
     const[sections, setSections] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+    const[letter_grading, setLetter_grading] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
 
     const[is_editing, setIs_editing] = useState(false);
     const[is_expanded, setIsExpanded] = useState(false);
     const[grading_expanded, setGrading_expanded] = useState(false);
 
+    // https://reactnavigation.org/docs/navigation-events/
     useEffect(() => {
+        console.log(`THIS IS RUNNING`);
         navigation.addListener('focus', () => {
             setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
         })
+        setLetter_grading(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
+        // curr_class = profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id);
     }, [])
 
     // Viewing state for a class.
@@ -216,7 +221,7 @@ const ClassView = ({curr_class, deleteClass, navigation}) => {
                                 <TouchableOpacity
                                     style={{marginRight: 15}}
                                     onPress={() => {
-                                        navigation.navigate('Configure Letter Grading', {curr_class: curr_class});
+                                        navigation.navigate('Configure Letter Grading', {semester: semester, curr_class: curr_class});
                                     }}>
                                     <AntDesign name="edit" size={45} color='black'/>
                                 </TouchableOpacity>
@@ -230,7 +235,7 @@ const ClassView = ({curr_class, deleteClass, navigation}) => {
                             {grading_expanded && (
                                 <View style={{flexDirection: 'column'}}>
                                     <Text style={{fontSize: 15}}>(Last number is non-inclusive.)</Text>
-                                    {curr_class.letter_grading.map((l) => {
+                                    {letter_grading.map((l) => {
                                         return(
                                             <Text style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
                                         );
@@ -348,6 +353,7 @@ const SemesterScreen = ({navigation, route}) => {
                     // name: string
                     // letter_grading: LetterGradeContent[]
                     // sections: SectionContent[]
+
                     // Letter Grading Info:
                     // id: Int32,
                     // year_id: Int32
@@ -496,7 +502,7 @@ const SemesterScreen = ({navigation, route}) => {
                             updateSemesterClassesInProfile(semester, new_classes);
                         }
                         return(
-                            <ClassView curr_class={curr_class.item} deleteClass={deleteClassInSemester} navigation={navigation}/>
+                            <ClassView semester={semester} curr_class={curr_class.item} deleteClass={deleteClassInSemester} navigation={navigation}/>
                         );
                     }}
                 />

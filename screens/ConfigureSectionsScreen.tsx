@@ -225,7 +225,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                             //     setSections();
                             // }
                             const deleteSectionFromClass = (section) => {
-                                console.log(`deleteSectionFromClass(): This ran`);
+                                // console.log(`deleteSectionFromClass(): This ran`);
                                 const new_sections = sections.filter((s) => s.id !== section.id);
                                 setSections(new_sections);
                                 updateClassSectionsInProfile(curr_class, new_sections);
@@ -256,8 +256,6 @@ const styles = StyleSheet.create({
     },
 
     inputText: {
-        // height: 10,
-        // margin: 12,
         textAlign: 'center',
         fontSize: 25,
         borderWidth: 3,
