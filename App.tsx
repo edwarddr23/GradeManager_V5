@@ -27,7 +27,6 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 
 import FlatButton from './shared/custom_buttons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -37,12 +36,10 @@ import CreateProfileScreen from './screens/CreateProfileScreen';
 import YearsScreen from './screens/YearsScreen';
 import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
-import ClassScreen from './screens/ClassScreen';
-// import { YearContent, ClassContent, ProfileContent, ProfileContext } from './shared/profile_context';
 import { ProfileProvider, useProfileContext } from './shared/profile_context';
+import SectionScreen from './screens/SectionScreen';
 import SemesterScreen from './screens/SemesterScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
-import SectionScreen from './screens/SectionScreen';
 import ConfigureLetterGradingScreen from './screens/ConfigureLetterGradingScreen';
 
 const Stack = createNativeStackNavigator();
@@ -56,7 +53,6 @@ function App(): React.JSX.Element {
             name="Home"
             component={HomeScreen}
             options={{
-              // title: 'Home',
               headerStyle: {
                 backgroundColor: '#f4511e'
               },
@@ -64,7 +60,6 @@ function App(): React.JSX.Element {
               headerTitleStyle: {
                 fontWeight: 'bold'
               },
-              // headerTitleAlign: 'center'
             }}/>
           <Stack.Screen
             name="Create Profile"
@@ -103,18 +98,19 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="Configure Sections"
               component={ConfigureSectionsScreen}
-              // options={({navigation, route}) => ({
-              //   headerRight: () => (
-              //     <View style={{width: 100, height: 45}}>
-              //       <FlatButton
-              //         text="Save"
-              //         onPress={() => {
-              //           navigation.navigate("Save");
-              //         }}
-              //       />
-              //     </View>
-              //   )
-              // })}
+              options={({navigation, route}) => ({
+                // title: ''
+                headerRight: () => (
+                  <View style={{width: 100, height: 45}}>
+                    <FlatButton
+                      text="Save"
+                      onPress={() => {
+                        navigation.navigate("Save");
+                      }}
+                    />
+                  </View>
+                )
+              })}
             />
             <Stack.Screen
               name="Configure Letter Grading"

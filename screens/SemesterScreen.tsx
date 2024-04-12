@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Keyboard, StyleSheet, TextInput } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, ClassContent, SectionContent, LetterGradeContent } from '../shared/profile_context';
 
@@ -50,7 +49,7 @@ const SectionView = ({section, navigation}) => {
                         {calculateExpectedSectionAverage(assignments) !== 'N/A' && (
                             <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {(calculateExpectedSectionAverage(assignments) * 100).toFixed(2)}%</Text>
                         )}
-                        <Text style={{fontSize: 20}}>Section Weight: {section.weight * 100}%</Text>
+                        <Text style={{fontSize: 20}}>Section Weight: {(section.weight * 100).toFixed(0)}%</Text>
                         {assignments.length === 0 && (
                             <Text style={{fontSize: 20}}>No assignments yet!</Text>
                         )}
@@ -142,17 +141,9 @@ const ClassView = ({curr_class, deleteClass, navigation}) => {
 
     useEffect(() => {
         navigation.addListener('focus', () => {
-            console.log('THIS RAN');
             setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
         })
     }, [])
-
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-    //         return null;
-    //     })
-    // );
 
     // Viewing state for a class.
     if(!is_editing){
@@ -477,11 +468,6 @@ const SemesterScreen = ({navigation, route}) => {
                                 beg: 0,
                                 end: 65
                             }
-                            // 'A': [90, 100],
-                            // 'B': [80, 89],
-                            // 'C': [70, 79],
-                            // 'D': [65, 69],
-                            // 'F': [0, 65]
                         ],
                         sections: []
                     };
@@ -490,11 +476,6 @@ const SemesterScreen = ({navigation, route}) => {
                         new_class
                     ]
                     setClasses(newClasses);
-                    // console.log(`ADD BUTTON: year.id: ${year.id}`);
-                    // console.log(`ADD BUTTON: LOOP`);
-                    // newClasses.map((c) => {
-                    //     console.log(`c.id: ${c.id}`);
-                    // });
                     addClassToProfile(new_class);
                 }}>
                 <AntDesign name="pluscircleo" size={70} color={'black'}/>

@@ -11,9 +11,9 @@ import Footer from '../shared/custom_footer';
 const SectionView = ({section, deleteSection}) => {
     const { updateSectionInProfile } = useProfileContext();
     const[is_editing, setIs_editing] = useState(false);
-    // console.log(`SectionView(): section: ${section.name}`);
     const[name, setName] = useState(section.name);
-    const[weight, setWeight] = useState(section.weight * 100);
+    // Precision needs to be defined as sometimes an integer over 100 gives a repeating integer (example 55 /100)
+    const[weight, setWeight] = useState((section.weight * 100).toFixed(0));
 
     return(
         <View style={styles.section}>
@@ -50,7 +50,7 @@ const SectionView = ({section, deleteSection}) => {
                             value={weight}
                             placeholder="Weight"
                             onChangeText={text => {
-                                setWeight(parseInt(text));
+                                setWeight(text);
                             }}
                             keyboardType='numeric'
                         />
@@ -70,7 +70,7 @@ const SectionView = ({section, deleteSection}) => {
                                         Toast.show('Please enter a numeric weight. Do not enter any punctuation', Toast.SHORT);
                                         return false;
                                     }
-                                    else if(!!weight.toString().match(/[.]/) === true){
+                                    else if(!!weight.match(/[.]/) === true){
                                         // console.log(!!weight.match(/[.]/));
                                         Toast.show('Please enter an integer for a weight', Toast.SHORT);
                                         return false;
@@ -82,15 +82,20 @@ const SectionView = ({section, deleteSection}) => {
                                     return true;
                                 }
                                 
-                                console.log('this was pressed')
+                                console.log(`Number.isInteger(${weight}): ${Number.isInteger(weight)}`)
 
                                 if(inputIsValid() === true){
+                                    const formatter = new Intl.NumberFormat('en-US', {
+                                        minimumFractionDigits: 2,      
+                                        maximumFractionDigits: 2
+                                    })
                                     const new_section = {
                                         ...section,
                                         name: name,
-                                        weight: weight / 100
+                                        weight: formatter.format(weight / 100)
                                     };
                                     console.log('new_section:', new_section);
+                                    console.log('new_section.weight:', new_section.weight);
                                     updateSectionInProfile(new_section);
                                     setIs_editing(!is_editing);
                                 }

@@ -84,6 +84,8 @@ export function calculateExpectedSectionAverage(assignments) {
             return a.numerator / a.denominator;
         });
 
+        // It is assumed that a section average cannot exceed 100%, and linear regression can easily lead to an average beyond 100% depending on the grades, the trend of the grades, and number of assignemnts. So, if it does exceed 100%, then return only 100%.
+        if((total / expected_assignment_grades.length) > 1) return 1;
         return (total / expected_assignment_grades.length);
     }
     else if(getValidAssignments(assignments).length === 1) {
@@ -134,6 +136,7 @@ export function calculateExpectedClassAverage(sections) {
     });
     // console.log(`calculateExpectedClassAverage(): valid_exp_section_averages: ${valid_exp_section_averages}`);
     // console.log(`calculateExpectedClassAverage(): total / valid_exp_section_averages.length: ${total / valid_exp_section_averages.length}`);
+    // if((total / valid_exp_section_averages.length) > 1) return 1;
     return (total / valid_exp_section_averages.length);
 }
 

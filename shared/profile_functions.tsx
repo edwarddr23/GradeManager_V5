@@ -105,7 +105,7 @@ function PrintSections(curr_class) {
                 if(s.name != ''){
                     return(
                         <View key={child_key}>
-                            <Text>{'\t\t\t' + s.name + ': ' + s.weight * 100 + '%'}</Text>
+                            <Text>{'\t\t\t' + s.name + ': ' + (s.weight * 100).toFixed(0) + '%'}</Text>
                             { PrintAssignments(s) }
                         </View>
                     );

@@ -187,14 +187,11 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                             <View>
                                 {semesters.map((semester) => {
                                     const chgSemesters = (new_semester) => {
-                                        console.log(`chgSemesters(): new_semester.name: ${new_semester.name}`);
-                                        console.log(`chgSemesters(): year: ${year}`)
                                         const new_semesters = semesters.map((s) => {
                                             if(s.id !== new_semester.id) return s;
                                             return new_semester;
                                         });
                                         setSemesters(new_semesters);
-                                        // console.log(`chgSemesters(): semesters[0].name: ${semesters[0].name}`);
                                         updateSemestersInYear(year, new_semesters);
                                     }
 
@@ -203,7 +200,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                                         setSemesters(new_semesters);
                                         updateSemestersInYear(year, new_semesters);
                                     }
-                                    // console.log('MAP: semester:', semester);
+                                    
                                     return(
                                         <SemesterView key={semester.id} semester={semester} updateSemesters={chgSemesters} deleteSemester={deleteSemesterInYear} navigation={navigation}/>
                                     );
@@ -218,7 +215,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
             )}
             {is_editing && (
                 <View style={styles.year}>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
                         <Text style={{textAlignVertical: 'center', fontSize: 17}}>Academic Year:</Text>
                         {/*Beg Year Number */}
                         <TextInput
@@ -269,7 +266,6 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
 
 const YearsScreen = ({navigation, route}) => {
     const { profile_context, updateYearsInProfile, addYearToProfile } = useProfileContext();
-    const fromClassScreen = route.params.fromClassScreen;
     
     const [years, setYears] = useState(profile_context.years);
 
@@ -284,7 +280,7 @@ const YearsScreen = ({navigation, route}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
-    }, [years, fromClassScreen]);
+    }, [years]);
 
     return(
         <View style={ {flex: 1, flexDirection: 'column', alignItems: 'center', paddingTop: 10} } >
@@ -404,42 +400,20 @@ const styles = StyleSheet.create({
       height: 'auto'
     },
 
-    // label: {
-    //   position: 'relative',
-    //   // backgroundColor: 'white',
-    //   // left: 5,
-    //   // top: 8,
-    //   zIndex: 999,
-    //   paddingHorizontal: 8,
-    //   fontSize: 14,
-    // },
-
     year: { 
-    //   alignItems: 'center',
       borderWidth: 4,
       borderRadius: 30,
       padding: 15,
-    //   flexDirection: 'row',
       gap: 20,
       alignItems: 'center'
-      // backgroundColor: 'purple',
-      // width: '95%'
     },
 
     inputText: {
-      // height: 10,
-      // margin: 12,
       textAlign: 'center',
       fontSize: 20,
       borderWidth: 3,
       borderRadius: 10,
       padding: 10,
-    //   marginHorizontal: 5,
     },
-
-    // fab: {
-    //   justifyContent: 'center',
-    //   alignItems: 'center',
-    // }
 
 })
