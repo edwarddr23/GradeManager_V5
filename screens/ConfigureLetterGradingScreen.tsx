@@ -123,32 +123,35 @@ RETURNS
 */
 const ConfigureLetterGradingScreen = ({navigation, route}) => {
     const { profile_context } = useProfileContext();
+    // Current class in question is extracted from the route params.
     const { curr_class } = route.params;
+    // Attach the current class's letter_grading property in state so that it can be edited in state.
     const[letter_grading, setLetter_grading] = useState(curr_class.letter_grading);
 
-    useEffect(() => {
-        const title = () => {
-            if(curr_class.name === '') return `New Class`;
-            return curr_class.name;
-        };
-        navigation.setOptions({
-            title: `Letter Grading in ${title()}`,
-            // headerLeft: () => (
-            //     <View style={{marginRight: 20}}>
-            //         <TouchableOpacity
-            //         activeOpacity={0.5}
-            //         onPress={() => {
-            //             navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
-            //         }}>
-            //         <AntDesign name="arrowleft" size={25} color='black'/>
-            //         </TouchableOpacity>
-            //     </View>
-            // )
-        });
-    })
+    // useEffect(() => {
+    //     const title = () => {
+    //         if(curr_class.name === '') return `New Class`;
+    //         return curr_class.name;
+    //     };
+    //     navigation.setOptions({
+    //         title: `Letter Grading in ${title()}`,
+    //         // headerLeft: () => (
+    //         //     <View style={{marginRight: 20}}>
+    //         //         <TouchableOpacity
+    //         //         activeOpacity={0.5}
+    //         //         onPress={() => {
+    //         //             navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
+    //         //         }}>
+    //         //         <AntDesign name="arrowleft" size={25} color='black'/>
+    //         //         </TouchableOpacity>
+    //         //     </View>
+    //         // )
+    //     });
+    // })
     
     return(
         <View style={styles.container}>
+            {/* Display components in a scrollable FlatList that allows the user to edit the letter_grade objects within letter_grades.*/}
             <FlatList
                 style={{width: '100%'}}
                 data={letter_grading}
@@ -171,14 +174,10 @@ export default ConfigureLetterGradingScreen;
 const styles = StyleSheet.create({
     container: {
         width: '90%',
-        // flexDirection: 'column',
         flex: 1,
-        // justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'purple',
         alignSelf: 'center',
         gap: 20
-        // flex: 1,
     },
 
     letterGrade: {
@@ -188,14 +187,9 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center'
-        // justifyContent: 'center',
-        // alignSelf: 'center'
-        // marginBottom: 20
     },
 
     inputText: {
-        // height: 10,
-        // margin: 12,
         textAlign: 'center',
         fontSize: 25,
         borderWidth: 3,

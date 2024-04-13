@@ -118,14 +118,12 @@ const SectionView = ({section, deleteSection}) => {
 const ConfigureSectionsScreen = ({navigation, route}) => {
     const { profile_context, addSectionToProfile, updateClassSectionsInProfile } = useProfileContext();
     const { curr_class } = route.params;
-    console.log(`ConfigureSectionsScreen(): curr_class: ${curr_class}`);
 
     // const[sections, setSections] = useState(curr_class.sections);
     const[sections, setSections] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
     const[total_weight, setTotal_weight] = useState<Float>(-1);
 
     useEffect(() => {
-        // updateClassSectionsInProfile(curr_class, sections);
         let class_name;
         if(curr_class.name === ''){
             class_name = 'New Class';
@@ -133,7 +131,6 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         else{
             class_name = curr_class.name;
         }
-        // return total;
         navigation.setOptions({
             title: `Sections in ${class_name}`,
             headerLeft: () => (
@@ -142,29 +139,17 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                     activeOpacity={0.5}
                     onPress={() => {
                         const { year, curr_class } = route.params;
-                        console.log('CUSTOM BUTTON PRESSED!');
-                        // console.log(`CUSTOM BUTTON: total_weight: ${total_weight}`);
-                        // console.log(`Custom Button: route.params: ${route.params}`);
-                        // profile_context.years.find()
-                        // console.log(`Custom Button: year: ${year.beg_year}-${year.end_year}, curr_class.name: ${curr_class.name}`);
                         let total = 0;
                         sections.map((s) => {
-                            // console.log('MAP: s.weight:', s.weight);
                             if(s.weight != -1 && s.weight != undefined){
                                 total += parseInt(parseFloat(s.weight) * 100);
                             }
                         });
-                        console.log(`useEffect(): total: ${total}`);
+                        // console.log(`useEffect(): total: ${total}`);
                         if(total > 100){
                             Toast.show('The total weights cannot exceed 100%', Toast.SHORT);
                         }
                         else{
-                            // const new_class = {
-                            //     ...curr_class,
-                            //     sections: sections
-                            // }
-                            // updateClassInProfile(year.id, curr_class.id, new_class);
-                            // navigation.goBack();
                             navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
                         }
                     }}>

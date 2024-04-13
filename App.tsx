@@ -119,23 +119,26 @@ function App(): React.JSX.Element {
               component={ConfigureLetterGradingScreen}
               options={({navigation, route}) => ({
                 header: () => (
-                  <View style={{width: '100%', height: 55, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
+                  <View style={{width: '100%', height: 65, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
                     {/* Back button */}
                     <View style={{marginRight: 20}}>
                       <TouchableOpacity
                       activeOpacity={0.5}
                       onPress={() => {
                         const { curr_class, semester } = route.params;
-                        // const { profile_context } = useProfileContext();
                         navigation.navigate('Semester', {semester: semester});
-                        // navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
                       }}>
                         <AntDesign name="arrowleft" size={25} color='black'/>
                       </TouchableOpacity>
                     </View>
                     {/* Title */}
                     <View style={{flex: 1}}>
-                      <Text style={{flexWrap: 'wrap'}}>Letter Grading in {route.params.curr_class.name}</Text>
+                      {route.params.curr_class.name !== '' && (
+                        <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in {route.params.curr_class.name}</Text>
+                      )}
+                      {route.params.curr_class.name === '' && (
+                        <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in New Class</Text>
+                      )}
                     </View>
                     {/* Save Button */}
                     <View style={{width: 100, height: 45, marginLeft: 'auto'}}>
@@ -148,48 +151,8 @@ function App(): React.JSX.Element {
                     </View>
                   </View>
                 ),
-                // headerLeft: () => (
-                //   <View style={{marginRight: 20}}>
-                //     <TouchableOpacity
-                //     activeOpacity={0.5}
-                //     onPress={() => {
-                //       const { curr_class, semester } = route.params;
-                //       // const { profile_context } = useProfileContext();
-                //       navigation.navigate('Semester', {semester: semester});
-                //       // navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
-                //     }}>
-                //       <AntDesign name="arrowleft" size={25} color='black'/>
-                //     </TouchableOpacity>
-                //   </View>
-                // ),
-                // headerRight: () => (
-                //   <View style={{width: 100, height: 45}}>
-                //     <FlatButton
-                //       text="Save"
-                //       onPress={() => {
-                //         navigation.navigate("Save");
-                //       }}
-                //     />
-                //   </View>
-                // )
               })}
             />
-            {/* <Stack.Screen
-              name="Class"
-              component={ClassScreen}
-              options={({navigation, route}) => ({
-                headerRight: () => (
-                  <View style={{width: 100, height: 45}}>
-                    <FlatButton
-                      text="Save"
-                      onPress={() => {
-                        navigation.navigate("Save");
-                      }}
-                    />
-                  </View>
-                )
-              })}
-            /> */}
             <Stack.Screen
             name="Section"
             component={SectionScreen}
