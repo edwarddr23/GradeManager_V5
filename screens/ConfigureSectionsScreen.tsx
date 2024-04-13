@@ -7,25 +7,56 @@ import Toast from 'react-native-simple-toast';
 import { findNextID } from '../shared/key_functions';
 import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import Footer from '../shared/custom_footer';
+import { validPositiveIntInputs } from '../shared/input_validation_functions';
 
-const SectionView = ({section, deleteSection}) => {
+/*
+NAME
+
+        SectionView - a component that represents a section object within a class object.
+        
+SYNOPSIS
+
+        <View> ConfigureLetterGradingScreen({Object section, Object route})
+            section --> the object representing the current section to represent.
+            deleteSection --> a function that mutates the parent component's sections state array and the sections array in the profile context to reflect the deletion of a sections object.
+
+DESCRIPTION
+
+        This component will return a View representing a certain section. A section's name and relative weight could be defined, and can also be removed entirely if the delete button is pressed.
+
+RETURNS
+
+        Returns a View that displays the section object's name and relative weight
+        depending on whether the is_editing state variable is true or false (this variable, which,
+        will change depending on whether the user pressed the editing button or the done button).
+*/
+const SectionView = ({updateTotal, section, deleteSection}) => {
     const { updateSectionInProfile } = useProfileContext();
+    // State variables to allow for the changing of the component's interactible elements.
     const[is_editing, setIs_editing] = useState(false);
     const[name, setName] = useState(section.name);
     // Precision needs to be defined as sometimes an integer over 100 gives a repeating integer (example 55 /100)
-    const[weight, setWeight] = useState((section.weight * 100).toFixed(0));
+    const[weight, setWeight] = useState(() => {
+        if(section.weight !== -1){
+            return (section.weight * 100).toFixed(0);
+        }
+        return '';
+    });
 
     return(
         <View style={styles.section}>
             {/* Viewing state of section. */}
             {!is_editing && (
                 <View style={{flexDirection: 'row'}}>
+                    {/* By default, a new section object created will have '' as a name. If this component is initialized and the name is empty, then it must be a new section.*/}
                     {name === '' && (
                         <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
                     )}
+                    {/* Otherwise, the section object in question has been fully initialized. Print out the name and the weight. */}
                     {name !== '' && (
                         <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {weight}%</Text>
                     )}
+                    {/* Edit button that changes the state of the View returned by SectionView to editing state.*/}
                     <TouchableOpacity
                         style={{marginLeft: 'auto'}}
                         onPress={() => setIs_editing(!is_editing)}>
@@ -37,6 +68,7 @@ const SectionView = ({section, deleteSection}) => {
             {is_editing && (
                 <View style={{alignItems: 'center', gap: 15}}>
                     <View style={{flexDirection: 'row'}}>
+                        {/* TextInputs that allow for the editing of the section name and weight. */}
                         <TextInput
                             style={styles.inputText}
                             value={name}
@@ -54,49 +86,69 @@ const SectionView = ({section, deleteSection}) => {
                             }}
                             keyboardType='numeric'
                         />
-                        {/* Done button to change the name of a section. */}
+                        {/* Done button to change the name and weight of a section. */}
                         <TouchableOpacity
                             style={{marginLeft: 'auto', alignSelf: 'center'}}
                             onPress={() => {
-                                const inputIsValid = () => {
-                                    if(name === ''){
-                                        return true;
-                                    }
-                                    if(weight === -1 || weight === ''){
-                                        Toast.show('Please enter weight', Toast.SHORT);
+                                /*
+                                NAME
+
+                                        validInputs - a function that validates the inputs for a section modification.
+                                        
+                                SYNOPSIS
+
+                                        bool validInputs()
+                                        
+                                DESCRIPTION
+
+                                        Each of the inputs will go through their own validation. If the name is empty or pure whitespace,
+                                        or if the weight is not a positive integer or is greater than 100, then the inputs are not valid.
+                                        If the inputs are not valid, then the state of the View returned by SectionView will not change to
+                                        its viewing state and will remain in its editing state. The profile context will also not be updated,
+                                        as we do not want to save an improper section object. If the input is valid, however, the state and the
+                                        profile context will be updated and the state of the View returned by SectionView will change to its
+                                        viewing state.
+                                        
+                                RETURNS
+
+                                        This function will return a boolean. If the inputs fail any of the tests, return false. Otherwise, the input must be true, so return true.
+                                */
+                                function validInputs() {
+                                    // Check if name is empty.
+                                    if(name === '' || name.trim() === ''){
+                                        Toast.show('Please enter a Name', Toast.SHORT);
                                         return false;
                                     }
-                                    else if(isNaN(weight)){
-                                        Toast.show('Please enter a numeric weight. Do not enter any punctuation', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(!!weight.match(/[.]/) === true){
-                                        // console.log(!!weight.match(/[.]/));
-                                        Toast.show('Please enter an integer for a weight', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(weight < 0){
-                                        Toast.show('Please enter a weight greater or equal to 0', Toast.SHORT);
+                                    // Check if name is a positive integer.
+                                    else if(validPositiveIntInputs([weight], ['Relative Weight']) === false) return false;
+                                    // validPositiveInputs() just makes sure that the number entered is an integer and positive, but does not check the range.
+                                    else if(weight > 100){
+                                        Toast.show('Weight cannot exceed 100%', Toast.SHORT);
                                         return false;
                                     }
                                     return true;
                                 }
-                                
-                                console.log(`Number.isInteger(${weight}): ${Number.isInteger(weight)}`)
-
-                                if(inputIsValid() === true){
+                                // If the name and weight for the section in question is valid, then keep the name and weight in state and save the new modified section to the profile context.
+                                if(validInputs() === true){
+                                    // Intl.NumberFormat() is needed to make sure that the weight is recorded as a decimal to 2 decimal places everytime no matter what weight / 100 returns.
                                     const formatter = new Intl.NumberFormat('en-US', {
                                         minimumFractionDigits: 2,      
                                         maximumFractionDigits: 2
                                     })
-                                    const new_section = {
+                                    // If there are leading or trailing spaces in the inputs, disregard them and save the trimmed inputs to the state on next rerender.
+                                    setName(name.trim());
+                                    setWeight(weight.trim());
+                                    let new_section = {
                                         ...section,
-                                        name: name,
-                                        weight: formatter.format(weight / 100)
-                                    };
-                                    console.log('new_section:', new_section);
-                                    console.log('new_section.weight:', new_section.weight);
+                                        // May seem redundant to trim the name and weight again, but this must trimmed since the setName() and setWeight hooks are not called until the next rerender, and thus, name and weight are not trimmed yet.
+                                        name: name.trim(),
+                                        weight: formatter.format(weight.trim() / 100)
+                                    }
+                                    // Update the current section in question to the profile context. Create a new section object based on the old one but modify the name and weight to fit the standardized percentage format (which I standardized to a decimal to 2 decimal places).
                                     updateSectionInProfile(new_section);
+                                    // Add the weight to to total weights. This will be used when checking for an invalid total when the user presses the back button.
+                                    updateTotal(new_section);
+                                    // Change the View returned by SectionView change back to its viewing state.
                                     setIs_editing(!is_editing);
                                 }
                             }}>
@@ -115,50 +167,88 @@ const SectionView = ({section, deleteSection}) => {
     );
 }
 
+/*
+NAME
+
+        ConfigureSectionsScreen - a component that represents the screen that handles the configuration of a class's sections.
+        
+SYNOPSIS
+
+        <View> ConfigureLetterGradingScreen({Object navigation, Object route})
+            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+            route --> the route object also inherited from the NavigationContainer.
+
+DESCRIPTION
+
+        This component allows sections of the current class in question to be viewed, and new sections can be added. Section names and relative weights for each section can be changed.
+
+RETURNS
+
+        Returns a View that displays the section object's name and relative weight
+        depending on whether the is_editing state variable is true or false (this variable, which,
+        will change depending on whether the user pressed the editing button or the done button).
+*/
 const ConfigureSectionsScreen = ({navigation, route}) => {
     const { profile_context, addSectionToProfile, updateClassSectionsInProfile } = useProfileContext();
     const { curr_class } = route.params;
 
-    // const[sections, setSections] = useState(curr_class.sections);
+    // Extract the sections in question from 
     const[sections, setSections] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-    const[total_weight, setTotal_weight] = useState<Float>(-1);
+
+    const[total, setTotal] = useState(() => {
+        let t = 0;
+        sections.map((s) => {
+            if(s.weight != -1 && s.weight != undefined){
+                t += parseInt(parseFloat(s.weight) * 100);
+            }
+        });
+        return t;
+    });
 
     useEffect(() => {
-        let class_name;
-        if(curr_class.name === ''){
-            class_name = 'New Class';
-        }
-        else{
-            class_name = curr_class.name;
-        }
-        navigation.setOptions({
-            title: `Sections in ${class_name}`,
-            headerLeft: () => (
-                <View style={{marginRight: 20}}>
-                    <TouchableOpacity
-                    activeOpacity={0.5}
-                    onPress={() => {
-                        const { year, curr_class } = route.params;
-                        let total = 0;
-                        sections.map((s) => {
-                            if(s.weight != -1 && s.weight != undefined){
-                                total += parseInt(parseFloat(s.weight) * 100);
-                            }
-                        });
-                        // console.log(`useEffect(): total: ${total}`);
-                        if(total > 100){
-                            Toast.show('The total weights cannot exceed 100%', Toast.SHORT);
-                        }
-                        else{
-                            navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
-                        }
-                    }}>
-                    <AntDesign name="arrowleft" size={25} color='black'/>
-                    </TouchableOpacity>
-                </View>
-            )
-        });
-    }, []);
+        // sections.map((s) => {
+        //     if(s.weight != -1 && s.weight != undefined){
+        //         total += parseInt(parseFloat(s.weight) * 100);
+        //     }
+        // });
+        route.params.total = total;
+        // console.log(`useEffect: total: ${total}`);
+        route.params.semester = profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id);
+        // let class_name;
+        // if(curr_class.name === ''){
+        //     class_name = 'New Class';
+        // }
+        // else{
+        //     class_name = curr_class.name;
+        // }
+        // navigation.setOptions({
+        //     title: `Sections in ${class_name}`,
+        //     headerLeft: () => (
+        //         <View style={{marginRight: 20}}>
+        //             <TouchableOpacity
+        //             activeOpacity={0.5}
+        //             onPress={() => {
+        //                 const { year, curr_class } = route.params;
+        //                 let total = 0;
+        //                 sections.map((s) => {
+        //                     if(s.weight != -1 && s.weight != undefined){
+        //                         total += parseInt(parseFloat(s.weight) * 100);
+        //                     }
+        //                 });
+        //                 // console.log(`useEffect(): total: ${total}`);
+        //                 if(total > 100){
+        //                     Toast.show('The total weights cannot exceed 100%', Toast.SHORT);
+        //                 }
+        //                 else{
+        //                     navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
+        //                 }
+        //             }}>
+        //             <AntDesign name="arrowleft" size={25} color='black'/>
+        //             </TouchableOpacity>
+        //         </View>
+        //     )
+        // });
+    }, [total]);
 
     return(
         <View style={{flex: 1, alignItems: 'center'}}>
@@ -205,20 +295,28 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                         keyExtractor={(item, index) => item.id}
                         removeClippedSubviews={false}
                         renderItem={(section) => {
-                            // const chgSections = (new_section) => {
-                            //     const new_sections = 
-                            //     setSections();
-                            // }
-                            const deleteSectionFromClass = (section) => {
-                                // console.log(`deleteSectionFromClass(): This ran`);
+                            function deleteSectionFromClass(section) {
                                 const new_sections = sections.filter((s) => s.id !== section.id);
                                 setSections(new_sections);
                                 updateClassSectionsInProfile(curr_class, new_sections);
-                                // updateSemesterClassesInProfile(semester, new_classes);
+                            }
+
+                            function updateTotal(new_section) {
+                                const new_sections = sections.map((s) => {
+                                    if(s.id !== new_section.id) return s;
+                                    return new_section;
+                                });
+                                let t = 0;
+                                new_sections.map((s) => {
+                                    if(s.weight != -1 && s.weight != undefined){
+                                        t += parseInt(parseFloat(s.weight) * 100);
+                                    }
+                                });
+                                setTotal(t);
                             }
 
                             return(
-                                <SectionView section={section.item} deleteSection={deleteSectionFromClass}/>
+                                <SectionView updateTotal={updateTotal} section={section.item} deleteSection={deleteSectionFromClass}/>
                             );
                         }}
                     />

@@ -31,6 +31,7 @@ import FlatButton from './shared/custom_buttons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Toast from 'react-native-simple-toast';
 
 import HomeScreen from './screens/HomeScreen';
 import CreateProfileScreen from './screens/CreateProfileScreen';
@@ -42,6 +43,34 @@ import SectionScreen from './screens/SectionScreen';
 import SemesterScreen from './screens/SemesterScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
 import ConfigureLetterGradingScreen from './screens/ConfigureLetterGradingScreen';
+
+const HeaderView = ({navigation, backButtonOnPress, titleView}) => {
+  return(
+    <View style={{width: '100%', height: 65, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
+      {/* Back button */}
+      <View style={{marginRight: 20}}>
+        <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={backButtonOnPress}>
+          <AntDesign name="arrowleft" size={25} color='black'/>
+        </TouchableOpacity>
+      </View>
+      {/* Title */}
+      <View style={{flex: 1}}>
+        { titleView }
+      </View>
+      {/* Save Button */}
+      <View style={{width: 100, height: 45, marginLeft: 'auto'}}>
+        <FlatButton
+          text="Save"
+          onPress={() => {
+            navigation.navigate("Save");
+          }}
+        />
+      </View>
+    </View>
+  );
+}
 
 const Stack = createNativeStackNavigator();
 
@@ -102,16 +131,44 @@ function App(): React.JSX.Element {
               component={ConfigureSectionsScreen}
               options={({navigation, route}) => ({
                 // title: ''
-                headerRight: () => (
-                  <View style={{width: 100, height: 45}}>
-                    <FlatButton
-                      text="Save"
-                      onPress={() => {
-                        navigation.navigate("Save");
-                      }}
-                    />
-                  </View>
-                )
+                // headerRight: () => (
+                //   <View style={{width: 100, height: 45}}>
+                //     <FlatButton
+                //       text="Save"
+                //       onPress={() => {
+                //         navigation.navigate("Save");
+                //       }}
+                //     />
+                //   </View>
+                // )
+                // header: () => (
+                //   <View>
+                //     <Text>{route.params.total}</Text>
+                //   </View>
+                // )
+                header: () => (
+                  <HeaderView
+                    navigation={navigation}
+                    backButtonOnPress={() => {
+                      const { year, curr_class, total } = route.params;
+                      if(total > 100){
+                          Toast.show(`The total weights cannot exceed 100% total: ${total}`, Toast.SHORT);
+                      }
+                      else{
+                          navigation.navigate('Semester', {semester: route.params.semester});
+                      }
+                    }}
+                    titleView={(
+                      <View>
+                        {route.params.curr_class.name !== '' && (
+                          <Text style={{flexWrap: 'wrap', fontSize: 20}}>Configure Sections in {route.params.curr_class.name}</Text>
+                        )}
+                        {route.params.curr_class.name === '' && (
+                          <Text style={{flexWrap: 'wrap', fontSize: 20}}>Configure Sections in New Class</Text>
+                        )}
+                      </View>
+                    )}
+                  />)
               })}
             />
             <Stack.Screen
@@ -119,37 +176,54 @@ function App(): React.JSX.Element {
               component={ConfigureLetterGradingScreen}
               options={({navigation, route}) => ({
                 header: () => (
-                  <View style={{width: '100%', height: 65, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
-                    {/* Back button */}
-                    <View style={{marginRight: 20}}>
-                      <TouchableOpacity
-                      activeOpacity={0.5}
-                      onPress={() => {
-                        const { curr_class, semester } = route.params;
-                        navigation.navigate('Semester', {semester: semester});
-                      }}>
-                        <AntDesign name="arrowleft" size={25} color='black'/>
-                      </TouchableOpacity>
-                    </View>
-                    {/* Title */}
-                    <View style={{flex: 1}}>
-                      {route.params.curr_class.name !== '' && (
-                        <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in {route.params.curr_class.name}</Text>
-                      )}
-                      {route.params.curr_class.name === '' && (
-                        <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in New Class</Text>
-                      )}
-                    </View>
-                    {/* Save Button */}
-                    <View style={{width: 100, height: 45, marginLeft: 'auto'}}>
-                      <FlatButton
-                        text="Save"
-                        onPress={() => {
-                          navigation.navigate("Save");
-                        }}
-                      />
-                    </View>
-                  </View>
+                  // <View style={{width: '100%', height: 65, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
+                  //   {/* Back button */}
+                  //   <View style={{marginRight: 20}}>
+                  //     <TouchableOpacity
+                  //     activeOpacity={0.5}
+                  //     onPress={() => {
+                  //       const { curr_class, semester } = route.params;
+                  //       navigation.navigate('Semester', {semester: semester});
+                  //     }}>
+                  //       <AntDesign name="arrowleft" size={25} color='black'/>
+                  //     </TouchableOpacity>
+                  //   </View>
+                  //   {/* Title */}
+                  //   <View style={{flex: 1}}>
+                  //     {route.params.curr_class.name !== '' && (
+                  //       <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in {route.params.curr_class.name}</Text>
+                  //     )}
+                  //     {route.params.curr_class.name === '' && (
+                  //       <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in New Class</Text>
+                  //     )}
+                  //   </View>
+                  //   {/* Save Button */}
+                  //   <View style={{width: 100, height: 45, marginLeft: 'auto'}}>
+                  //     <FlatButton
+                  //       text="Save"
+                  //       onPress={() => {
+                  //         navigation.navigate("Save");
+                  //       }}
+                  //     />
+                  //   </View>
+                  // </View>
+                  <HeaderView
+                    navigation={navigation}
+                    backButtonOnPress={() => {
+                      const { curr_class, semester } = route.params;
+                      navigation.navigate('Semester', {semester: semester});
+                    }}
+                    titleView={(
+                      <View>
+                        {route.params.curr_class.name !== '' && (
+                          <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in {route.params.curr_class.name}</Text>
+                        )}
+                        {route.params.curr_class.name === '' && (
+                          <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in New Class</Text>
+                        )}
+                      </View>
+                    )}
+                  />
                 ),
               })}
             />

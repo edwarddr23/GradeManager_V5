@@ -36,8 +36,8 @@ const LetterGradeView = ({letter_grade}) => {
     const { updateLetterGradeInProfile } = useProfileContext();
     // State variables to allow for the editing and viewing behaviors of component LetterGradeView.
     const[is_editing, setIs_editing] = useState(false);
-    const[beg, setBeg] = useState(letter_grade.beg);
-    const[end, setEnd] = useState(letter_grade.end);
+    const[beg, setBeg] = useState(letter_grade.beg.toString());
+    const[end, setEnd] = useState(letter_grade.end.toString());
 
     return(
         <View>
@@ -82,6 +82,8 @@ const LetterGradeView = ({letter_grade}) => {
                             // Given the inputs pass all of the tests in validPositiveIntInputs(), then change the state of this component to its viewing state and keep the changes to the beginning and end ranges to the state as well as save them to the global profile object.
                             if(valid_inputs){
                                 setIs_editing(!is_editing);
+                                setBeg(beg.trim());
+                                setEnd(end.trim());
                                 updateLetterGradeInProfile(
                                     {
                                         ...letter_grade,

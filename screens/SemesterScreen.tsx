@@ -142,7 +142,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
 
     // https://reactnavigation.org/docs/navigation-events/
     useEffect(() => {
-        console.log(`THIS IS RUNNING`);
+        // console.log(`THIS IS RUNNING`);
         navigation.addListener('focus', () => {
             setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
         })
@@ -237,7 +237,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                                     <Text style={{fontSize: 15}}>(Last number is non-inclusive.)</Text>
                                     {letter_grading.map((l) => {
                                         return(
-                                            <Text style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
+                                            <Text key={l.id} style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
                                         );
                                     })}
                                 </View>

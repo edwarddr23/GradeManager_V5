@@ -3,7 +3,7 @@ import Toast from 'react-native-simple-toast';
 
 export function validPositiveIntInputs(inputs, input_names) {
     for(let i = 0; i < inputs.length; i++) {
-        if(inputs[i] === -1 || inputs[i] === ''){
+        if(inputs[i] === -1 || inputs[i].toString().trim() === ''){
             Toast.show(`Please enter ${input_names[i]}`, Toast.SHORT);
             return false;
         }
