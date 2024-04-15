@@ -1,47 +1,54 @@
 import React from 'react'
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 import FlatButton from '../shared/custom_buttons';
-import { useProfileContext } from '../shared/profile_context';
 
+/*
+NAME
+
+        HomeScreen - a component that shows handles the home screen functionality.
+SYNOPSIS
+
+        <View> HomeScreen({navigation})
+            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+DESCRIPTION
+
+        This component returns a View that displays the title text and the buttons that navigate to the CreateProfileScreen and LoadScreen.
+RETURNS
+
+        Returns a View component.
+*/
 const HomeScreen = ({navigation}) => {
-    const profile_context = useProfileContext();
-    
-    // console.log('HomeScreen.tsx: profile_context:', profile_context);
-
-    function handleGoToCreateProfile (isLoadingProfile) {
-        if(isLoadingProfile === false){
-            return navigation.navigate('Create Profile');
-        }
-    };
-
-    function handleGoToLoadProfile () {
-        return navigation.navigate('Load');
-    }
-
     return(
-        <View style={{flexDirection: 'column', flex: 1, alignItems: 'center'}}>
-            <View style={{flex: 1, paddingTop: '25%', width: '90%', justifyContent: 'space-evenly'}}>
-                <Text style={{fontSize: 50, fontWeight: 'bold', paddingBottom: 20, textAlign: 'center'}}>Welcome to Grade Manager!</Text>
+        <View style={styles.container}>
+            <View style={{flex: 1}}>
+                <Text style={{marginTop: 'auto', fontSize: 50, fontWeight: 'bold', paddingBottom: 20, textAlign: 'center'}}>Welcome to Grade Manager!</Text>
             </View>
-            <View style={{flex: 1, width: '70%'}}>
+            <View style={{flex: 1, width: '70%', gap: 30}}>
                 <View style={{flex: 1}}>
-                    <View style={{flex: 1, paddingBottom: '10%'}}>
-                        <FlatButton
-                            text='Create New Profile'
-                            onPress={() => handleGoToCreateProfile(false)}
-                        />
-                    </View>
-                    <View style={{flex: 1, paddingBottom: '30%'}}>
-                        <FlatButton
-                            text='Load Profile'
-                            onPress={() => handleGoToLoadProfile()}
-                        />
-                    </View>
+                    <FlatButton
+                        text='Create New Profile'
+                        onPress={() => navigation.navigate('Create Profile')}
+                    />
                 </View>
+                <View style={{flex: 1}}>
+                    <FlatButton
+                        text='Load Profile'
+                        onPress={() => navigation.navigate('Load')}
+                    />
+                </View>
+                <View style={{flex: 1}}/>
             </View>
         </View>
     );
 }
 
 export default HomeScreen;
+
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'column',
+        flex: 1,
+        alignItems: 'center'
+    }
+})

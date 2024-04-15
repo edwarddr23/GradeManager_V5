@@ -5,7 +5,6 @@ import { useProfileContext, SectionContent } from '../shared/profile_context';
 import Toast from 'react-native-simple-toast';
 
 import { findNextID } from '../shared/key_functions';
-import { Float } from 'react-native/Libraries/Types/CodegenTypes';
 import Footer from '../shared/custom_footer';
 import { validPositiveIntInputs } from '../shared/input_validation_functions';
 

@@ -82,16 +82,7 @@ function App(): React.JSX.Element {
         <Stack.Navigator>
           <Stack.Screen
             name="Home"
-            component={HomeScreen}
-            options={{
-              headerStyle: {
-                backgroundColor: '#f4511e'
-              },
-              headerTintColor: 'white',
-              headerTitleStyle: {
-                fontWeight: 'bold'
-              },
-            }}/>
+            component={HomeScreen}/>
           <Stack.Screen
             name="Create Profile"
             component={CreateProfileScreen}/>
@@ -130,22 +121,6 @@ function App(): React.JSX.Element {
               name="Configure Sections"
               component={ConfigureSectionsScreen}
               options={({navigation, route}) => ({
-                // title: ''
-                // headerRight: () => (
-                //   <View style={{width: 100, height: 45}}>
-                //     <FlatButton
-                //       text="Save"
-                //       onPress={() => {
-                //         navigation.navigate("Save");
-                //       }}
-                //     />
-                //   </View>
-                // )
-                // header: () => (
-                //   <View>
-                //     <Text>{route.params.total}</Text>
-                //   </View>
-                // )
                 header: () => (
                   <HeaderView
                     navigation={navigation}
@@ -161,10 +136,10 @@ function App(): React.JSX.Element {
                     titleView={(
                       <View>
                         {route.params.curr_class.name !== '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20}}>Configure Sections in {route.params.curr_class.name}</Text>
+                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>Configure Sections in {route.params.curr_class.name}</Text>
                         )}
                         {route.params.curr_class.name === '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20}}>Configure Sections in New Class</Text>
+                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>Configure Sections in New Class</Text>
                         )}
                       </View>
                     )}
@@ -176,37 +151,6 @@ function App(): React.JSX.Element {
               component={ConfigureLetterGradingScreen}
               options={({navigation, route}) => ({
                 header: () => (
-                  // <View style={{width: '100%', height: 65, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
-                  //   {/* Back button */}
-                  //   <View style={{marginRight: 20}}>
-                  //     <TouchableOpacity
-                  //     activeOpacity={0.5}
-                  //     onPress={() => {
-                  //       const { curr_class, semester } = route.params;
-                  //       navigation.navigate('Semester', {semester: semester});
-                  //     }}>
-                  //       <AntDesign name="arrowleft" size={25} color='black'/>
-                  //     </TouchableOpacity>
-                  //   </View>
-                  //   {/* Title */}
-                  //   <View style={{flex: 1}}>
-                  //     {route.params.curr_class.name !== '' && (
-                  //       <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in {route.params.curr_class.name}</Text>
-                  //     )}
-                  //     {route.params.curr_class.name === '' && (
-                  //       <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in New Class</Text>
-                  //     )}
-                  //   </View>
-                  //   {/* Save Button */}
-                  //   <View style={{width: 100, height: 45, marginLeft: 'auto'}}>
-                  //     <FlatButton
-                  //       text="Save"
-                  //       onPress={() => {
-                  //         navigation.navigate("Save");
-                  //       }}
-                  //     />
-                  //   </View>
-                  // </View>
                   <HeaderView
                     navigation={navigation}
                     backButtonOnPress={() => {
@@ -216,10 +160,10 @@ function App(): React.JSX.Element {
                     titleView={(
                       <View>
                         {route.params.curr_class.name !== '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in {route.params.curr_class.name}</Text>
+                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>Letter Grading in {route.params.curr_class.name}</Text>
                         )}
                         {route.params.curr_class.name === '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20}}>Letter Grading in New Class</Text>
+                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>Letter Grading in New Class</Text>
                         )}
                       </View>
                     )}

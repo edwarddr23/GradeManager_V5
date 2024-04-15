@@ -4,13 +4,13 @@ import { View, Text, StyleSheet, TextInput } from 'react-native'
 export default function InputWithLabel ({value, setValue, extraOnChangeText, placeholder, label}) {
     const [isFocus, setIsFocus] = useState(false);
 
-    const renderLabel = (labelText) => {
-        console.log('custom_text_inputs.js: renderLabel(): value: ', value);
-        console.log('custom_text_inputs.js: renderLabel(): isFocus: ', isFocus);
+    const renderLabel = (label) => {
+        // console.log('custom_text_inputs.js: renderLabel(): value: ', value);
+        // console.log('custom_text_inputs.js: renderLabel(): isFocus: ', isFocus);
         if (value || isFocus) {
-            console.log('custom_text_inputs.js: renderLabel(): returning label...');
+            // console.log('custom_text_inputs.js: renderLabel(): returning label...');
             return(
-                <Text style={[styles.label, isFocus && {color: 'blue'}]}>{labelText + ":"}</Text>
+                <Text style={[styles.label, isFocus && {color: 'blue'}]}>{label + ":"}</Text>
             );
         }
         return null;
