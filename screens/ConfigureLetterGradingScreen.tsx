@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Keyboard } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useProfileContext } from '../shared/profile_context';
 
 import { validPositiveIntInputs } from '../shared/input_validation_functions';
+import Footer from '../shared/custom_footer';
 
 /*
 NAME
@@ -130,6 +131,9 @@ const ConfigureLetterGradingScreen = ({navigation, route}) => {
     // Attach the current class's letter_grading property in state so that it can be edited in state.
     const[letter_grading, setLetter_grading] = useState(curr_class.letter_grading);
 
+    // Keyboard flags in state that indicate whether the keyboard is showing or not. This will be used mainly to make certain views invisible when the keyboard comes up.
+    const[keyboard_showing, setKeyboard_showing] = useState(false);
+
     // useEffect(() => {
     //     const title = () => {
     //         if(curr_class.name === '') return `New Class`;
@@ -150,23 +154,39 @@ const ConfigureLetterGradingScreen = ({navigation, route}) => {
     //         // )
     //     });
     // })
+
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboard_showing(true);
+        })
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboard_showing(false)
+        })
+    })
     
     return(
-        <View style={styles.container}>
-            {/* Display components in a scrollable FlatList that allows the user to edit the letter_grade objects within letter_grades.*/}
-            <FlatList
-                style={{width: '100%'}}
-                data={letter_grading}
-                keyExtractor={(item, index) => item.id}
-                removeClippedSubviews={false}
-                renderItem={(letter_grade) => {
-                    return(
-                        <LetterGradeView letter_grade={letter_grade.item}/>
-                    );
-                }}
-                contentContainerStyle={{marginTop: 30}}
-                ItemSeparatorComponent={() => <View style={{height: 20}}/>}
-            />
+        <View style={{flexDirection: 'column', flex: 1}}>
+            <View style={styles.container}>
+                {/* Display components in a scrollable FlatList that allows the user to edit the letter_grade objects within letter_grades.*/}
+                <FlatList
+                    style={{width: '100%'}}
+                    data={letter_grading}
+                    keyExtractor={(item, index) => item.id}
+                    removeClippedSubviews={false}
+                    renderItem={(letter_grade) => {
+                        // For each letter grade found in the letter_grading state array, create a LetterGradeView component based on its properties.
+                        return(
+                            <LetterGradeView letter_grade={letter_grade.item}/>
+                        );
+                    }}
+                    contentContainerStyle={{marginTop: 30}}
+                    ItemSeparatorComponent={() => <View style={{height: 20}}/>}
+                />
+            </View>
+            {/* If the keyboard is not up, then show the footer. If the footer is not hidden when the keyboard is brought up, then it will be brought to above the keyboard. */}
+            {!keyboard_showing && (
+                <Footer/>
+            )}
         </View>
     );
 }

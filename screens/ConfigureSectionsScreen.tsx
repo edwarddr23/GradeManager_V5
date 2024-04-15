@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet, Keyboard } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, SectionContent } from '../shared/profile_context';
 import Toast from 'react-native-simple-toast';
@@ -190,11 +190,16 @@ RETURNS
 */
 const ConfigureSectionsScreen = ({navigation, route}) => {
     const { profile_context, addSectionToProfile, updateClassSectionsInProfile } = useProfileContext();
+    // Extract the current class from the route's params to determine what the current class is.
     const { curr_class } = route.params;
 
-    // Extract the sections in question from 
+    // Extract the sections in question from the profile context using the current class in question.
     const[sections, setSections] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
 
+    // Keyboard flags in state that indicate whether the keyboard is showing or not. This will be used mainly to make certain views invisible when the keyboard comes up.
+    const[keyboard_showing, setKeyboard_showing] = useState(false);
+
+    // If there are sections already, set the total to the total of those weights.
     const[total, setTotal] = useState(() => {
         let t = 0;
         sections.map((s) => {
@@ -205,7 +210,15 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         return t;
     });
 
+    // Hook that runs on rerender. On rerender or when state variable total changes, then put this total in the params as well as the current semester. These will be for the header in App.tsx.
     useEffect(() => {
+        // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboard_showing(true);
+        })
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboard_showing(false)
+        })
         // sections.map((s) => {
         //     if(s.weight != -1 && s.weight != undefined){
         //         total += parseInt(parseFloat(s.weight) * 100);
@@ -251,13 +264,15 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
     }, [total]);
 
     return(
-        <View style={{flex: 1, alignItems: 'center'}}>
-            <View style={{marginVertical: 10, width: '80%', flex: 1}}>
+        // The programmatically set view that displays existing sections and allows users to add sections.
+        <View style={{flex: 1, alignItems: 'center', marginTop: 10}}>
+            <View style={{width: '80%', flex: 1, gap: 10}}>
                 {/* Button that adds a section. */}
                 <TouchableOpacity
-                    style={{marginBottom: 10, alignSelf: 'center'}}
+                    style={{alignSelf: 'center'}}
                     activeOpacity={0.5}
                     onPress={() => {
+                        // Properties of a section type for reference:
                         // id: Int32,
                         // year_id: Int32
                         // semester_id: Int32
@@ -266,6 +281,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                         // weight: Float
                         // average: Float
                         // assignments: AssignmentContent[]
+                        // Initialize a new SectionContent object.
                         const new_section: SectionContent = {
                             id: findNextID(sections),
                             year_id: curr_class.year_id,
@@ -276,31 +292,64 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                             average: -1,
                             assignments: []
                         }
-                        // console.log(`new_section.assignments.length: ${new_section.assignments.length}`);
+                        // Change the sections in state to reflect the new sections with the added section.
                         setSections([
                             ...sections,
                             new_section
                         ]);
+                        // Modifies the global profile context to reflect the new sections with the added section
                         addSectionToProfile(new_section);
                     }}>
-                    <AntDesign name="pluscircleo" size={55} color='black'/>
+                    {/* The icon for the add button. */}
+                    <AntDesign name="pluscircleo" size={70} color='black'/>
                 </TouchableOpacity>
+                {/* If there are no sections yet, display a text to notify the user to press the plus button to add sections. */}
                 {sections.length === 0 && (
                     <Text style={{textAlign: 'center', fontSize: 20}}>Press this button to add sections</Text>
                 )}
+                {/* Display of sections of the current class in question. */}
                 <View style={{flex: 1}}>
                     <FlatList
-                        style={{width: '100%'}}
                         data={sections}
                         keyExtractor={(item, index) => item.id}
                         removeClippedSubviews={false}
                         renderItem={(section) => {
+                            /*
+                            NAME
+
+                                    deleteSectionFromClass - a function that handles the deletion of a section in the state and global profile context.
+                            SYNOPSIS
+
+                                    void ConfigureLetterGradingScreen(Object section)
+                                        section --> a section object that represents the section to remove from the sections in state and sections in the global profile context.           
+                            DESCRIPTION
+
+                                    This function allows for the handling of deleting a section from a class after the event that the user presses the delete button on a given section. A new section array is created that is based on the old one, but without the section that matches parameter section. The respective sections array is updated in the state and in the global profile context to instead use this new sections list.
+                            RETURNS
+
+                                    Returns void.
+                            */
                             function deleteSectionFromClass(section) {
                                 const new_sections = sections.filter((s) => s.id !== section.id);
                                 setSections(new_sections);
                                 updateClassSectionsInProfile(curr_class, new_sections);
                             }
 
+                            /*
+                            NAME
+
+                                    updateTotal - a function that handles the updating of the state total variable after a section object is modified.
+                            SYNOPSIS
+
+                                    void updateTotal(new_section)
+                                        new_section --> a section object that represents the section in question that the user has finished editing (presumed to have valid values).
+                            DESCRIPTION
+
+                                    This function updates the total state variable after a section is updated. A new sections list is created to reflect the changed section which is now parameter new_section. A new total is calculated with this new sections array and this value is saved to the total state variable. This will be used in validating the total of the sections' weights after the back button in the header of the screen is pressed.
+                            RETURNS
+
+                                    Returns void.
+                            */
                             function updateTotal(new_section) {
                                 const new_sections = sections.map((s) => {
                                     if(s.id !== new_section.id) return s;
@@ -315,6 +364,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                                 setTotal(t);
                             }
 
+                            // For each section element in state array sections, create a SectionView component using its data.
                             return(
                                 <SectionView updateTotal={updateTotal} section={section.item} deleteSection={deleteSectionFromClass}/>
                             );
@@ -322,8 +372,10 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                     />
                 </View>
             </View>
-            {/* FOOTER */}
-            <Footer/>
+            {/* If the keyboard is not up, then show the footer. If the footer is not hidden when the keyboard is brought up, then it will be brought to above the keyboard. */}
+            {!keyboard_showing && (
+                <Footer/>
+            )}
         </View>
     );
 }
