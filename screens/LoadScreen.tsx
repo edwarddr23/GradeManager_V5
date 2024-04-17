@@ -6,14 +6,16 @@
         responsible for loading a profile from a profile name.
 */
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { View, Text, ScrollView, TextInput, StyleSheet, Keyboard } from 'react-native'
 
 import storage from '../shared/storage';
-import InputWithLabel from '../shared/custom_text_Inputs';
+import { SelectList } from 'react-native-dropdown-select-list';
 import { PrintData } from '../shared/profile_functions';
 import FlatButton from '../shared/custom_buttons';
 import { useProfileContext } from '../shared/profile_context';
+import { getAllSaveFileNames, importData } from '../shared/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /*
 NAME
@@ -33,9 +35,36 @@ RETURNS
 const LoadScreen = ({navigation}) => {
     const { profile_context } = useProfileContext();
     // State variables to keep track of the profile name to load and whether to allow the printing and loading of a profile if one is found.
-    const[loadFileName, setLoadFileName] = useState('');
+    // const[loadFileName, setLoadFileName] = useState('');
     const[fileExists, setFileExists] = useState(false);
     const[profile, setProfile] = useState({});
+    const[selected, setSelected] = useState();
+    const[all_keys, setAll_keys] = useState([]);
+    /*
+    NAME
+
+            getAllKeys - an async function that gets all of the saved profiles under a file name (key).
+    SYNOPSIS
+
+            void getAllKeys()
+                
+    DESCRIPTION
+
+            This function is a promise that calls the AsyncStorage getAllKeys() function to get all of the filenames, as I saved all of the filenames as the key. This function
+            is called in the useEffect hook to avoid running this promise function as an infinite loop.
+    RETURNS
+
+            Returns a View component.
+    */
+    // Algorithm inspiration taken from https://stackoverflow.com/questions/68762079/why-is-this-async-function-infinite-looping.
+    const getAllKeys = async() => {
+        try{
+            setAll_keys(await AsyncStorage.getAllKeys());
+        }
+        catch(error){
+            console.error(`Error: ${error}`);
+        }
+    }
 
     // Keyboard flags in state that indicate whether the keyboard is showing or not. This will be used mainly to make certain views invisible when the keyboard comes up.
     const[keyboard_showing, setKeyboard_showing] = useState(false);
@@ -48,7 +77,14 @@ const LoadScreen = ({navigation}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
-    });
+        getAllKeys();
+        // const getAll = async() => {
+        //     return (await AsyncStorage.getAllKeys((values) => useCallback(values)));
+        // }
+        // console.log(`useEffect(): getAllSaveFileNames(): ${JSON.stringify(getAllSaveFileNames(setAll_keys))}`);
+        
+        // console.log(`useEffect(): all_keys: ${all_keys}`)
+    }, []);
 
     /*
     NAME
@@ -72,6 +108,7 @@ const LoadScreen = ({navigation}) => {
     */
     // Inspired by https://www.waldo.com/blog/react-native-fs
     function readFile(fileName) {
+        console.log(`readFile(): fileName: ${fileName}`);
         if(fileName === ''){
             setFileExists(false);
             return;
@@ -79,6 +116,7 @@ const LoadScreen = ({navigation}) => {
         storage.load({key: fileName})
             // If a file is found under fileName, modify the global profile_context to reflect this loaded profile if the user chooses to load it. Set state variable fileExists to true so that the profile preview and the load button can be rendered.
             .then((data) => {
+                console.log(`loading ${fileName}`)
                 const profile = data.profile;
                 setProfile(profile);
                 profile_context.setProfile_name(profile.profile_name);
@@ -96,7 +134,7 @@ const LoadScreen = ({navigation}) => {
     return(
         <View style={styles.container}>
             {/* The TextInput for the profile name to load and the TextView under it that tells the user to not put punctuation or an extension. */}
-            <View style={{height: 70}}>
+            {/* <View style={{height: 70}}>
                 <TextInput
                     style={styles.textInput}
                     value={loadFileName}
@@ -108,29 +146,44 @@ const LoadScreen = ({navigation}) => {
                     placeholder='Enter profile name here'
                 />
                 <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
+            </View> */}
+            {/* SelectList that lets a user select a saved profile. */}
+            <View>
+                <SelectList
+                    // Placeholder is type so that the selected type will show after the exam is closed and reopened.
+                    placeholder={'Select a profile name here'}
+                    setSelected={(val) => setSelected(val)}
+                    data={all_keys}
+                    search={false}
+                    save="value"
+                    // When a user selects a profile, load that into the global profile_context and print its contents.
+                    onSelect={() => {
+                        readFile(selected);
+                    }}
+                />
             </View>
             {/* ScrollView to display the profile data loaded if one under the filename specified is found. */}
             <View style={{flex: 1}}>
                 <ScrollView>
                     {/* If there is a profile name entered and a file is found for that name, print the data loaded. */}
-                    {fileExists === true && loadFileName !== '' && (
+                    {fileExists === true && selected !== '' && (
                         PrintData(profile_context)
                     )}
                     {/* If there is a profile name entered but no file is found, then let the user know that no user is found. */}
-                    {fileExists === false && loadFileName !== '' && (
-                        <Text>Profile: "{loadFileName}" could not be found.</Text>
+                    {fileExists === false && selected !== '' && (
+                        <Text>Profile: "{selected}" could not be found.</Text>
                     )}
                     {/* If there is no profile name entered, then return to a resting state and do not do anything. */}
-                    {loadFileName === '' && (
+                    {selected === '' && (
                         <Text>Profile Preview here...</Text>
                     )}
                 </ScrollView>
             </View>
             {/* Load button that lets a user load the profile loaded into the global profile_context in function readFile(). */}
             <View style={{height: 70}}>
-                {fileExists === true && loadFileName != '' && !keyboard_showing && (
+                {fileExists === true && selected !== '' && !keyboard_showing && (
                     <FlatButton 
-                        text={'Load \"' +  loadFileName + '\"'}
+                        text={'Load \"' +  selected + '\"'}
                         onPress={() => {
                             // console.log('renderLoadProfileButton(): profile:', profile);
                             navigation.navigate('Years', {profile: profile});

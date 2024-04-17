@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
+/* 
+    SaveScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for saving a profile specified by a filename.
+*/
+
+import React, { useState } from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import RNFS from 'react-native-fs';
+// import RNFS from 'react-native-fs';
 
 import InputWithLabel from '../shared/custom_text_Inputs';
 import FlatButton from '../shared/custom_buttons';
@@ -10,7 +18,7 @@ import { useProfileContext } from '../shared/profile_context';
 
 const SaveScreen = ({navigation, route}) => {
     const { profile_context } = useProfileContext();
-    console.log(`SaveScreen.tsx: profile_context.years: ${profile_context.years}`);
+    // console.log(`SaveScreen.tsx: profile_context.years: ${profile_context.years}`);
     // const {profile} = route.params;
     // const[documentsFolder, setDocumentsFolder] = useState('');
     const[saveFileName, setSaveFileName] = useState('');
