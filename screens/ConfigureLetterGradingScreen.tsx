@@ -1,3 +1,13 @@
+/* 
+    ConfigureLetterGradingScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for configuring the letter grades and their ranges for a given class. Changes
+        in the state will be saved to the global profile context to keep the data consistent between
+        screens and make sure that the data saved in SaveScreen.tsx is accurate.
+*/
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Keyboard } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';

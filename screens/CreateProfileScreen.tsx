@@ -1,3 +1,12 @@
+/* 
+    CreateProfileScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for initializing a new profile and navigating to the YearsScreen to let the user
+        start editing the newly initialized global profile context
+*/
+
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
 import Toast from 'react-native-simple-toast';

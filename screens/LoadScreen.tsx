@@ -1,5 +1,13 @@
-import React, { useState } from 'react'
-import { View, Text, ScrollView, TextInput, StyleSheet } from 'react-native'
+/* 
+    LoadScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for loading a profile from a profile name.
+*/
+
+import React, { useEffect, useState } from 'react'
+import { View, Text, ScrollView, TextInput, StyleSheet, Keyboard } from 'react-native'
 
 import storage from '../shared/storage';
 import InputWithLabel from '../shared/custom_text_Inputs';
@@ -7,80 +15,77 @@ import { PrintData } from '../shared/profile_functions';
 import FlatButton from '../shared/custom_buttons';
 import { useProfileContext } from '../shared/profile_context';
 
+/*
+NAME
+
+        LoadScreen - a component that handles the load screen functionality.
+SYNOPSIS
+
+        <View> LoadScreen({navigation})
+            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+DESCRIPTION
+
+        This component renders the TextInput for the profile name to load, the profile information, and the button to load the profile in question if a profile with that name is found.
+RETURNS
+
+        Returns a View component.
+*/
 const LoadScreen = ({navigation}) => {
     const { profile_context } = useProfileContext();
+    // State variables to keep track of the profile name to load and whether to allow the printing and loading of a profile if one is found.
     const[loadFileName, setLoadFileName] = useState('');
     const[fileExists, setFileExists] = useState(false);
     const[profile, setProfile] = useState({});
 
-    const renderProfilePreview = () => {
-        if(fileExists === true && loadFileName != '') {
-            return(PrintData(profile_context));
-        }
-        else if(fileExists === false && loadFileName != '') {
-            return(
-                <Text>Profile: "{loadFileName}" could not be found.</Text>
-            );
-        }
-        else{
-            console.log('renderProfilePreview(): fileExists():', fileExists);
-            return(
-                <Text>Profile Preview here...</Text>
-            );
-        }
-    }
+    // Keyboard flags in state that indicate whether the keyboard is showing or not. This will be used mainly to make certain views invisible when the keyboard comes up.
+    const[keyboard_showing, setKeyboard_showing] = useState(false);
 
-    const renderLoadProfileButton = () => {
-        if(fileExists === true && loadFileName != '') {
-            return(
-                <FlatButton 
-                    text={'Load \"' +  loadFileName + '\"'}
-                    onPress={() => {
-                        console.log('renderLoadProfileButton(): profile:', profile);
-                        navigation.navigate('Years', {profile: profile});
-                    }}
-                />
-            );
-        }
-        else{
-            return null;
-        }
-    }
+    // Hook that runs everytime there is a rerender. Listeners for the keyboard are updated to keep track of whether the keyboard is up or not. This will be used to display the load button only when the keyboard is down, otherwise, the button will hold itself above the keyboard.
+    useEffect(() => {
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboard_showing(true);
+        })
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboard_showing(false)
+        })
+    });
 
-    // const saveFileExists = () => {
-    //     if(loadFileName != ''){
-    //         console.log('saveFileExists(): searching for', loadFileName + '...');
-    //         storage.load({key: loadFileName})
-    //             .then((data) => {
-    //                 setFileExists(true)
-    //             })
-    //             .catch((err) => {
-    //                 setFileExists(false)
-    //             });
-    //     }
-    //     else{
-    //         console.log('saveFileExists(): No profile name entered.');
-    //         setFileExists('')
-    //     }
-    // }
+    /*
+    NAME
 
+            readFile - a function that handles the search for a profile under the name specified by parameter fileName.
+    SYNOPSIS
+
+            void readFile(fileName)
+                fileName --> a string that represents the filename entered from the TextInput on this screen.
+    DESCRIPTION
+
+            If the fileName passed as a parameter is an empty string, then set the state fileExists variable to false to 
+            avoid unexpected behavior. The filename must be passed as a parameter and cannot use the state variable as the 
+            state variable is only updated after a rerender, when we want to read the file as it is entered (in other words,
+            before a rerender). Once the fileName parameter entered is not empty, then attempt to load a profile in storage
+            under the key name fileName. If a profile is found, set the profile variable in state to the data found. Edit the
+            global profile_context object to now hold the data that was found in the file loaded.
+    RETURNS
+
+            Returns void.
+    */
     // Inspired by https://www.waldo.com/blog/react-native-fs
-    const readFile = (fileName) => {
-        if(fileName == ''){
+    function readFile(fileName) {
+        if(fileName === ''){
             setFileExists(false);
-            return
+            return;
         }
-        console.log('LoadScreen.tsx: readFile(): Reading from', fileName + '...');
         storage.load({key: fileName})
+            // If a file is found under fileName, modify the global profile_context to reflect this loaded profile if the user chooses to load it. Set state variable fileExists to true so that the profile preview and the load button can be rendered.
             .then((data) => {
-                console.log('readFile(): data:', data);
                 const profile = data.profile;
                 setProfile(profile);
-                console.log('LoadScreen.tsx: readFile(): profile:', profile);
                 profile_context.setProfile_name(profile.profile_name);
                 profile_context.setYears(profile.years);
                 setFileExists(true);
             })
+            // If a file is not found under fileName, then throw a warning into the console and set the fileExists state variable to false to prevent the loading of a profile that does not exist or a profile that should not be loaded.
             .catch((err) => {
                 console.warn(err.message);
                 console.log('err.name:', err.name);
@@ -89,48 +94,49 @@ const LoadScreen = ({navigation}) => {
     };
 
     return(
-        <View style={{flexDirection: 'column', flex: 1}}>
-            <View style={{flex: 1, marginVertical: '5%', marginHorizontal: '5%'}}>
-                {/* <View style={{flex: .5}}> */}
-                <View style={{height: 50}}>
-                    <TextInput
-                        style={styles.inputText}
-                        value={loadFileName}
-                        onChangeText={text => {
-                            setLoadFileName(text);
-                            readFile(text);
-                        }}
-                        placeholder='Enter profile name here'
-                    />
-                </View>
-                    {/* <InputWithLabel
-                        value={loadFileName}
-                        SetValue={setLoadFileName}
-                        placeholder={'Enter profile name here...'}
-                        label="Profile Name:"
-                    /> */}
-                    <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
-                {/* </View> */}
-                {/* {readFile()} */}
-                {/* <Text>"{loadFileName}" exists: {String(saveFileExists())}</Text> */}
-                {/* <View style={{flex: .3, marginTop: '5%'}}>
+        <View style={styles.container}>
+            {/* The TextInput for the profile name to load and the TextView under it that tells the user to not put punctuation or an extension. */}
+            <View style={{height: 70}}>
+                <TextInput
+                    style={styles.textInput}
+                    value={loadFileName}
+                    // As the text in the TextInput changes, change the fileName state variable for rerender handling, and read the file specified by the profile name entered.
+                    onChangeText={text => {
+                        setLoadFileName(text.trim());
+                        readFile(text.trim());
+                    }}
+                    placeholder='Enter profile name here'
+                />
+                <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
+            </View>
+            {/* ScrollView to display the profile data loaded if one under the filename specified is found. */}
+            <View style={{flex: 1}}>
+                <ScrollView>
+                    {/* If there is a profile name entered and a file is found for that name, print the data loaded. */}
+                    {fileExists === true && loadFileName !== '' && (
+                        PrintData(profile_context)
+                    )}
+                    {/* If there is a profile name entered but no file is found, then let the user know that no user is found. */}
+                    {fileExists === false && loadFileName !== '' && (
+                        <Text>Profile: "{loadFileName}" could not be found.</Text>
+                    )}
+                    {/* If there is no profile name entered, then return to a resting state and do not do anything. */}
+                    {loadFileName === '' && (
+                        <Text>Profile Preview here...</Text>
+                    )}
+                </ScrollView>
+            </View>
+            {/* Load button that lets a user load the profile loaded into the global profile_context in function readFile(). */}
+            <View style={{height: 70}}>
+                {fileExists === true && loadFileName != '' && !keyboard_showing && (
                     <FlatButton 
-                        text='Show Preview'
+                        text={'Load \"' +  loadFileName + '\"'}
                         onPress={() => {
-                            readFile();
-                            // poosaveToFileHandler(saveFileName);
+                            // console.log('renderLoadProfileButton(): profile:', profile);
+                            navigation.navigate('Years', {profile: profile});
                         }}
                     />
-                </View> */}
-                <View style={{flex: 1}}>
-                    <ScrollView style={{paddingTop: '5%'}}>
-                        {renderProfilePreview()}
-                    </ScrollView>
-                </View>
-                <View style={{flex: .3, paddingBottom: '10%'}}>
-                    {renderLoadProfileButton()}
-                </View>
-                {/* <View style={{flex:}}></View> */}
+                )}
             </View>
         </View>
     );
@@ -139,7 +145,15 @@ const LoadScreen = ({navigation}) => {
 export default LoadScreen;
 
 const styles = StyleSheet.create({
-    inputText: {
+    container: {
+        flex: 1,
+        marginVertical: '5%',
+        width: '90%',
+        alignSelf: 'center',
+        gap: 20
+    },
+
+    textInput: {
         fontSize: 20,
         borderWidth: 3,
         borderRadius: 10,

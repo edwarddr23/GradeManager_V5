@@ -1,3 +1,13 @@
+/* 
+    ConfigureSectionsScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for configuring sections for a given class. Section names and relative weights
+        can be defined. Changes in the state will be saved to the global profile context to keep the 
+        data consistent between screens and make sure that the data saved in SaveScreen.tsx is accurate.
+*/
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet, Keyboard } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign'

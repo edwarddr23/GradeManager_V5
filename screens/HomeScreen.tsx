@@ -1,3 +1,12 @@
+/* 
+    HomeScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for the home screen; This entails the welcome text and the buttons for going
+        to the screen that handles creating a profile and the button that handles loading a profile.
+*/
+
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -6,7 +15,7 @@ import FlatButton from '../shared/custom_buttons';
 /*
 NAME
 
-        HomeScreen - a component that shows handles the home screen functionality.
+        HomeScreen - a component that handles the home screen functionality.
 SYNOPSIS
 
         <View> HomeScreen({navigation})
