@@ -295,7 +295,7 @@ NAME
     ClassView - a dynamic component that allows the viewing and editing of a given class within a semester.
 SYNOPSIS
 
-    ClassView = ({semester, curr_class, deleteClass, navigation})
+    <View> ClassView = ({semester, curr_class, deleteClass, navigation})
         semester --> the semester object the current section in question is a child of.
         curr_class --> the class object in question to display and edit.
         deleteClass --> a function component to handle the deletion of a class from the parent component SemesterScreen.
@@ -323,7 +323,6 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     // State variables that handle the behaviors of the state returned by the ClassView component.
     const[is_editing, setIs_editing] = useState(false);
     const[is_expanded, setIsExpanded] = useState(false);
-    const[grading_expanded, setGrading_expanded] = useState(false);
 
     useEffect(() => {
         // navigation.addListener('focus', () => {
@@ -332,6 +331,24 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
         // setLetter_grading(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
     }, [])
 
+    /*
+    NAME
+
+        renderCalculatedClassAverage - a function component that renders the calculated class average of the current class in question.
+    
+    SYNOPSIS
+
+        void renderCalculatedClassAverage()
+
+    DESCRIPTION
+
+        This function component will display either the calculated class average as a proper decimal to 2 decimal places or as "N/A" if
+        a calculated average for the class cannot be calculated with the information from its child assignments.
+
+    RETURNS
+
+        Returns a Text component that displays the calculated class average or "N/A".
+    */
     const renderCalculatedClassAverage = () => {
         if(calculateClassAverage(sections) === 'N/A') return (
             <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
@@ -341,15 +358,24 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
         )
     }
 
-    const renderExpectedClassLetterGrade = () => {
-        if(calculateExpectedClassLetterGrade(curr_class) === 'N/A') return (
-            <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
-        );
-        return(
-            <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
-        )
-    }
+    /*
+    NAME
 
+        renderExpectedClassAverage - a function component that renders the expected class average of the current class in question.
+    
+    SYNOPSIS
+
+        void renderExpectedClassLetterGrade()
+
+    DESCRIPTION
+
+        This function component will display either the expected class average as a proper decimal to 2 decimal places or as "N/A" if
+        an expected average for the class cannot be calculated with the information from its child assignments.
+
+    RETURNS
+
+        Returns a Text component that displays the expected class average or "N/A".
+    */
     const renderExpectedClassAverage = () => {
         if(calculateExpectedClassAverage(sections) === 'N/A') return (
             <Text style={{fontSize: 20}}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
@@ -359,14 +385,37 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
         )
     }
 
+    // State variables that handle the expanding and collapsing of the letter grading view.
+    const[grading_expanded, setGrading_expanded] = useState(false);
+    /*
+    NAME
+
+        renderClassLetterGrading - a function component that renders the letter grading thresholds of the current class in question.
+    
+    SYNOPSIS
+
+        <View> renderClassLetterGrading()
+
+    DESCRIPTION
+
+        This function component will render a dynamic View component that has an expanded and unexpanded
+        state. In its unexpanded state, it just shows its header, which says "Letter Grading". When the header
+        (which is the only part of the View visible in its editing state) is pressed, the View is expanded,
+        and will show the each letter grade and their respective ranges. There is also an edit button that allows
+        the user to configure the letter grading thresholds for the current class in question.
+
+    RETURNS
+
+        Returns a dynamic View component which has an expanded or unexpanded state.
+    */
     const renderClassLetterGrading = () => {
         return(
-            <View style={{backgroundColor: '#BEBEBE', borderRadius: 10, padding: 20}}>
+            <View style={styles.letterGrading}>
                 {/* Top pressable part of the letter grading View component that lets the user view or edit the letter grading thresholds for a given class. It can be expanded or minimized to reduce clutter. */}
-                <TouchableOpacity style={{flexDirection: 'row'}}
+                <TouchableOpacity style={{flexDirection: 'row', gap: 10}}
                     onPress={() => setGrading_expanded(!grading_expanded)}
                     activeOpacity={0.5}>
-                    <Text style={{fontSize: 28, textAlignVertical: 'center'}}>Letter Grading:</Text>
+                    <Text style={{flex: 1, fontSize: 28, textAlignVertical: 'center'}}>Letter Grading:</Text>
                     {/* Button to configure letter grades and their thresholds.*/}
                     <TouchableOpacity
                         onPress={() => { navigation.navigate('Configure Letter Grading', {semester: semester, curr_class: curr_class})}}>
@@ -395,9 +444,29 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
         );
     }
 
+    /*
+    NAME
+
+        renderClassSections - a function component that renders the sections of the current class in question.
+    
+    SYNOPSIS
+
+        <View> renderClassSections()
+
+    DESCRIPTION
+
+        This function component will render a View that will vary based on how many sections are
+        iterated through when mapping through the sections state array. Each section found in the sections
+        state array will have a respective SectionView component created from it, allowing the user to view
+        and edit the section in question.
+
+    RETURNS
+
+        Returns a View that programmatically displays the sections of a class.
+    */
     const renderClassSections = () => {
         if(sections.length > 0) return (
-            <View style={{flex: 1}}>
+            <View>
                 {sections.map((s) => {
                     return(
                         <SectionView key={s.id} semester={semester} curr_class={curr_class} section={s} navigation={navigation}/>
@@ -407,13 +476,42 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
         )
     }
 
+    /*
+    NAME
+
+        renderClassArrowIcon - a function component that renders the up or down icon for a class.
     
+    SYNOPSIS
+
+        <AntDesign> renderClassArrowIcon()
+
+    DESCRIPTION
+
+        This function component will render an AntDesign component that is a down circle or
+        up circle icon if the class is collapsed and expanded, respectively. This is short and
+        simple, but is used multiple times as it must be called for both the viewing and editing
+        states of the top section of the ClassView, so this has its own function component.
+
+    RETURNS
+
+        Returns an AntDesign component which has an up circle or down circle icon.
+    */
+    const renderClassArrowIcon = () => {
+        if(!is_expanded) return (
+            <AntDesign style={{marginLeft: 10}} name="downcircleo" size={50} color='black'/>
+        );
+        return (
+            <AntDesign style={{marginLeft: 10}} name="upcircleo" size={50} color='black'/>
+        );
+    }
+
     return(
         <View style={styles.classStyle}>
             {/* Top section of SectionView for dropdown functionality and showing class name and class letter grade. */}
             <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() => setIsExpanded(!is_expanded)}>
+                {/* Viewing state of top section of SectionView. */}
                 {!is_editing && (
                     <View style={{flexDirection: 'row', flex: 1}}>
                         <View style={{flex: 1}}>
@@ -429,7 +527,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                             )}
                         </View>
                         <View style={{flexDirection: 'row'}}>
-                            {/* Edit button for class. */}
+                            {/* Edit button for class, which changes the state of the top section of SectionView to its editing state. */}
                             <TouchableOpacity
                                 style={{marginLeft: 'auto'}}
                                 activeOpacity={0.5}
@@ -438,19 +536,16 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                                 }}>
                                 <AntDesign name="edit" size={50} color='black'/>
                             </TouchableOpacity>
-                            {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
-                            {!is_expanded && (
-                                <AntDesign style={{marginLeft: 10}} name="downcircleo" size={50} color='black'/>
-                            )}
-                            {is_expanded && (
-                                <AntDesign style={{marginLeft: 10}} name="upcircleo" size={50} color='black'/>
-                            )}
                         </View>
+                        {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
+                        { renderClassArrowIcon() }
                     </View>
                 )}
+                {/* Editing state of top section of SectionView. */}
                 {is_editing && (
                     <View style={{alignItems: 'center', gap: 10}}>
                         <View style={{flexDirection: 'row'}}>
+                            {/* TextInput that allows the name of the current class in question to be changed. */}
                             <TextInput
                                 style={styles.inputText}
                                 value={name}
@@ -459,20 +554,24 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                                     setName(text);
                                 }}
                             />
-                            {/* Done Button to change name of class. */}
+                            {/* Done Button to change name of class, which also changes the state of the top section of SectionView to its viewing state. */}
                             <TouchableOpacity
                                 style={{marginLeft: 'auto'}}
                                 activeOpacity={0.5}
                                 onPress={() => {
+                                    // A copy of the old curr_class object is made, changing only the name.
                                     const new_class = {
                                         ...curr_class,
                                         name: name
                                     }
+                                    // Update the global context to reflect the name change.
                                     updateClassInProfile(new_class);
                                     setIs_editing(false);
                                 }}>
                                 <AntDesign name="checkcircleo" size={50} color='green'/>
                             </TouchableOpacity>
+                            {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
+                            { renderClassArrowIcon() }
                         </View>
                         {/* Button that deletes a year from a semester. */}
                         <TouchableOpacity
@@ -489,7 +588,8 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                     {/* Print out class average if one can be calculated. */}
                     { renderCalculatedClassAverage() }
                     <View>
-                        { renderExpectedClassLetterGrade() }
+                        {/* Render the expected letter grade */}
+                        <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
                         { renderExpectedClassAverage() }
                     </View>
                     {/* Expandable letter grading component that displays the letter grade thresholds. */}
@@ -518,7 +618,6 @@ const SemesterScreen = ({navigation, route}) => {
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
     useEffect(() => {
-        console.log(`SemesterScreen(): useEffect() ran`);
         setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
         navigation.setOptions({
             title: `${semester.season} ${semester.year}`,
@@ -549,6 +648,51 @@ const SemesterScreen = ({navigation, route}) => {
             {/* Button that adds a class to a semester */}
             <TouchableOpacity style={{ height: 75, marginTop: 20, marginBottom: 5}}
                 onPress={() => {
+                    const initialLetterGrading = () => {
+                        const letters = {
+                            "A": [94, 100],
+                            "A-": [90, 94],
+                            "B+": [87, 90],
+                            "B": [84, 87],
+                            "B-": [80, 84],
+                            "C+": [77, 80],
+                            "C": [74, 77],
+                            "C-": [70, 74],
+                            "D+": [67, 70],
+                            "D": [65, 67],
+                            "F": [0, 65]
+                        };
+                        let init_letter_grading = [];
+                        for(const [key, value] of Object.entries(letters)){
+                            // Letter Grading Info:
+                            // id: Int32,
+                            // year_id: Int32
+                            // semester_id: Int32
+                            // class_id: Int32
+                            // letter: string
+                            // beg: Int32
+                            // end: Int32
+                            // const a_grade: LetterGradeContent = {
+                            //     id: 0,
+                            //     year_id: semester.year_id,
+                            //     semester_id: semester.id,
+                            //     class_id
+                            // }
+                            init_letter_grading.push(
+                                {
+                                    id: findNextID(init_letter_grading),
+                                    year_id: semester.year_id,
+                                    semester_id: semester.id,
+                                    class_id: findNextID(classes),
+                                    letter: key,
+                                    beg: value[0],
+                                    end: value[1]
+                                }
+                            )
+                        }
+                        return init_letter_grading;
+                    }
+
                     // Class Data Info:
                     // id: Int32
                     // year_id: Int32
@@ -556,128 +700,12 @@ const SemesterScreen = ({navigation, route}) => {
                     // name: string
                     // letter_grading: LetterGradeContent[]
                     // sections: SectionContent[]
-
-                    // Letter Grading Info:
-                    // id: Int32,
-                    // year_id: Int32
-                    // semester_id: Int32
-                    // class_id: Int32
-                    // letter: string
-                    // beg: Int32
-                    // end: Int32
-                    // const a_grade: LetterGradeContent = {
-                    //     id: 0,
-                    //     year_id: semester.year_id,
-                    //     semester_id: semester.id,
-                    //     class_id
-                    // }
-
                     let new_class: ClassContent = {
                         id: findNextID(classes),
                         year_id: semester.year_id,
                         semester_id: semester.id,
                         name: '',
-                        letter_grading: [
-                            {
-                                id: 0,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "A",
-                                beg: 94,
-                                end: 100
-                            },
-                            {
-                                id: 1,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "A-",
-                                beg: 90,
-                                end: 94
-                            },
-                            {
-                                id: 2,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "B+",
-                                beg: 87,
-                                end: 90
-                            },
-                            {
-                                id: 3,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "B",
-                                beg: 84,
-                                end: 87
-                            },
-                            {
-                                id: 4,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "B-",
-                                beg: 80,
-                                end: 84
-                            },
-                            {
-                                id: 5,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "C+",
-                                beg: 77,
-                                end: 80
-                            },
-                            {
-                                id: 6,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "C",
-                                beg: 74,
-                                end: 77
-                            },
-                            {
-                                id: 7,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "C-",
-                                beg: 70,
-                                end: 74
-                            },
-                            {
-                                id: 8,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "D+",
-                                beg: 67,
-                                end: 70
-                            },
-                            {
-                                id: 9,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "D",
-                                beg: 65,
-                                end: 67
-                            },
-                            {
-                                id: 10,
-                                year_id: semester.year_id,
-                                semester_id: semester.id,
-                                class_id: findNextID(classes),
-                                letter: "F",
-                                beg: 0,
-                                end: 65
-                            }
-                        ],
+                        letter_grading: initialLetterGrading(),
                         sections: []
                     };
                     const newClasses = [
@@ -733,7 +761,7 @@ const styles = StyleSheet.create({
         // gap: 10
         // backgroundColor: 'purple',
         // width: '95%'
-    }, 
+    },
 
     inputText: {
         // height: 10,
@@ -752,5 +780,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#BEBEBE',
         borderRadius: 20,
         marginBottom: 20
+    },
+
+    letterGrading: {
+        backgroundColor: '#BEBEBE',
+        borderRadius: 10,
+        padding: 20
     }
 });
