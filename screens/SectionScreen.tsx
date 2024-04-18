@@ -8,13 +8,14 @@
 */
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput, Keyboard } from 'react-native';
 import { useProfileContext, AssignmentContent } from '../shared/profile_context';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { SelectList } from 'react-native-dropdown-select-list';
 import Toast from 'react-native-simple-toast';
 
 import { findNextID } from '../shared/key_functions';
+import Footer from '../shared/custom_footer';
 
 /*
 NAME
@@ -265,8 +266,9 @@ NAME
         SectionScreen - a component that handles the UI elements and functionalities associated with the screen responsible for adding and editing assignments within a section.
 SYNOPSIS
 
-        <View> SectionScreen({navigation})
-        route --> the route object also inherited from the NavigationContainer.
+        <View> SectionScreen({navigation, route})
+            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+            route --> the route object also inherited from the NavigationContainer.
 
 DESCRIPTION
 
@@ -276,17 +278,30 @@ RETURNS
 
         Returns View that lets the user add assignments and edit them within a section.
 */
-const SectionScreen = ({route}) => {
+const SectionScreen = ({navigation, route}) => {
     const { addAssignmentToProfile, updateSectionAssignmentsInProfile } = useProfileContext();
     const { section } = route.params;
     
     // Assignments array extracted from section (which is from the route's params) is tied to the state. 
     const[assignments, setAssignments] = useState(section.assignments);
 
+    // Keyboard state flag that will help in tracking whether the keyboard is up or not.
+    const[keyboard_showing, setKeyboard_showing] = useState(false);
+
+    useEffect(() => {
+        // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
+        const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
+            setKeyboard_showing(true);
+        })
+        const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
+            setKeyboard_showing(false)
+        })
+    })
+
     return(
-        <View style={{flex: 1, alignItems: 'center'}}>
+        <View style={{flex: 1, flexDirection: 'column', marginTop: 10, gap: 10, alignItems: 'center'}}>
             {/* Button that adds an assignment to a section */}
-            <TouchableOpacity style={{ height: 75, marginTop: 20, marginBottom: 5}}
+            <TouchableOpacity style={{ height: 75}}
                 onPress={() => {
                     // For context, here are the AssignmentContent attributes:
                     // id: Int32
@@ -319,7 +334,7 @@ const SectionScreen = ({route}) => {
                 }}>
                 <AntDesign name="pluscircleo" size={70} color={'black'}/>
             </TouchableOpacity>
-            <View style={{flex: 1, alignItems: 'center', marginTop: 20, width: '100%'}}>
+            <View style={{flex: 1, alignItems: 'center', width: '100%'}}>
                 {/* FlatList that holds all of the assignment views for the section in question. */}
                 <FlatList
                     style={{width: '90%'}}
@@ -356,6 +371,10 @@ const SectionScreen = ({route}) => {
                     }}
                 />
             </View>
+            {/* If the keyboard is not up, then show the footer. If the footer is not hidden when the keyboard is brought up, then it will be brought to above the keyboard. */}
+            {!keyboard_showing && (
+                <Footer navigation={navigation}/>
+            )}
         </View>
     );
 }
