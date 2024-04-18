@@ -644,9 +644,9 @@ const SemesterScreen = ({navigation, route}) => {
     }, [classes]);
 
     return(
-        <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
+        <View style={styles.container}>
             {/* Button that adds a class to a semester */}
-            <TouchableOpacity style={{ height: 75, marginTop: 20, marginBottom: 5}}
+            <TouchableOpacity style={{ height: 75 }}
                 onPress={() => {
                     const initialLetterGrading = () => {
                         const letters = {
@@ -720,7 +720,7 @@ const SemesterScreen = ({navigation, route}) => {
             {classes.length === 0 && (
                 <Text style={{fontSize: 30}}>Add classes</Text>
             )}
-            <View style={{flex: 1, alignItems: 'center', marginTop: 20, width: '100%'}}>
+            <View style={{flex: 1, alignItems: 'center', width: '100%'}}>
                 <FlatList
                     style={{width: '90%'}}
                     data={classes}
@@ -749,6 +749,13 @@ const SemesterScreen = ({navigation, route}) => {
 export default SemesterScreen;
 
 const styles = StyleSheet.create({
+    container: {
+        marginTop: 10,
+        flex: 1,
+        alignItems: 'center',
+        gap: 10
+    },
+
     classStyle: { 
         //   alignItems: 'center',
         borderWidth: 4,
