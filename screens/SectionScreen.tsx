@@ -20,14 +20,14 @@ import Footer from '../shared/custom_footer';
 /*
 NAME
 
-        AssignmentView - a dynamic component that allows the viewing and editing of a section of a given class.
+        AssignmentView - a dynamic component that allows the viewing and editing of an assignment of a given class.
 SYNOPSIS
 
         <View> AssignmentView({assignment})
             assignment --> the assignment object in question to display and edit.
 DESCRIPTION
 
-        This component has two states: viewing and editing. In the viewing state, the user can view the section's
+        This component has two states: viewing and editing. In the viewing state, the user can view the assignment's
         name and its grade. In its editing state is a textInput for the assignment name and a SelectList with an
         accompanying TextInput(s) for the numerator and denominator. The grade could be of type Percentage or Ratio.
         If it is a percentage, the denominator will be 100%, and the numerator has to be a positive integer. If it is

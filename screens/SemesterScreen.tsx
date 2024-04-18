@@ -1,7 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react';
+/* 
+    SemesterScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for adding classes within a semester and editing their names. Buttons to edit
+        other properties of the class will direct the user to another screen (which is really
+        another component).
+*/
+
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Keyboard, StyleSheet, TextInput } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign'
-import { useProfileContext, ClassContent, SectionContent, LetterGradeContent } from '../shared/profile_context';
+import { useProfileContext, ClassContent } from '../shared/profile_context';
 
 import { findNextID } from '../shared/key_functions';
 import { calculateSectionAverage, calculateClassAverage, calculateClassLetterGrade, calculateExpectedSectionAverage, calculateExpectedClassAverage, calculateExpectedClassLetterGrade } from '../shared/calculation_functions';
@@ -10,70 +20,228 @@ import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
 import FlatButton from '../shared/custom_buttons';
 
-const SectionView = ({semester, section, curr_class, navigation}) => {
-    const { profile_context, updateSectionInProfile, getSectionAverageFromProfile } = useProfileContext();
+/*
+NAME
+
+    SectionView - a dynamic component that allows the viewing and editing of a section from a given class.
+SYNOPSIS
+
+    <View> SectionView({semester, section, curr_class, navigation})
+        semester --> the semester object the current section in question is a child of.
+        section --> the section object in question to display and edit.
+        curr_class --> the class object the current section in question is a child of.
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+            
+DESCRIPTION
+
+    This component has two states: viewing and editing. In the viewing state, the user can view the section's
+    name, average, expected average, relative weight, and assignments. The edit button can change the name of
+    the section, and pressing the SectionView itself will lead to the SectionScreen component, which allows for
+    more customizability of the section in question.
+
+RETURNS
+
+    Returns a dynamic View with a viewing and editing state for a given section.
+*/
+const SectionView = ({semester, curr_class, section, navigation}) => {
+    // Context function to update the current section within the global profile context.
+    const { updateSectionInProfile } = useProfileContext();
+    // State variables that track the changes the user makes to the current section in question.
     const[is_editing, setIs_editing] = useState(false);
-    console.log(`SectionView(): section.assignments: ${section.assignments}`);
     const[name, setName] = useState(section.name);
     const[assignments, setAssignments] = useState(section.assignments);
+
+    /*
+    NAME
+
+        renderSectionName - a functional component that renders the name for a section depending on what the value is in context.
+    
+    SYNOPSIS
+
+        <View> renderSectionName()
+
+    DESCRIPTION
+
+        The View component returned will have a Text component that will vary depending on whether the name of the section is
+        initialized or not. If the name is initialized, then it will print the name. If not, then it will print "New Sectiion".
+
+    RETURNS
+
+        Returns a View that holds a Text component, which displays the section's name, or "New Section".
+    */
+    const renderSectionName = () => {
+        return(
+            <View>
+                {section.name === '' && (
+                    <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
+                )}
+                {section.name !== '' && (
+                    <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}</Text>
+                )}
+            </View>
+        );
+    }
+
+    /*
+    NAME
+
+        renderCalculatedSectionAverage - a functional component that renders the calculated average for a section depending on what the assignments are in context.
+    
+    SYNOPSIS
+
+        <View> renderCalculatedSectionAverage()
+
+    DESCRIPTION
+
+        The View component returned will have a Text component that will vary depending on whether the section's average can be calculated
+        or not. When it can be calculated, display a percentage. Otherwise, just display the "N/A" the calculateSectionAverage() function
+        returns.
+
+    RETURNS
+
+        Returns a View that holds a Text component, which displays the section's calculated average, or "N/A".
+    */
+    const renderCalculatedSectionAverage = () => {
+        return(
+            <View>
+                {/* If a section's calculated average cannot be determined, just display the "N/A" returned */}
+                {calculateSectionAverage(assignments) === 'N/A' && (
+                    <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {calculateSectionAverage(assignments)}</Text>
+                )}
+                {/* If a section's calculated average can be determined, display it as a percentage. */}
+                {calculateSectionAverage(assignments) !== 'N/A' && (
+                    <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {(calculateSectionAverage(assignments) * 100).toFixed(2)}%</Text>
+                )}
+            </View>
+        );
+    }
+
+    /*
+    NAME
+
+        renderExpectedSectionAverage - a functional component that renders the expected average for a section depending on what the assignments are in context.
+    
+    SYNOPSIS
+
+        <View> renderExpectedSectionAverage()
+
+    DESCRIPTION
+
+        The View component returned will have a Text component that will vary depending on whether the section's expected average can be calculated
+        or not. When it can be calculated, display a percentage. Otherwise, just display the "N/A" the calculateSectionAverage() function
+        returns.
+
+    RETURNS
+
+        Returns a View that holds a Text component, which displays the section's expected average, or "N/A".
+    */
+    const renderExpectedSectionAverage = () => {
+        return(
+            <View>
+                {/* If a section's expected average cannot be determined, just display the "N/A" returned */}
+                {calculateExpectedSectionAverage(assignments) === 'N/A' && (
+                    <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {calculateExpectedSectionAverage(assignments)}</Text>
+                )}
+                {/* If a section's expected average can be determined, display it as a percentage. */}
+                {calculateExpectedSectionAverage(assignments) !== 'N/A' && (
+                    <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {(calculateExpectedSectionAverage(assignments) * 100).toFixed(2)}%</Text>
+                )}
+            </View>
+        );
+    }
+
+    /*
+    NAME
+
+        renderSectionWeight - a functional component that renders the relative weight of the current section in question.
+    
+    SYNOPSIS
+
+        <Text> renderSectionWeight()
+        
+    DESCRIPTION
+
+        If the section's weight is uninitialized (is equal to -1), then return the section weight as "N/A". Otherwise,
+        display the section's weight as a percentage.
+
+    RETURNS
+
+        Returns a Text component that displays the assignment information, depending on what in that assignment object in context is initialized.
+    */
+    const renderSectionWeight = () => {
+        if(section.weight !== -1) return(
+            // The section's weight needs to have operations performed on it as the weights in context are recorded as decimals rather than percentages (e.g. 0.3 instead of 30%).
+            <Text style={{fontSize: 20}}>Section Weight: {(section.weight * 100).toFixed(0)}%</Text>
+        );
+        return <Text style={{fontSize: 20}}>Section Weight: N/A</Text>
+    }
+
+    /*
+    NAME
+
+        renderSectionAssignments - a functional component that renders a Text component or a View with multiple Text components depending on how many assignments are in the current section in question.
+    
+    SYNOPSIS
+
+        <Text> or <View> renderSectionAssignments()
+        
+    DESCRIPTION
+
+        If the section has no assignments, then a Text component that says that there are no assignments will be returned. If there
+        are assignments in the current section in question, then return a View component that iterates through each assignment
+
+    RETURNS
+
+        Returns a Text component that displays the assignment information, depending on what in that assignment object in context is initialized.
+    */
+    const renderSectionAssignments = () => {
+        if(assignments.length === 0) return (
+            <Text style={{fontSize: 20}}>No assignments yet!</Text>
+        )
+        return (
+            <View>
+                <Text style={{fontSize: 20}}>Assignments:</Text>
+                {/* The Text component returned will vary based on several factors. If the assignment in question
+                has a type, then there must be a name (as the validation when editing a section in the SectionScreen
+                component requires a name to be specified when a type is specified). Therefore, display the name and
+                the numerator and denominator. If the type is a ratio, just display the numerator and denominator as
+                themselves, and when the type is a percentage, then put a % sign next to both values. If there is no
+                type specified, then there is no numerator or denominator. Display "N/A" for the numerator and denominator.
+                If the section name in context is uninitialized (is ''), then display "New Assignment". */}
+                {assignments.map((a) => {
+                    if(a.type === 'Ratio') return(
+                        <Text key={a.id}>{a.name}: {a.numerator} / {a.denominator}</Text>
+                    );
+                    else if(a.type === 'Percentage') return(
+                        <Text key={a.id}>{a.name}: {a.numerator}% / {a.denominator}%</Text>
+                    );
+                    else if(a.name !== '') return (
+                        <Text key={a.id}>{a.name}: N/A</Text>
+                    );
+                    else if(a.name === '') return (
+                        <Text key={a.id}>New Assignment</Text>
+                    );
+                })}
+            </View>
+        );
+    }
 
     return(
         <View style={styles.section}>
             {/* Viewing state of section. */}
             {!is_editing && (
                 <TouchableOpacity style={{flexDirection: 'row'}}
+                    // Pressing on the section component will send the user to another screen, which lets them edit more of the section in question.
                     onPress={() => {
-                        console.log(`Clicked on a section!`);
-                        console.log(`section.assignments.length: ${section.assignments.length}`);
                         navigation.navigate('Section', {semester: semester, section: section, curr_class: curr_class});
                     }}>
-                    <View style={{flexDirection: 'column'}}>
-                        {section.name === '' && (
-                            <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
-                        )}
-                        {section.name !== '' && calculateSectionAverage(assignments) === 'N/A' && (
-                            <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}</Text>
-                        )}
-                        {section.name !== '' && calculateSectionAverage(assignments) !== 'N/A' && (
-                            <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}</Text>
-                        )}
-                        {calculateSectionAverage(assignments) === 'N/A' && (
-                            <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {calculateSectionAverage(assignments)}</Text>
-                        )}
-                        {calculateSectionAverage(assignments) !== 'N/A' && (
-                            <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {(calculateSectionAverage(assignments) * 100).toFixed(2)}%</Text>
-                        )}
-                        {calculateExpectedSectionAverage(assignments) === 'N/A' && (
-                            <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {calculateExpectedSectionAverage(assignments)}</Text>
-                        )}
-                        {calculateExpectedSectionAverage(assignments) !== 'N/A' && (
-                            <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {(calculateExpectedSectionAverage(assignments) * 100).toFixed(2)}%</Text>
-                        )}
-                        <Text style={{fontSize: 20}}>Section Weight: {(section.weight * 100).toFixed(0)}%</Text>
-                        {assignments.length === 0 && (
-                            <Text style={{fontSize: 20}}>No assignments yet!</Text>
-                        )}
-                        {assignments.length > 0 && (
-                            <View>
-                                {/* <Text>Number of assignments: {assignments.length}</Text> */}
-                                <Text style={{fontSize: 20}}>Assignments:</Text>
-                                {assignments.map((a) => {
-                                    console.log(`SectionView(): a.type: ${a.type}`);
-                                    if(a.type === 'Ratio') return(
-                                        <Text key={a.id}>{a.name}: {a.numerator} / {a.denominator}</Text>
-                                    );
-                                    else if(a.type === 'Percentage') return(
-                                        <Text key={a.id}>{a.name}: {a.numerator}% / {a.denominator}%</Text>
-                                    );
-                                    else if(a.name !== '') return (
-                                        <Text key={a.id}>{a.name}: N/A</Text>
-                                    );
-                                    else if(a.name === '') return (
-                                        <Text key={a.id}>New Assignment</Text>
-                                    );
-                                })}
-                            </View>
-                        )}
+                    <View>
+                        {/* Display the name, calculated average, expected average, the relative weight, and the assignments of the section in question. */}
+                        { renderSectionName() }
+                        { renderCalculatedSectionAverage() }
+                        { renderExpectedSectionAverage() }
+                        { renderSectionWeight() }
+                        { renderSectionAssignments() }
                     </View>
                     {/* Edit button for section. */}
                     <TouchableOpacity
@@ -98,22 +266,20 @@ const SectionView = ({semester, section, curr_class, navigation}) => {
                     <TouchableOpacity
                         style={{marginLeft: 'auto', alignSelf: 'center'}}
                         onPress={() => {
-                            const inputIsValid = () => {
-                                if(name === ''){
-                                    Toast.show('Please enter name', Toast.SHORT);
-                                    return false;
-                                }
-                                return true;
+                            // If the name entered is currently empty, then do not let the user enter exit the editing state and notify them that they need to enter a name.
+                            if(name.trim() === ''){
+                                Toast.show('Please enter name', Toast.SHORT);
+                                return;
                             }
-
-                            if(inputIsValid() === true){
-                                const new_section = {
-                                    ...section,
-                                    name: name
-                                };
-                                updateSectionInProfile(new_section);
-                                setIs_editing(!is_editing);
-                            }
+                            // Otherwise, then trim the name entered and change the name in state and in the global profile context.
+                            setName(name.trim());
+                            const new_section = {
+                                ...section,
+                                name: name.trim()
+                            };
+                            updateSectionInProfile(new_section);
+                            // Change the state of the View returned by SectionView to its viewing state.
+                            setIs_editing(!is_editing);
                         }}>
                         <AntDesign name='checkcircleo' size={45} color='green'/>
                     </TouchableOpacity>
@@ -256,7 +422,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                             <View style={{flex: 1}}>
                                 {sections.map((s) => {
                                     return(
-                                        <SectionView key={s.id} semester={semester} section={s} curr_class={curr_class} navigation={navigation}/>
+                                        <SectionView key={s.id} semester={semester} curr_class={curr_class} section={s} navigation={navigation}/>
                                     );
                                 })}
                             </View>
