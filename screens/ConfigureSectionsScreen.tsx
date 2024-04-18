@@ -383,7 +383,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
             </View>
             {/* If the keyboard is not up, then show the footer. If the footer is not hidden when the keyboard is brought up, then it will be brought to above the keyboard. */}
             {!keyboard_showing && (
-                <Footer/>
+                <Footer navigation={navigation}/>
             )}
         </View>
     );

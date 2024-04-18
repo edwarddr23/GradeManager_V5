@@ -271,6 +271,8 @@ const YearsScreen = ({navigation, route}) => {
 
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
+    // const[profile_name, setProfile_name] = useState(profile_context.profile_name);
+
     useEffect(() => {
         setYears(profile_context.years);
         // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
@@ -280,6 +282,9 @@ const YearsScreen = ({navigation, route}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
+        // navigation.addListener('focus', () => {
+        //     setProfile_name(profile_context.profile_name);
+        // })
     }, [years]);
 
     return(
@@ -357,7 +362,7 @@ const YearsScreen = ({navigation, route}) => {
                         <Text style={{fontSize: 25, textAlign: 'center'}}>Expected Cumulative GPA: {calculateExpectedCumulativeGPA(years)}</Text>
                     </View>
                     {/* FOOTER */}
-                    <Footer/>
+                    <Footer navigation={navigation}/>
                 </View>
             )}
         </View>

@@ -509,7 +509,7 @@ const SemesterScreen = ({navigation, route}) => {
             </View>
             {/* FOOTER */}
             {!keyboard_showing && (
-                <Footer/>
+                <Footer navigation={navigation}/>
             )}
         </View>
     );
