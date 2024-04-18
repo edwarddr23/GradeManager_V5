@@ -10,7 +10,7 @@ import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
 import FlatButton from '../shared/custom_buttons';
 
-const SectionView = ({section, navigation}) => {
+const SectionView = ({semester, section, curr_class, navigation}) => {
     const { profile_context, updateSectionInProfile, getSectionAverageFromProfile } = useProfileContext();
     const[is_editing, setIs_editing] = useState(false);
     console.log(`SectionView(): section.assignments: ${section.assignments}`);
@@ -25,7 +25,7 @@ const SectionView = ({section, navigation}) => {
                     onPress={() => {
                         console.log(`Clicked on a section!`);
                         console.log(`section.assignments.length: ${section.assignments.length}`);
-                        navigation.navigate('Section', {section: section});
+                        navigation.navigate('Section', {semester: semester, section: section, curr_class: curr_class});
                     }}>
                     <View style={{flexDirection: 'column'}}>
                         {section.name === '' && (
@@ -256,7 +256,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                             <View style={{flex: 1}}>
                                 {sections.map((s) => {
                                     return(
-                                        <SectionView key={s.id} section={s} navigation={navigation}/>
+                                        <SectionView key={s.id} semester={semester} section={s} curr_class={curr_class} navigation={navigation}/>
                                     );
                                 })}
                             </View>

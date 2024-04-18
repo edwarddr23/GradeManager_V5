@@ -1,3 +1,12 @@
+/* 
+    SectionScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for adding assingments and specifying their grades for a specific section in
+        question.
+*/
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, TextInput } from 'react-native';
 import { useProfileContext, AssignmentContent } from '../shared/profile_context';
@@ -7,32 +16,123 @@ import Toast from 'react-native-simple-toast';
 
 import { findNextID } from '../shared/key_functions';
 
-const AssignmentView = ({assignment}) => {
+/*
+NAME
+
+        AssignmentView - a dynamic component that allows the viewing and editing of a section of a given class.
+SYNOPSIS
+
+        <View> AssignmentView({assignment})
+            assignment --> the assignment object in question to display and edit.
+DESCRIPTION
+
+        This component has two states: viewing and editing. In the viewing state, the user can view the section's
+        name and its grade. In its editing state is a textInput for the assignment name and a SelectList with an
+        accompanying TextInput(s) for the numerator and denominator. The grade could be of type Percentage or Ratio.
+        If it is a percentage, the denominator will be 100%, and the numerator has to be a positive integer. If it is
+        a ratio, the numerator and the donominator have to be positive integers where the numerator has to be less than
+        or equall to the denominator.
+RETURNS
+
+        Returns a dynamic View with a viewing and editing state for a given assignment.
+*/
+const AssignmentView = ({assignment, deleteAssignment}) => {
+    // Function will be needed when the name, numerator, or denominator of an assignment is changed.
     const { updateAssignmentInProfile } = useProfileContext();
+    // State variables of an assignment that a user can interact and change. Their initial values will be what the assignment object passed in has.
     const[is_editing, setIs_editing] = useState(false);
     const[name, setName] = useState(assignment.name);
     const[type, setType] = useState(assignment.type);
     const[numerator, setNumerator] = useState(assignment.numerator);
     const[denominator, setDenominator] = useState(assignment.denominator);
-
-    useEffect(() => {
-        if(type === 'Percentage'){
-            setDenominator(100);
-        }
-    });
     
-    // Viewing state for assignment.
+    /*
+    NAME
+
+            validInput - a function that validates the input for an assignment.
+    SYNOPSIS
+
+            bool validInput()
+               
+    DESCRIPTION
+
+            The name, numerator, and denominator will be validated. The name will be validated based on
+            whether it is an empty string or not after trailing whitespace is taken out. We do not want
+            to validate a name that is only whitespace. Then, if the type selected is "Percentage", then
+            we will check if a numerator was entered and if it is a positive integer. When the type selected
+            is "Ratio", we will validate both the numerator and the denominator the same way.
+    RETURNS
+
+            Returns a boolean that returns true if the input is valid and false if it is invalid.
+    */
+    const validInput = () => {
+        if(name.trim() === ''){
+            Toast.show('Please enter a name', Toast.SHORT);
+            return false;
+        }
+        // Regardless of the type, validate the numerator.
+        if(numerator === -1 || numerator === ''){
+            Toast.show('Please enter numerator', Toast.SHORT);
+            return false;
+        }
+        else if(isNaN(numerator)){
+            Toast.show('Please enter a numeric numerator. Do not enter any punctuation', Toast.SHORT);
+            return false;
+        }
+        else if(!!numerator.toString().match(/[.]/) === true){
+            Toast.show('Please enter an integer for the numerator', Toast.SHORT);
+            return false;
+        }
+        else if(numerator < 0){
+            Toast.show('Please enter a numerator greater or equal to 0', Toast.SHORT);
+            return false;
+        }
+        
+        if( type=== 'Percentage' && numerator > denominator){
+            Toast.show('Percentage cannot be higher than 100', Toast.SHORT);
+            return false;
+        }
+        // If the type is a ratio, then validate both the numerator and denominator
+        if(type === 'Ratio'){
+            if(denominator === -1 || denominator === ''){
+                Toast.show('Please enter denominator', Toast.SHORT);
+                return false;
+            }
+            else if(isNaN(denominator)){
+                Toast.show('Please enter a numeric denominator. Do not enter any punctuation', Toast.SHORT);
+                return false;
+            }
+            else if(!!denominator.toString().match(/[.]/) === true){
+                Toast.show('Please enter an integer for the denominator', Toast.SHORT);
+                return false;
+            }
+            else if(denominator < 0){
+                Toast.show('Please enter a denominator greater or equal to 0', Toast.SHORT);
+                return false;
+            }
+            else if(denominator < numerator){
+                Toast.show('Please enter a denominator greater or equal to the numerator', Toast.SHORT);
+                return false;
+            }
+        }
+        // Otherwise, all of the tests pass, so the input must be valid. Return true.
+        return true;
+    }
+    
+    // Viewing state for assignment component.
     if(!is_editing){
         return(
             <View style={styles.assignmentStyle}>
-                <View style={{flexDirection: 'row', flex: 1}}>
+                <View style={{flexDirection: 'row', flex: 1, width: '100%', alignItems: 'center'}}>
                     <View style={{flexDirection: 'column', paddingLeft: 10}}>
+                        {/* Display assignment's name. */}
                         {assignment.name === '' && (
                             <Text style={{fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}}>New Assignment</Text>
                         )}
                         {assignment.name !== '' && (
                             <Text style={{fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}}>{name}:{'\t\t'}</Text>
                         )}
+                        {/* Display assignment's type and the percentage or ratio. */}
                         {type === 'Percentage' && (
                             <Text style={{fontSize: 25, textAlignVertical: 'center'}}>Grade: {((numerator / denominator) * 100).toFixed(2)}%</Text>
                         )}
@@ -47,14 +147,15 @@ const AssignmentView = ({assignment}) => {
                         onPress={() => {
                             setIs_editing(!is_editing);
                         }}>
-                        <AntDesign name="edit" size={40} color='black'/>
+                        <AntDesign name="edit" size={50} color='black'/>
                     </TouchableOpacity>
                 </View>
             </View>
         );
     }
-    // Editing state for assignment
+    // Editing state for assignment.
     else{
+        // Array of objects that holds the information to work off of for the SelectList that lets a user select a type for the assignment in question.
         const types = [
             {key: '0', value: 'Percentage'},
             {key: '1', value: 'Ratio'}
@@ -63,6 +164,7 @@ const AssignmentView = ({assignment}) => {
         return(
             <View style={styles.assignmentStyle}>
                 <View style={{flexDirection: 'row', marginVertical: 10}}>
+                    {/* TextInput that changes the name of an assignment in question. */}
                     <TextInput
                         style={styles.inputText}
                         value={name}
@@ -71,84 +173,23 @@ const AssignmentView = ({assignment}) => {
                             setName(text);
                         }}
                     />
-                    {/* Done button to update name for assignment. */}
+                    {/* Done button to update name and/or the type, numerator, and denominator for the assignment in question. */}
                     <TouchableOpacity
                         style={{marginLeft: 'auto', alignSelf: 'center'}}
                         activeOpacity={0.5}
                         onPress={() => {
-                            const validInput = () => {
-                                if(name === ''){
-                                    Toast.show('Please enter a name', Toast.SHORT);
-                                    return false;
-                                }
-                                // else if(type === ''){
-                                //     Toast.show('Please enter a type', Toast.SHORT);
-                                //     return false;
-                                // }
-                                else if(type ==='Percentage'){
-                                    if(numerator === -1 || numerator === ''){
-                                        Toast.show('Please enter numerator', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(denominator === -1 || denominator === ''){
-                                        Toast.show('Please enter numerator', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(isNaN(numerator)){
-                                        Toast.show('Please enter a numeric numerator. Do not enter any punctuation', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(!!numerator.toString().match(/[.]/) === true){
-                                        // console.log(!!weight.match(/[.]/));
-                                        Toast.show('Please enter an integer for the numerator', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(numerator < 0){
-                                        Toast.show('Please enter a numerator greater or equal to 0', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(numerator > denominator){
-                                        Toast.show('Percentage cannot be higher than 100', Toast.SHORT);
-                                        return false;
-                                    }
-                                }
-                                else if(type === 'Ratio'){
-                                    if(denominator === -1 || denominator === ''){
-                                        Toast.show('Please enter denominator', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(isNaN(denominator)){
-                                        Toast.show('Please enter a numeric denominator. Do not enter any punctuation', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(!!denominator.toString().match(/[.]/) === true){
-                                        // console.log(!!weight.match(/[.]/));
-                                        Toast.show('Please enter an integer for the denominator', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(denominator < 0){
-                                        Toast.show('Please enter a denominator greater or equal to 0', Toast.SHORT);
-                                        return false;
-                                    }
-                                    else if(denominator < numerator){
-                                        Toast.show('Please enter a denominator greater or equal to the numerator', Toast.SHORT);
-                                        return false;
-                                    }
-                                }
-                                return true;
-                            }
-
+                            // If the input is valid, then update the state and the global profile context to reflect the changes. Trim the name in both the state and the context so it looks cleaner in the case that the user put trailing and/or leading whitespace.
                             if(validInput() === true){
+                                setName(name.trim());
+                                // Create a new assignment object based on the old one to reflect possible changes in name, type, numerator, and/or denominator.
                                 const new_assignment = {
                                     ...assignment,
-                                    name: name,
+                                    name: name.trim(),
                                     type: type,
                                     numerator: numerator,
                                     denominator: denominator
                                 }
-                                console.log(`new_assignment: ${JSON.stringify(new_assignment)}`);
                                 setIs_editing(!is_editing);
-                                // console.log(`new_assignment.name: ${new_assignment.name}`);
                                 updateAssignmentInProfile(new_assignment);
                             }
                         }}>
@@ -157,6 +198,7 @@ const AssignmentView = ({assignment}) => {
                 </View>
                 <View style={{flexDirection: 'row'}}>
                     <View style={{flex: 2, justifyContent: 'center'}}>
+                        {/* SelectList that lets a user select between types "Percentage" and "Ratio". */}
                         <SelectList
                             // Placeholder is type so that the selected type will show after the exam is closed and reopened.
                             placeholder={type}
@@ -164,9 +206,21 @@ const AssignmentView = ({assignment}) => {
                             data={types}
                             search={false}
                             save="value"
+                            onSelect={() => {
+                                // If the user selects "Percentage", then the denominator must be 100.
+                                if(type === 'Percentage'){
+                                    setDenominator(100);
+                                }
+                                // If the user selects "Ratio", then make sure that the denominator is uninitialized in the case that the user switches between types.
+                                if(type === 'Ratio'){
+                                    setDenominator(-1);
+                                }
+                            }}
                         />
                     </View>
+                    {/* If a type is selected, for either type, a numerator TextInput is needed for the user to enter a numerator.  */}
                     {type !== '' && (
+                        // TextInput for numerator of an assignment.
                         <View style={{flex: 2, flexDirection: 'row'}}>
                             <TextInput
                                 style={styles.inputText}
@@ -178,12 +232,13 @@ const AssignmentView = ({assignment}) => {
                             <Text style={{fontSize: 30, textAlignVertical: 'center'}}>/</Text>
                         </View>
                     )}
+                    {/* If the type is a Percentage, then the denominator should not be entered, as it should be out of 100%. */}
                     {type === 'Percentage' && (
-                        <View>
-                            <Text style={{flex: 1,fontSize: 25, textAlignVertical: 'center'}}>100%</Text>
-                        </View>
+                        <Text style={{flex: 1, fontSize: 25, textAlignVertical: 'center'}}>100%</Text>
                     )}
+                    {/* If the type is a Ratio, then another TextInput is needed for the user to enter a denominator. */}
                     {type === 'Ratio' && (
+                        // TextInput for denominator of an assignment.
                         <TextInput
                             style={styles.inputText}
                             value={denominator}
@@ -193,68 +248,47 @@ const AssignmentView = ({assignment}) => {
                         />
                     )}
                 </View>
+                {/* Button that deletes a year from a semester. */}
+                <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={deleteAssignment}>
+                    <AntDesign name="delete" size={50} color={'black'}/>
+                </TouchableOpacity>
             </View>
         );
     }
 }
 
-const SectionScreen = ({navigation, route}) => {
-    const { profile_context, updateSectionInProfile, addAssignmentToProfile } = useProfileContext();
+/*
+NAME
+
+        SectionScreen - a component that handles the UI elements and functionalities associated with the screen responsible for adding and editing assignments within a section.
+SYNOPSIS
+
+        <View> SectionScreen({navigation})
+        route --> the route object also inherited from the NavigationContainer.
+
+DESCRIPTION
+
+        If the user presses the plus button, a new assignment object will be created, with an accompanying View that can be
+        interacted with to edit that object. The object will be updated in state and context.
+RETURNS
+
+        Returns View that lets the user add assignments and edit them within a section.
+*/
+const SectionScreen = ({route}) => {
+    const { addAssignmentToProfile, updateSectionAssignmentsInProfile } = useProfileContext();
     const { section } = route.params;
-    const curr_class = profile_context.years.find((y) => y.id === section.year_id).semesters.find((s) => s.id === section.semester_id).classes.find((c) => c.id === section.class_id);
-
+    
+    // Assignments array extracted from section (which is from the route's params) is tied to the state. 
     const[assignments, setAssignments] = useState(section.assignments);
-
-    useEffect(() => {
-        navigation.setOptions({
-            title: `${section.name} in ${curr_class.name}`,
-            headerLeft: () => (
-                <View style={{marginRight: 20}}>
-                    <TouchableOpacity
-                    activeOpacity={0.5}
-                    onPress={() => {
-                        console.log('SectionScreen.tsx: CUSTOM BACK BUTTON');
-                        // updateSectionInProfile(
-                        //     {
-                        //         ...section,
-                        //         average: 0.7
-                        //     }
-                        // )
-                        // navigation.goBack();
-                        navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
-                    }}>
-                    <AntDesign name="arrowleft" size={25} color='black'/>
-                    </TouchableOpacity>
-                </View>
-            )
-        });
-        console.log(`SectionScreen(): section.assignments.length: ${section.assignments.length}`);
-        console.log(`SectionScreen(): assignments: ${assignments}`);
-    });
 
     return(
         <View style={{flex: 1, alignItems: 'center'}}>
             {/* Button that adds an assignment to a section */}
             <TouchableOpacity style={{ height: 75, marginTop: 20, marginBottom: 5}}
                 onPress={() => {
-                    // let new_class: ClassContent = {
-                    //     id: findNextID(classes),
-                    //     year_id: semester.year_id,
-                    //     semester_id: semester.id,
-                    //     name: '',
-                    //     sections: []
-                    // };
-                    // const newClasses = [
-                    //     ...classes,
-                    //     new_class
-                    // ]
-                    // setClasses(newClasses);
-                    // // console.log(`ADD BUTTON: year.id: ${year.id}`);
-                    // console.log(`ADD BUTTON: LOOP`);
-                    // newClasses.map((c) => {
-                    //     console.log(`c.id: ${c.id}`);
-                    // });
-                    // addClassToProfile(new_class);
+                    // For context, here are the AssignmentContent attributes:
                     // id: Int32
                     // year_id: Int32
                     // semester_id: Int32
@@ -275,6 +309,7 @@ const SectionScreen = ({navigation, route}) => {
                         numerator: -1,
                         denominator: -1
                     }
+                    // Add this new initialized assignment object to the state and context.
                     const new_assignments = [
                         ...assignments,
                         new_assignment
@@ -285,14 +320,38 @@ const SectionScreen = ({navigation, route}) => {
                 <AntDesign name="pluscircleo" size={70} color={'black'}/>
             </TouchableOpacity>
             <View style={{flex: 1, alignItems: 'center', marginTop: 20, width: '100%'}}>
+                {/* FlatList that holds all of the assignment views for the section in question. */}
                 <FlatList
                     style={{width: '90%'}}
                     data={assignments}
-                    keyExtractor={(item, index) => item.id}
+                    keyExtractor={(item) => item.id}
                     removeClippedSubviews={false}
                     renderItem={(assignment) => {
+                        /*
+                        NAME
+
+                                deleteAssignmentFromSection - a function that handles the deletion of an assignment from a section.
+                        SYNOPSIS
+
+                                void SectionScreen()
+                                
+                        DESCRIPTION
+
+                                A new_assignments array is created to be the same as the previous assignments array but without the current 
+                                assignment in question (which, would be the assignment to remove). Both the state and the global context are
+                                updated with this new_assignments array.
+                        RETURNS
+
+                                Returns void.
+                        */
+                        function deleteAssignmentFromSection(){
+                            const new_assignments = assignments.filter((s) => s.id !== assignment.item.id);
+                            setAssignments(new_assignments);
+                            updateSectionAssignmentsInProfile(section, new_assignments)
+                        }
+                        // Each item in the FlatList are displayed through an AssignmentView component.
                         return(
-                            <AssignmentView assignment={assignment.item}/>
+                            <AssignmentView assignment={assignment.item} deleteAssignment={deleteAssignmentFromSection}/>
                         );
                     }}
                 />
@@ -304,21 +363,16 @@ const SectionScreen = ({navigation, route}) => {
 export default SectionScreen;
 
 const styles = StyleSheet.create({
-    assignmentStyle: { 
-        //   alignItems: 'center',
+    assignmentStyle: {
         borderWidth: 4,
         borderRadius: 30,
         padding: 10,
-        marginBottom: 10
-        //   flexDirection: 'row',
-        // gap: 10
-        // backgroundColor: 'purple',
-        // width: '95%'
+        marginBottom: 10,
+        alignItems: 'center',
+        gap: 10
     }, 
 
     inputText: {
-        // height: 10,
-        // margin: 12,
         textAlign: 'center',
         fontSize: 25,
         borderWidth: 3,

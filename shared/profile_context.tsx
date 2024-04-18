@@ -175,6 +175,10 @@ export function ProfileProvider({children}) {
         curr_assignment.denominator = new_assignment.denominator;
     }
 
+    const updateSectionAssignmentsInProfile = (section, new_assignments) => {
+        years.find((y) => y.id === section.year_id).semesters.find((s) => s.id === section.semester_id).classes.find((c) => c.id === section.class_id).sections.find((s) => s.id === section.id).assignments = new_assignments;
+    }
+
     // const getValidAssignmentsFromSection = (section) => {
     //     // return section.assignments.map((a) => {
     //     //     console.log(`getValidAssignmentsFromSection(): a.numerator / a.denominator: ${a.numerator} / ${a.denominator}`);
@@ -218,7 +222,8 @@ export function ProfileProvider({children}) {
                 updateSectionInProfile,
                 updateClassSectionsInProfile,
                 addAssignmentToProfile,
-                updateAssignmentInProfile,}}>
+                updateAssignmentInProfile,
+                updateSectionAssignmentsInProfile}}>
             {children}
         </ProfileContext.Provider>
     )

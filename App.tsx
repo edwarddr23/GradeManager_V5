@@ -143,7 +143,8 @@ function App(): React.JSX.Element {
                         )}
                       </View>
                     )}
-                  />)
+                  />
+                )
               })}
             />
             <Stack.Screen
@@ -175,15 +176,31 @@ function App(): React.JSX.Element {
             name="Section"
             component={SectionScreen}
             options={({navigation, route}) => ({
-              headerRight: () => (
-                <View style={{width: 100, height: 45}}>
-                  <FlatButton
-                    text="Save"
-                    onPress={() => {
-                      navigation.navigate("Save");
-                    }}
-                  />
-                </View>
+              header: () => (
+                <HeaderView
+                  navigation={navigation}
+                  backButtonOnPress={() => {
+                    const { semester } = route.params;
+                    navigation.navigate('Semester', {semester: semester});
+                    // navigation.navigate('Semester', {semester: semester});
+                  }}
+                  titleView={(
+                    <View>
+                      {route.params.section.name !== '' && route.params.curr_class.name !== '' && (
+                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>{route.params.section.name} in {route.params.curr_class.name}</Text>
+                      )}
+                      {route.params.section.name === '' && route.params.curr_class.name !== '' && (
+                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>New Section in {route.params.curr_class.name}</Text>
+                      )}
+                      {route.params.section.name !== '' && route.params.curr_class.name === '' && (
+                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>{route.params.section.name} in New Class</Text>
+                      )}
+                      {route.params.section.name === '' && route.params.curr_class.name === '' && (
+                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>New Section in New Class</Text>
+                      )}
+                    </View>
+                  )}
+                />
               )
             })}/>
             <Stack.Screen
