@@ -289,32 +289,123 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     );
 }
 
-const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
-    // console.log(`ClassView: curr_class: ${curr_class.id}`);
-    const { profile_context, updateClassInProfile, addSectionToProfile } = useProfileContext();
-    // id: findNextID(classes),
-    // year_id: semester.year_id,
-    // semester_id: semester.id,
-    // name: 'New Class',
-    // sections: []
-    const[name, setName] = useState(curr_class.name);
-    // const[sections, setSections] = useState(curr_class.sections);
-    const[sections, setSections] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-    const[letter_grading, setLetter_grading] = useState(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
+/*
+NAME
 
+    ClassView - a dynamic component that allows the viewing and editing of a given class within a semester.
+SYNOPSIS
+
+    ClassView = ({semester, curr_class, deleteClass, navigation})
+        semester --> the semester object the current section in question is a child of.
+        curr_class --> the class object in question to display and edit.
+        deleteClass --> a function component to handle the deletion of a class from the parent component SemesterScreen.
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+            
+DESCRIPTION
+
+    This component has two states: viewing and editing. In the viewing state, the user can view the class's letter
+    grade, calculated average, expected letter grade, expected average, letter grading, sections, and each section's
+    assignments. The editing state allows the user to edit the name of the class in question. Buttons and views within
+    the ClassView component allow for the editing of properties of the class.
+
+RETURNS
+
+    Returns a dynamic View with a viewing and editing state for a given class.
+*/
+const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
+    // Object profile_context and function updateClassInProfile are extracted from the global context to keep global context updated and the page responsive even when navigating back to this screen or when the sections within a class change.
+    const { profile_context, updateClassInProfile } = useProfileContext();
+    // State variables that handle the changing of certain properties of a class within this screen.
+    const[name, setName] = useState(curr_class.name);
+    const[sections, setSections] = useState(curr_class.sections);
+    const[letter_grading, setLetter_grading] = useState(curr_class.letter_grading);
+
+    // State variables that handle the behaviors of the state returned by the ClassView component.
     const[is_editing, setIs_editing] = useState(false);
     const[is_expanded, setIsExpanded] = useState(false);
     const[grading_expanded, setGrading_expanded] = useState(false);
 
-    // https://reactnavigation.org/docs/navigation-events/
     useEffect(() => {
-        // console.log(`THIS IS RUNNING`);
-        navigation.addListener('focus', () => {
-            setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-        })
-        setLetter_grading(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
-        // curr_class = profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id);
+        // navigation.addListener('focus', () => {
+        //     setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+        // })
+        // setLetter_grading(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
     }, [])
+
+    const renderCalculatedClassAverage = () => {
+        if(calculateClassAverage(sections) === 'N/A') return (
+            <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
+        );
+        return (
+            <Text style={{fontSize: 20}}>Class Average%: {(calculateClassAverage(sections) * 100).toFixed(2)}%</Text>
+        )
+    }
+
+    const renderExpectedClassLetterGrade = () => {
+        if(calculateExpectedClassLetterGrade(curr_class) === 'N/A') return (
+            <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
+        );
+        return(
+            <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
+        )
+    }
+
+    const renderExpectedClassAverage = () => {
+        if(calculateExpectedClassAverage(sections) === 'N/A') return (
+            <Text style={{fontSize: 20}}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
+        )
+        return(
+            <Text style={{fontSize: 20}}>Expected Average%: {(calculateExpectedClassAverage(sections) * 100).toFixed(2)}%</Text>
+        )
+    }
+
+    const renderClassLetterGrading = () => {
+        return(
+            <View style={{backgroundColor: '#BEBEBE', borderRadius: 10, padding: 20}}>
+                {/* Top pressable part of the letter grading View component that lets the user view or edit the letter grading thresholds for a given class. It can be expanded or minimized to reduce clutter. */}
+                <TouchableOpacity style={{flexDirection: 'row'}}
+                    onPress={() => setGrading_expanded(!grading_expanded)}
+                    activeOpacity={0.5}>
+                    <Text style={{fontSize: 28, textAlignVertical: 'center'}}>Letter Grading:</Text>
+                    {/* Button to configure letter grades and their thresholds.*/}
+                    <TouchableOpacity
+                        onPress={() => { navigation.navigate('Configure Letter Grading', {semester: semester, curr_class: curr_class})}}>
+                        <AntDesign name="edit" size={45} color='black'/>
+                    </TouchableOpacity>
+                    {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
+                    {!grading_expanded && (
+                        <AntDesign style={{marginLeft: 'auto'}} name="downcircleo" size={45} color="black"/>
+                    )}
+                    {grading_expanded && (
+                        <AntDesign style={{marginLeft: 'auto'}} name="upcircleo" size={45} color="black"/>
+                    )}
+                </TouchableOpacity>
+                {/* Display each letter grade's thresholds when the letter grading component is expanded. */}
+                {grading_expanded && (
+                    <View>
+                        <Text style={{fontSize: 15}}>(Last number is non-inclusive.)</Text>
+                        {letter_grading.map((l) => {
+                            return(
+                                <Text key={l.id} style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
+                            );
+                        })}
+                    </View>
+                )}
+            </View>
+        );
+    }
+
+    const renderClassSections = () => {
+        if(sections.length > 0) return (
+            <View style={{flex: 1}}>
+                {sections.map((s) => {
+                    return(
+                        <SectionView key={s.id} semester={semester} curr_class={curr_class} section={s} navigation={navigation}/>
+                    );
+                })}
+            </View>
+        )
+    }
 
     // Viewing state for a class.
     if(!is_editing){
@@ -344,6 +435,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                         }}>
                         <AntDesign name="edit" size={50} color='black'/>
                     </TouchableOpacity>
+                    {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
                     {!is_expanded && (
                         <AntDesign style={{marginLeft: 10}} name="downcircleo" size={50} color='black'/>
                     )}
@@ -355,78 +447,21 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                 {is_expanded && (
                     <View style={{marginVertical: 10, flex: 1, flexDirection: 'column', gap: 20}}>
                         {/* Print out class average if one can be calculated. */}
-                        {sections.length > 0 && calculateClassAverage(sections) === 'N/A' && (
-                            <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
-                        )}
-                        {sections.length > 0 && calculateClassAverage(sections) !== 'N/A' && (
-                            <Text style={{fontSize: 20}}>Class Average%: {(calculateClassAverage(sections) * 100).toFixed(2)}%</Text>
-                        )}
+                        { renderCalculatedClassAverage() }
                         <View>
-                            {calculateExpectedClassLetterGrade(curr_class) === 'N/A' && (
-                                <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
-                            )}
-                            {calculateExpectedClassLetterGrade(curr_class) !== 'N/A' && (
-                                <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
-                            )}
-                            {sections.length > 0 && calculateExpectedClassAverage(sections) === 'N/A' && (
-                                <Text style={{fontSize: 20}}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
-                            )}
-                            {sections.length > 0 && calculateExpectedClassAverage(sections) !== 'N/A' && (
-                                <Text style={{fontSize: 20}}>Expected Average%: {(calculateExpectedClassAverage(sections) * 100).toFixed(2)}%</Text>
-                            )}
+                            { renderExpectedClassLetterGrade() }
+                            { renderExpectedClassAverage() }
                         </View>
-                        {/* Letter grading pane. */}
-                        <View style={{backgroundColor: '#BEBEBE', borderRadius: 10, padding: 20}}>
-                            <TouchableOpacity style={{flexDirection: 'row'}}
-                                onPress={() => {
-                                    setGrading_expanded(!grading_expanded);
-                                }}
-                                activeOpacity={0.5}>
-                                <Text style={{fontSize: 28, textAlignVertical: 'center'}}>Letter Grading:</Text>
-                                {/* Button to configure letter grades and their thresholds.*/}
-                                <TouchableOpacity
-                                    style={{marginRight: 15}}
-                                    onPress={() => {
-                                        navigation.navigate('Configure Letter Grading', {semester: semester, curr_class: curr_class});
-                                    }}>
-                                    <AntDesign name="edit" size={45} color='black'/>
-                                </TouchableOpacity>
-                                {!grading_expanded && (
-                                    <AntDesign style={{marginLeft: 'auto'}} name="downcircleo" size={45} color="black"/>
-                                )}
-                                {grading_expanded && (
-                                    <AntDesign style={{marginLeft: 'auto'}} name="upcircleo" size={45} color="black"/>
-                                )}
-                            </TouchableOpacity>
-                            {grading_expanded && (
-                                <View style={{flexDirection: 'column'}}>
-                                    <Text style={{fontSize: 15}}>(Last number is non-inclusive.)</Text>
-                                    {letter_grading.map((l) => {
-                                        return(
-                                            <Text key={l.id} style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
-                                        );
-                                    })}
-                                </View>
-                            )}
-                        </View>
+                        {/* Expandable letter grading component that displays the letter grade thresholds. */}
+                        { renderClassLetterGrading() }
                         {/* Button to add sections and their weights */}
                         <View style={{height: 60}}>
                             <FlatButton
                                 text='Configure Sections'
-                                onPress={() => {
-                                    navigation.navigate('Configure Sections', {curr_class: curr_class});
-                                }}
+                                onPress={() => { navigation.navigate('Configure Sections', {curr_class: curr_class}) }}
                             />
                         </View>
-                        {sections.length > 0 && (
-                            <View style={{flex: 1}}>
-                                {sections.map((s) => {
-                                    return(
-                                        <SectionView key={s.id} semester={semester} curr_class={curr_class} section={s} navigation={navigation}/>
-                                    );
-                                })}
-                            </View>
-                        )}
+                        { renderClassSections() }
                     </View>
                 )}
             </View>
