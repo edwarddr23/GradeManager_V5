@@ -756,23 +756,15 @@ const styles = StyleSheet.create({
         gap: 10
     },
 
-    classStyle: { 
-        //   alignItems: 'center',
+    classStyle: {
         borderWidth: 4,
         borderRadius: 30,
         padding: 10,
         marginBottom: 10,
-        // alignItems: 'center',
         gap: 15
-        //   flexDirection: 'row',
-        // gap: 10
-        // backgroundColor: 'purple',
-        // width: '95%'
     },
 
     inputText: {
-        // height: 10,
-        // margin: 12,
         textAlign: 'center',
         fontSize: 25,
         borderWidth: 3,
