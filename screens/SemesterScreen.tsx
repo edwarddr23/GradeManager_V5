@@ -407,103 +407,105 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
         )
     }
 
-    // Viewing state for a class.
-    if(!is_editing){
-        return(
-            <View style={styles.classStyle}>
-                {/* Top section of SectionView for dropdown functionality and showing class name and class letter grade. */}
-                <TouchableOpacity 
-                    style={{flexDirection: 'row'}}
-                    activeOpacity={0.5}
-                    onPress={() => setIsExpanded(!is_expanded)}>
-                    {/* Display class name and letter grade, if possible. */}
-                    {name !== '' && (
-                        <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>{name}: {calculateClassLetterGrade(curr_class)}</Text>
-                    )}
-                    {name === '' && calculateClassLetterGrade(curr_class) === 'N/A' && (
-                        <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class</Text>
-                    )}
-                    {name === '' && calculateClassLetterGrade(curr_class) !== 'N/A' && (
-                        <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class: {calculateClassLetterGrade(curr_class)}</Text>
-                    )}
-                    {/* Edit button for class. */}
-                    <TouchableOpacity
-                        style={{marginLeft: 'auto'}}
-                        activeOpacity={0.5}
-                        onPress={() => {
-                            setIs_editing(true);
-                        }}>
-                        <AntDesign name="edit" size={50} color='black'/>
-                    </TouchableOpacity>
-                    {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
-                    {!is_expanded && (
-                        <AntDesign style={{marginLeft: 10}} name="downcircleo" size={50} color='black'/>
-                    )}
-                    {is_expanded && (
-                        <AntDesign style={{marginLeft: 10}} name="upcircleo" size={50} color='black'/>
-                    )}
-                </TouchableOpacity>
-                {/* If the ClassView is expanded, display the class info: class grade, sections, section weights, section grades, assignments, and assignment grades.*/}
-                {is_expanded && (
-                    <View style={{marginVertical: 10, flex: 1, flexDirection: 'column', gap: 20}}>
-                        {/* Print out class average if one can be calculated. */}
-                        { renderCalculatedClassAverage() }
-                        <View>
-                            { renderExpectedClassLetterGrade() }
-                            { renderExpectedClassAverage() }
+    
+    return(
+        <View style={styles.classStyle}>
+            {/* Top section of SectionView for dropdown functionality and showing class name and class letter grade. */}
+            <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => setIsExpanded(!is_expanded)}>
+                {!is_editing && (
+                    <View style={{flexDirection: 'row', flex: 1}}>
+                        <View style={{flex: 1}}>
+                            {/* Display class name and letter grade, if possible. */}
+                            {name !== '' && (
+                                <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>{name}: {calculateClassLetterGrade(curr_class)}</Text>
+                            )}
+                            {name === '' && calculateClassLetterGrade(curr_class) === 'N/A' && (
+                                <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class</Text>
+                            )}
+                            {name === '' && calculateClassLetterGrade(curr_class) !== 'N/A' && (
+                                <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class: {calculateClassLetterGrade(curr_class)}</Text>
+                            )}
                         </View>
-                        {/* Expandable letter grading component that displays the letter grade thresholds. */}
-                        { renderClassLetterGrading() }
-                        {/* Button to add sections and their weights */}
-                        <View style={{height: 60}}>
-                            <FlatButton
-                                text='Configure Sections'
-                                onPress={() => { navigation.navigate('Configure Sections', {curr_class: curr_class}) }}
-                            />
+                        <View style={{flexDirection: 'row'}}>
+                            {/* Edit button for class. */}
+                            <TouchableOpacity
+                                style={{marginLeft: 'auto'}}
+                                activeOpacity={0.5}
+                                onPress={() => {
+                                    setIs_editing(true);
+                                }}>
+                                <AntDesign name="edit" size={50} color='black'/>
+                            </TouchableOpacity>
+                            {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
+                            {!is_expanded && (
+                                <AntDesign style={{marginLeft: 10}} name="downcircleo" size={50} color='black'/>
+                            )}
+                            {is_expanded && (
+                                <AntDesign style={{marginLeft: 10}} name="upcircleo" size={50} color='black'/>
+                            )}
                         </View>
-                        { renderClassSections() }
                     </View>
                 )}
-            </View>
-        );
-    }
-    // Editing state for a class.
-    else{
-        return(
-            <View style={styles.classStyle}>
-                <View style={{flexDirection: 'row'}}>
-                    <TextInput
-                        style={styles.inputText}
-                        value={name}
-                        placeholder="Name"
-                        onChangeText={text => {
-                            setName(text);
-                        }}
-                    />
-                    {/* Done Button to change name of class. */}
-                    <TouchableOpacity
-                        style={{marginLeft: 'auto'}}
-                        activeOpacity={0.5}
-                        onPress={() => {
-                            const new_class = {
-                                ...curr_class,
-                                name: name
-                            }
-                            updateClassInProfile(new_class);
-                            setIs_editing(false);
-                        }}>
-                        <AntDesign name="checkcircleo" size={50} color='green'/>
-                    </TouchableOpacity>
+                {is_editing && (
+                    <View style={{alignItems: 'center', gap: 10}}>
+                        <View style={{flexDirection: 'row'}}>
+                            <TextInput
+                                style={styles.inputText}
+                                value={name}
+                                placeholder="Name"
+                                onChangeText={text => {
+                                    setName(text);
+                                }}
+                            />
+                            {/* Done Button to change name of class. */}
+                            <TouchableOpacity
+                                style={{marginLeft: 'auto'}}
+                                activeOpacity={0.5}
+                                onPress={() => {
+                                    const new_class = {
+                                        ...curr_class,
+                                        name: name
+                                    }
+                                    updateClassInProfile(new_class);
+                                    setIs_editing(false);
+                                }}>
+                                <AntDesign name="checkcircleo" size={50} color='green'/>
+                            </TouchableOpacity>
+                        </View>
+                        {/* Button that deletes a year from a semester. */}
+                        <TouchableOpacity
+                            activeOpacity={0.5}
+                            onPress={() => deleteClass(curr_class)}>
+                            <AntDesign name="delete" size={50} color={'black'}/>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            </TouchableOpacity>
+            {/* If the ClassView is expanded, display the class info: class grade, sections, section weights, section grades, assignments, and assignment grades.*/}
+            {is_expanded && (
+                <View style={{marginVertical: 10, flex: 1, flexDirection: 'column', gap: 20}}>
+                    {/* Print out class average if one can be calculated. */}
+                    { renderCalculatedClassAverage() }
+                    <View>
+                        { renderExpectedClassLetterGrade() }
+                        { renderExpectedClassAverage() }
+                    </View>
+                    {/* Expandable letter grading component that displays the letter grade thresholds. */}
+                    { renderClassLetterGrading() }
+                    {/* Button to add sections and their weights */}
+                    <View style={{height: 60}}>
+                        <FlatButton
+                            text='Configure Sections'
+                            onPress={() => { navigation.navigate('Configure Sections', {curr_class: curr_class}) }}
+                        />
+                    </View>
+                    { renderClassSections() }
                 </View>
-                {/* Button that deletes a year from a semester. */}
-                <TouchableOpacity
-                    activeOpacity={0.5}
-                    onPress={() => deleteClass(curr_class)}>
-                    <AntDesign name="delete" size={50} color={'black'}/>
-                </TouchableOpacity>
-            </View>
-        )
-    }
+            )}
+        </View>
+    );
 }
 
 const SemesterScreen = ({navigation, route}) => {
@@ -725,7 +727,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         padding: 10,
         marginBottom: 10,
-        alignItems: 'center',
+        // alignItems: 'center',
         gap: 15
         //   flexDirection: 'row',
         // gap: 10
