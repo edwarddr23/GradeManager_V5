@@ -1,3 +1,11 @@
+/* 
+    YearsScreen.tsx
+    PURPOSE
+
+        The purpose of this file is to define all of the functionalities necessary for the screen
+        responsible for adding academic years to a profile, as well as add semesters within each year.
+*/
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, Keyboard } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -7,27 +15,52 @@ import { findNextID } from '../shared/key_functions'
 import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA, calculateExpectedYearGPA, calculateExpectedCumulativeGPA } from '../shared/calculation_functions'
 import { useProfileContext, YearContent, SemesterContent } from '../shared/profile_context'
 
+/*
+NAME
+
+    SemesterView - a dynamic component that allows the viewing and editing of a semester from a given academic year.
+
+SYNOPSIS
+
+    <TouchableOpacity> SemesterView({ navigation, semester, updateSemesters, deleteSemester })
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+        semester --> the semester object the current section in question is a child of.
+        updateSemesters --> a function responsible for updating the SemesterContent state array and the SemesterContent array in the global profile context.
+        deleteSemester --> a function responsible for deleting a semester from the SemesterContent state array and the SemesterContent array in the global proile context.
+              
+DESCRIPTION
+
+    This component has two states: viewing and editing. In the viewing state, the user can view the semester's season,
+    year, calculated GPA, and expected GPA. The user can also press on this component to navigate to the SemesterScreen
+    to make more changes to the semester (such as adding classes).
+
+RETURNS
+
+    Returns a dynamic TouchableOpacity with a viewing and editing state for a given semester.
+*/
 const SemesterView = ({ navigation, semester, updateSemesters, deleteSemester }) => {
-    const { profile_context, updateSemesterInProfile } = useProfileContext();
+    // Global profile context function extracted to handle updating the specific semester in question in the global profile context.
+    const { updateSemesterInProfile } = useProfileContext();
+    // State variables to handle the changing behavior and attributes of the current SemesterContent object and the component.
     const[is_editing, setIs_editing] = useState(false);
     const[season, setSeason] = useState(semester.season);
     const[year, setYear] = useState(semester.year);
 
     return(
         <TouchableOpacity 
-            style={{width: '100%', backgroundColor: '#b8b8b8', borderRadius: 10, padding: 15, marginVertical: 10}}
+            style={styles.semester}
             onPress={() => {
                 navigation.navigate('Semester', {semester: semester});
             }}>
-            <View style={{flexDirection: 'column'}}>
+            <View>
                 {/* Viewing state for semester. */}
                 {!is_editing && (
                     <View style={{flexDirection: 'row'}}>
                         <View style={{flexDirection: 'column'}}>
-                            {is_editing == false && season === "" && (
+                            {season === "" && (
                                 <Text style={{fontWeight: 'bold', fontSize: 25}}>New Semester</Text>
                             )}
-                            {is_editing == false && season !== "" && (
+                            {season !== "" && (
                                 <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}</Text>
                             )}
                             <Text style={{fontSize: 20}}>Semester GPA: {calculateSemesterGPA(semester)}</Text>
@@ -370,6 +403,15 @@ const YearsScreen = ({navigation, route}) => {
 export default YearsScreen;
 
 const styles = StyleSheet.create({
+    semester: {
+        width: '100%',
+        backgroundColor: '#b8b8b8',
+        borderRadius: 10,
+        padding: 15,
+        marginVertical: 10,
+        flexDirection: 'row'
+    },
+
     scroll: {
       width: '90%'
     },
