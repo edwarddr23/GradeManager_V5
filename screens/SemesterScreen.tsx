@@ -608,6 +608,28 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     );
 }
 
+/*
+NAME
+
+    SemesterScreen - a component that handles the UI elements and functionalities associated with the screen responsible for adding viewing, adding, and editing classes within a semester.
+
+SYNOPSIS
+
+    <View> SemesterScreen({navigation, route})
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+        route --> the route object also inherited from the NavigationContainer.
+
+DESCRIPTION
+
+    If the user presses the plus button, a new ClassContent object is created, initialized and added to both the state and global profile context.
+    Then, a ClassView component is made to display this object, and allows for the viewing and editing of that object. The name of a class or the names
+    of sections within a class can be edited. Any other properties of a class can be changed using the functionality of a different screen (which is
+    really, of course, just another component).
+
+RETURNS
+
+    Returns View that lets the user add classes and edit them within a semester.
+*/
 const SemesterScreen = ({navigation, route}) => {
     const { profile_context, addClassToProfile, updateSemesterClassesInProfile } = useProfileContext();
     const { semester } = route.params;
@@ -619,21 +641,21 @@ const SemesterScreen = ({navigation, route}) => {
 
     useEffect(() => {
         setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
-        navigation.setOptions({
-            title: `${semester.season} ${semester.year}`,
-            headerLeft: () => (
-                <View style={{marginRight: 20}}>
-                    <TouchableOpacity
-                    activeOpacity={0.5}
-                    onPress={() => {
-                        console.log('SemesterScreen.tsx: CUSTOM BACK BUTTON');
-                        navigation.navigate('Years', {fromClassScreen: true});
-                    }}>
-                    <AntDesign name="arrowleft" size={25} color='black'/>
-                    </TouchableOpacity>
-                </View>
-            )
-        })
+        // navigation.setOptions({
+        //     title: `${semester.season} ${semester.year}`,
+        //     headerLeft: () => (
+        //         <View style={{marginRight: 20}}>
+        //             <TouchableOpacity
+        //             activeOpacity={0.5}
+        //             onPress={() => {
+        //                 console.log('SemesterScreen.tsx: CUSTOM BACK BUTTON');
+        //                 navigation.navigate('Years', {fromClassScreen: true});
+        //             }}>
+        //             <AntDesign name="arrowleft" size={25} color='black'/>
+        //             </TouchableOpacity>
+        //         </View>
+        //     )
+        // })
         // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
         const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
             setKeyboard_showing(true);

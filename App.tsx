@@ -105,17 +105,30 @@ function App(): React.JSX.Element {
             <Stack.Screen
               name="Semester"
               component={SemesterScreen}
-              options={({navigation}) => ({
-                headerRight: () => (
-                  <View style={{width: 100, height: 45}}>
-                    <FlatButton
-                      text="Save"
-                      onPress={() => {
-                        navigation.navigate("Save");
-                      }}
-                    />
-                  </View>
+              options={({navigation, route}) => ({
+                header: () => (
+                  <HeaderView
+                    navigation={navigation}
+                    backButtonOnPress={() => {
+                      navigation.navigate('Years');
+                    }}
+                    titleView={(
+                      <View>
+                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>{route.params.semester.season} {route.params.semester.year}</Text>
+                      </View>
+                    )}
+                  />
                 )
+                // headerRight: () => (
+                //   <View style={{width: 100, height: 45}}>
+                //     <FlatButton
+                //       text="Save"
+                //       onPress={() => {
+                //         navigation.navigate("Save");
+                //       }}
+                //     />
+                //   </View>
+                // )
               })}/>
             <Stack.Screen
               name="Configure Sections"
