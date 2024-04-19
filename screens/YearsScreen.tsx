@@ -14,6 +14,7 @@ import Footer from '../shared/custom_footer';
 import { findNextID } from '../shared/key_functions'
 import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA, calculateExpectedYearGPA, calculateExpectedCumulativeGPA } from '../shared/calculation_functions'
 import { useProfileContext, YearContent, SemesterContent } from '../shared/profile_context'
+import { SelectList } from 'react-native-dropdown-select-list';
 
 /*
 NAME
@@ -38,13 +39,112 @@ RETURNS
 
     Returns a dynamic TouchableOpacity with a viewing and editing state for a given semester.
 */
-const SemesterView = ({ navigation, semester, updateSemesters, deleteSemester }) => {
+const SemesterView = ({ navigation, years_range, semester, updateSemesters, deleteSemester }) => {
     // Global profile context function extracted to handle updating the specific semester in question in the global profile context.
     const { updateSemesterInProfile } = useProfileContext();
     // State variables to handle the changing behavior and attributes of the current SemesterContent object and the component.
     const[is_editing, setIs_editing] = useState(false);
     const[season, setSeason] = useState(semester.season);
     const[year, setYear] = useState(semester.year);
+    const[seasonAndYear, setSeasonAndYear] = useState(() => {
+        if(season !== '' && year !== -1) return(`${season} ${year}`);
+        return '';
+    });
+
+    const renderSeasonAndYear = () => {
+        return(
+            <View style={{flexDirection: 'row', gap: 10}}>
+                <SelectList
+                    // Placeholder is type so that the selected type will show after the exam is closed and reopened.
+                    placeholder={seasonAndYear}
+                    setSelected={(val) => setSeasonAndYear(val)}
+                    data={[`Fall ${years_range[0]}`, `Winter ${years_range[0]}`, `Spring ${years_range[1]}`]}
+                    search={false}
+                    save="value"
+                    onSelect={() => {
+                        console.log(`renderSeasonAndYear(): ${seasonAndYear}`);
+                        setSeason(seasonAndYear.split(" ")[0]);
+                        setYear(seasonAndYear.split(" ")[1]);
+                        // For context, here are the attributes for SemesterContent:
+                        // id: Int32
+                        // year_id: Int32
+                        // classes: ClassContent[]
+                        // season: string
+                        // year: Int32
+                        const updated_semester = {
+                            ...semester,
+                            season: seasonAndYear.split(" ")[0],
+                            year: seasonAndYear.split(" ")[1]
+                        }
+                        updateSemesters(updated_semester);
+                        updateSemesterInProfile(updated_semester);
+                    }}
+                />
+            </View>
+        );
+        // if(!is_editing){
+        //     if(season === "") return(
+        //         <Text style={{fontWeight: 'bold', fontSize: 25}}>New Semester</Text>
+        //     );
+        //     return(
+        //         <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}</Text>
+        //     );
+        // }
+        // return(
+        //     <View style={{flexDirection: 'row', gap: 15}}>
+        //         <TextInput
+        //             style={styles.inputText}
+        //             value={season}
+        //             placeholder="Season"
+        //             onChangeText={text => {
+        //                 setSeason(text);
+        //             }}
+        //         />
+        //         <TextInput
+        //             style={styles.inputText}
+        //             value={semesterYear}
+        //             placeholder="Year"
+        //             onChangeText={text => {
+        //                 setSemesterYear(text);
+        //             }}
+        //         />
+        //     </View>
+        // );
+    }
+
+    const renderDoneOrEdit = () => {
+        // Edit button that activates editing state for semester.
+        if(!is_editing){
+            return(
+                <TouchableOpacity
+                    style={{marginLeft: 'auto', alignSelf: 'center'}}
+                    activeOpacity={0.5}
+                    onPress={() => {
+                        setIs_editing(!is_editing);
+                    }}>
+                    <AntDesign name="edit" size={50} color="black"/>
+                </TouchableOpacity>
+            );
+        }
+        // Done button for editing season and year for the semester.
+        return(
+            <TouchableOpacity
+                style={{marginLeft: 'auto', paddingLeft: 20, alignSelf: 'center'}}
+                activeOpacity={0.5}
+                onPress={() => {
+                    const updated_semester = {
+                        ...semester,
+                        season: season,
+                        year: year
+                    }
+                    updateSemesters(updated_semester);
+                    updateSemesterInProfile(updated_semester);
+                    setIs_editing(!is_editing);
+                }}>
+                <AntDesign name="checkcircleo" size={50} color='green'/>
+            </TouchableOpacity>
+        );
+    }
 
     return(
         <TouchableOpacity 
@@ -52,77 +152,22 @@ const SemesterView = ({ navigation, semester, updateSemesters, deleteSemester })
             onPress={() => {
                 navigation.navigate('Semester', {semester: semester});
             }}>
-            <View>
-                {/* Viewing state for semester. */}
-                {!is_editing && (
-                    <View style={{flexDirection: 'row'}}>
-                        <View style={{flexDirection: 'column'}}>
-                            {season === "" && (
-                                <Text style={{fontWeight: 'bold', fontSize: 25}}>New Semester</Text>
-                            )}
-                            {season !== "" && (
-                                <Text style={{fontWeight: 'bold', fontSize: 25}}>{semester.season} {semester.year}</Text>
-                            )}
-                            <Text style={{fontSize: 20}}>Semester GPA: {calculateSemesterGPA(semester)}</Text>
-                            <Text style={{fontSize: 20}}>Expected Semester GPA: {calculateExpectedSemesterGPA(semester)}</Text>
-                        </View>
-                        {/* Edit button that activates editing state for semester. */}
-                        <TouchableOpacity
-                            style={{marginLeft: 'auto', alignSelf: 'center'}}
-                            activeOpacity={0.5}
-                            onPress={() => {
-                                setIs_editing(!is_editing);
-                            }}>
-                            <AntDesign name="edit" size={45} color="black"/>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {/* Editing state for semester */}
-                {is_editing && (
-                    <View style={{alignItems: 'center', gap: 20}}>
-                        <View style={{flexDirection: 'row', gap: 15}}>
-                            <TextInput
-                                style={styles.inputText}
-                                value={season}
-                                placeholder="Season"
-                                onChangeText={text => {
-                                    setSeason(text);
-                                }}
-                            />
-                            <TextInput
-                                style={styles.inputText}
-                                value={year}
-                                placeholder="Year"
-                                onChangeText={text => {
-                                    setYear(text);
-                                }}
-                            />
-                            {/* Done button for editing season and year for the semester. */}
-                            <TouchableOpacity
-                                style={{marginLeft: 'auto', paddingLeft: 20, alignSelf: 'center'}}
-                                activeOpacity={0.5}
-                                onPress={() => {
-                                    const updated_semester = {
-                                        ...semester,
-                                        season: season,
-                                        year: year
-                                    }
-                                    updateSemesters(updated_semester);
-                                    updateSemesterInProfile(updated_semester);
-                                    setIs_editing(!is_editing);
-                                }}>
-                                <AntDesign name="checkcircleo" size={50} color='green'/>
-                            </TouchableOpacity>
-                        </View>
-                        {/* Button that deletes a semester from a year. */}
-                        <TouchableOpacity
-                            activeOpacity={0.5}
-                            onPress={() => deleteSemester(semester)}>
-                            <AntDesign name="delete" size={50} color={'black'}/>
-                        </TouchableOpacity>
-                    </View>
-                )}
+            <View style={{flexDirection: 'row'}}>
+                <View style={{flex: 1}}>
+                    { renderSeasonAndYear() }
+                    <Text style={{fontSize: 20}}>Semester GPA: {calculateSemesterGPA(semester)}</Text>
+                    <Text style={{fontSize: 20}}>Expected Semester GPA: {calculateExpectedSemesterGPA(semester)}</Text>
+                </View>
+                { renderDoneOrEdit() }
             </View>
+            {/* Button that deletes a semester from a year. */}
+            {is_editing && (
+                <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => deleteSemester(semester)}>
+                    <AntDesign name="delete" size={50} color={'black'}/>
+                </TouchableOpacity>
+            )}
         </TouchableOpacity>
     );
 }
@@ -233,7 +278,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                                     }
                                     
                                     return(
-                                        <SemesterView key={semester.id} semester={semester} updateSemesters={chgSemesters} deleteSemester={deleteSemesterInYear} navigation={navigation}/>
+                                        <SemesterView key={semester.id} years_range={[beg_year, end_year]} semester={semester} updateSemesters={chgSemesters} deleteSemester={deleteSemesterInYear} navigation={navigation}/>
                                     );
                                 })}
                             </View>
@@ -409,7 +454,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 15,
         marginVertical: 10,
-        flexDirection: 'row'
+        alignItems: 'center'
     },
 
     scroll: {
@@ -455,7 +500,7 @@ const styles = StyleSheet.create({
 
     inputText: {
       textAlign: 'center',
-      fontSize: 20,
+      fontSize: 25,
       borderWidth: 3,
       borderRadius: 10,
       padding: 10,
