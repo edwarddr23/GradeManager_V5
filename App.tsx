@@ -114,7 +114,14 @@ function App(): React.JSX.Element {
                     }}
                     titleView={(
                       <View>
-                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>{route.params.semester.season} {route.params.semester.year}</Text>
+                        {/* If the semester season and name are initialized, display them. */}
+                        {route.params.semester.season !== '' && route.params.semester.year !== '' && (
+                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>{route.params.semester.season} {route.params.semester.year}</Text>
+                        )}
+                        {/* If the semester season and name are not initialized, display "New Semester". */}
+                        {route.params.semester.season === '' && route.params.semester.year === -1 && (
+                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>New Semester</Text>
+                        )}
                       </View>
                     )}
                   />

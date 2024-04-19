@@ -576,7 +576,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                         {/* Button that deletes a year from a semester. */}
                         <TouchableOpacity
                             activeOpacity={0.5}
-                            onPress={() => deleteClass(curr_class)}>
+                            onPress={() => deleteClass()}>
                             <AntDesign name="delete" size={50} color={'black'}/>
                         </TouchableOpacity>
                     </View>
@@ -631,16 +631,20 @@ RETURNS
     Returns View that lets the user add classes and edit them within a semester.
 */
 const SemesterScreen = ({navigation, route}) => {
+    // Context object and functions that will be needed to keep the context updated with the state as the user makes changes.
     const { profile_context, addClassToProfile, updateSemesterClassesInProfile } = useProfileContext();
+    // This semester passed through params will be the scope of this screen and any subsequent child screens.
     const { semester } = route.params;
 
+    // The semester object's classes passed through the params is attached to the state.
     const[classes, setClasses] = useState(semester.classes);
     // const[classes, setClasses] = useState(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
 
+    // Keyboard state flag that will help in tracking whether the keyboard is up or not.
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
     useEffect(() => {
-        setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
+        // setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
         // navigation.setOptions({
         //     title: `${semester.season} ${semester.year}`,
         //     headerLeft: () => (
@@ -665,83 +669,129 @@ const SemesterScreen = ({navigation, route}) => {
         })
     }, [classes]);
 
+    /*
+    NAME
+
+        handleAddClass - a function component that handles adding a class to the state and profile context.
+    
+    SYNOPSIS
+
+        void handleAddClass()
+
+    DESCRIPTION
+
+        This function component initializes a new ClassContent object and adds it to the state classes array
+        and to the respective classes array in context. This function component is used when the add classes
+        button is pressed.
+
+    RETURNS
+
+        Returns void.
+    */
+    const handleAddClass = () => {
+        /*
+        NAME
+
+            initialLetterGrading - a function that makes a default letter grading array.
+        
+        SYNOPSIS
+
+            LetterGradeContent[] initialLetterGrading()
+
+        DESCRIPTION
+
+            This function uses a dictionary of default letter grades and their respective ranges. For each
+            key in this dictionary, a LetterGradeContent object is created using that information and the info
+            from the current semester in question, as this LetterGradeContent object is a child of a ClassContent
+            object, which is a child of the current SemesterContent object in question. Each of these LetterGradeContent
+            objects are accumulated into an array, and at the end, this array is returned.
+
+        RETURNS
+
+            Returns an LetterGradeContent array with default letters and ranges.
+        */
+        function initialLetterGrading() {
+            const letters = {
+                "A": [94, 100],
+                "A-": [90, 94],
+                "B+": [87, 90],
+                "B": [84, 87],
+                "B-": [80, 84],
+                "C+": [77, 80],
+                "C": [74, 77],
+                "C-": [70, 74],
+                "D+": [67, 70],
+                "D": [65, 67],
+                "F": [0, 65]
+            };
+            let init_letter_grading = [];
+            for(const [key, value] of Object.entries(letters)){
+                // Letter Grading Info:
+                // id: Int32,
+                // year_id: Int32
+                // semester_id: Int32
+                // class_id: Int32
+                // letter: string
+                // beg: Int32
+                // end: Int32
+                // const a_grade: LetterGradeContent = {
+                //     id: 0,
+                //     year_id: semester.year_id,
+                //     semester_id: semester.id,
+                //     class_id
+                // }
+                init_letter_grading.push(
+                    {
+                        id: findNextID(init_letter_grading),
+                        year_id: semester.year_id,
+                        semester_id: semester.id,
+                        class_id: findNextID(classes),
+                        letter: key,
+                        beg: value[0],
+                        end: value[1]
+                    }
+                )
+            }
+            return init_letter_grading;
+        }
+
+        // Class Data Info:
+        // id: Int32
+        // year_id: Int32
+        // semester_id: Int32
+        // name: string
+        // letter_grading: LetterGradeContent[]
+        // sections: SectionContent[]
+        let new_class: ClassContent = {
+            id: findNextID(classes),
+            year_id: semester.year_id,
+            semester_id: semester.id,
+            name: '',
+            letter_grading: initialLetterGrading(),
+            sections: []
+        };
+        // Create a copy of the old classes state array and add the new_class object.
+        const newClasses = [
+            ...classes,
+            new_class
+        ]
+        // Update the state and profile context with this new array of classes.
+        setClasses(newClasses);
+        addClassToProfile(new_class);
+    }
+
     return(
         <View style={styles.container}>
             {/* Button that adds a class to a semester */}
             <TouchableOpacity style={{ height: 75 }}
-                onPress={() => {
-                    const initialLetterGrading = () => {
-                        const letters = {
-                            "A": [94, 100],
-                            "A-": [90, 94],
-                            "B+": [87, 90],
-                            "B": [84, 87],
-                            "B-": [80, 84],
-                            "C+": [77, 80],
-                            "C": [74, 77],
-                            "C-": [70, 74],
-                            "D+": [67, 70],
-                            "D": [65, 67],
-                            "F": [0, 65]
-                        };
-                        let init_letter_grading = [];
-                        for(const [key, value] of Object.entries(letters)){
-                            // Letter Grading Info:
-                            // id: Int32,
-                            // year_id: Int32
-                            // semester_id: Int32
-                            // class_id: Int32
-                            // letter: string
-                            // beg: Int32
-                            // end: Int32
-                            // const a_grade: LetterGradeContent = {
-                            //     id: 0,
-                            //     year_id: semester.year_id,
-                            //     semester_id: semester.id,
-                            //     class_id
-                            // }
-                            init_letter_grading.push(
-                                {
-                                    id: findNextID(init_letter_grading),
-                                    year_id: semester.year_id,
-                                    semester_id: semester.id,
-                                    class_id: findNextID(classes),
-                                    letter: key,
-                                    beg: value[0],
-                                    end: value[1]
-                                }
-                            )
-                        }
-                        return init_letter_grading;
-                    }
-
-                    // Class Data Info:
-                    // id: Int32
-                    // year_id: Int32
-                    // semester_id: Int32
-                    // name: string
-                    // letter_grading: LetterGradeContent[]
-                    // sections: SectionContent[]
-                    let new_class: ClassContent = {
-                        id: findNextID(classes),
-                        year_id: semester.year_id,
-                        semester_id: semester.id,
-                        name: '',
-                        letter_grading: initialLetterGrading(),
-                        sections: []
-                    };
-                    const newClasses = [
-                        ...classes,
-                        new_class
-                    ]
-                    setClasses(newClasses);
-                    addClassToProfile(new_class);
-                }}>
+                onPress={handleAddClass}>
                 <AntDesign name="pluscircleo" size={70} color={'black'}/>
             </TouchableOpacity>
+            {/* If there's no classes, but a Text component that lets the user know that the add button is to add classes to a semester. */}
             {classes.length === 0 && (
                 <Text style={{fontSize: 30}}>Add classes</Text>
             )}
+            {/* FlatList of ClassViews that lets the user view and modify classes within the current semester in question. */}
             <View style={{flex: 1, alignItems: 'center', width: '100%'}}>
                 <FlatList
                     style={{width: '90%'}}
@@ -749,8 +799,26 @@ const SemesterScreen = ({navigation, route}) => {
                     keyExtractor={(item, index) => item.id}
                     removeClippedSubviews={false}
                     renderItem={(curr_class) => {
-                        const deleteClassInSemester = (class_to_remove) => {
-                            const new_classes = classes.filter((c) => c.id !== class_to_remove.id);
+                        /*
+                        NAME
+
+                            deleteClassInSemester - a function component that handles the deletion of a class from the state and global context.
+                        
+                        SYNOPSIS
+
+                            void deleteClassInSemester()
+
+                        DESCRIPTION
+
+                            This function component creates a new array of ClassContent objects that has the current class in question (curr_class)
+                            filtered out. This new array is put into the state and the global profile context.
+
+                        RETURNS
+
+                            Returns void.
+                        */
+                        const deleteClassInSemester = () => {
+                            const new_classes = classes.filter((c) => c.id !== curr_class.item.id);
                             setClasses(new_classes);
                             updateSemesterClassesInProfile(semester, new_classes);
                         }
