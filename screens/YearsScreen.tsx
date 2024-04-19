@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, SectionList, Keyboard } from 'react-native'
-import AntDesign from 'react-native-vector-icons/AntDesign'
-import Feather from 'react-native-vector-icons/Feather'
-import Footer from '../shared/custom_footer'
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, Keyboard } from 'react-native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Footer from '../shared/custom_footer';
 
-import { initializeArrKeys, findNextID } from '../shared/key_functions'
-import InputWithLabel from '../shared/custom_text_Inputs'
+import { findNextID } from '../shared/key_functions'
 import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA, calculateExpectedYearGPA, calculateExpectedCumulativeGPA } from '../shared/calculation_functions'
-import { useProfileContext, ClassContent, YearContent, SemesterContent } from '../shared/profile_context'
+import { useProfileContext, YearContent, SemesterContent } from '../shared/profile_context'
 
 const SemesterView = ({ navigation, semester, updateSemesters, deleteSemester }) => {
     const { profile_context, updateSemesterInProfile } = useProfileContext();

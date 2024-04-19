@@ -167,7 +167,7 @@ const SectionView = ({updateTotal, section, deleteSection}) => {
                     {/* Button that deletes a year from a semester. */}
                     <TouchableOpacity
                         activeOpacity={0.5}
-                        onPress={() => deleteSection(section)}>
+                        onPress={() => deleteSection()}>
                         <AntDesign name="delete" size={50} color={'black'}/>
                     </TouchableOpacity>
                 </View>
@@ -338,8 +338,8 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
 
                                     Returns void.
                             */
-                            function deleteSectionFromClass(section) {
-                                const new_sections = sections.filter((s) => s.id !== section.id);
+                            function deleteSectionFromClass() {
+                                const new_sections = sections.filter((s) => s.id !== section.item.id);
                                 setSections(new_sections);
                                 updateClassSectionsInProfile(curr_class, new_sections);
                             }

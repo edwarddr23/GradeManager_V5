@@ -9,7 +9,6 @@ export default function Footer ({navigation}) {
 
 
     useEffect(() => {
-        console.log('hi')
         // A listener is added to the useEffect() hook so that when the LoadScreen comes back into focus, the save files available will be updated in the case that a user loads, saves to a new file, and then hits the back button until they go back to the load screen. Without this listener, useEffect() will not automatically run again once the back button brings the user back to LoadScreen.
         navigation.addListener('focus', () => {
             setProfile_name(profile_context.profile_name);
