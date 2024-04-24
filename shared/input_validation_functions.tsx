@@ -2,23 +2,25 @@ import React from 'react'
 import Toast from 'react-native-simple-toast';
 
 export function validPositiveIntInputs(inputs, input_names) {
-    for(let i = 0; i < inputs.length; i++) {
-        if(inputs[i] === -1 || inputs[i].toString().trim() === ''){
+    let isValid = true;
+    inputs.forEach((input, i) => {
+        console.log(`validPositiveIntInputs: inputs[${i}]: ${input}`);
+        if(input === -1 || input.toString().trim() === ''){
             Toast.show(`Please enter ${input_names[i]}`, Toast.SHORT);
-            return false;
+            isValid = false;
         }
-        else if(isNaN(inputs[i])){
+        else if(isNaN(input)){
             Toast.show(`Please enter a numeric ${input_names[i]}`, Toast.SHORT);
-            return false;
+            isValid = false;
         }
-        else if(!!inputs[i].toString().match(/[.]/) === true){
+        else if(!!input.toString().match(/[.]/) === true){
             Toast.show(`Please enter an integer for a ${input_names[i]}`, Toast.SHORT);
-            return false;
+            isValid = false;
         }
-        else if(inputs[i] < 0){
+        else if(input < 0){
             Toast.show(`${input_names[i]} should be greater or equal to 0`, Toast.SHORT);
-            return false;
+            isValid = false;
         }
-        return true;
-    }
+    })
+    return isValid;
 }
