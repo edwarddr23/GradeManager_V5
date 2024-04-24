@@ -620,53 +620,95 @@ const YearsScreen = ({navigation}) => {
         })
         // Navigation listener that rerenders the years, calculated cumulative gpa, and expected cumulative gpa when the user navigates back to YearsScreen.
         navigation.addListener('focus', () => {
-            setYears(profile_context.years);
+            // setYears(profile_context.years);
             setCumulativeGPA(calculateCumulativeGPA(years));
             setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
         })
-    }, [years]);
+    }, []);
 
-    return(
-        <View style={ {flex: 1, flexDirection: 'column', alignItems: 'center', paddingTop: 10} } >
-            <View style={{width: 80, height: 80}}>
-                {/* Button that adds years */}
-                <TouchableOpacity 
-                    activeOpacity={0.5} 
-                    onPress={() => {
-                        let new_year: YearContent ={
-                            id: findNextID(years),
-                            semesters: [],
-                            beg_year: -1,
-                            end_year: -1
-                        }
-                        setYears([
-                            ...years,
-                            new_year
-                        ])
-                        addYearToProfile(new_year.id);
-                    }}
-                >
-                    <AntDesign name="pluscircleo" style={styles.plus_icon} size={80}/>
-                </TouchableOpacity>
-            </View>
-            <Text style={{fontSize: 17, fontWeight: 'bold', paddingBottom: 5}}>Press the plus sign to add an academic year</Text>
+    /*
+    NAME
+
+        renderAcademicYears - a function component that handles the rendering of academic years for the profile.
+
+    SYNOPSIS
+
+        <Text> or <View> renderAcademicYears()
+        
+    DESCRIPTION
+
+        If the years state array is empty, then render a Text component that lets the user know that pressing the plus icon will
+        let them add academic years to the profile. Otherwise, display the academic years with a View holding FlatList, which
+        programmatically creates YearViews for each year found in the years state array. This function component also defines the
+        functions passed into each YearView component.
+
+    RETURNS
+
+        Returns a Text or View component depending on how many years are in the years state array.
+    */
+    const renderAcademicYears = () => {
+        if(years.length === 0) return(
+            <Text style={{flex: 1, fontSize: 17, fontWeight: 'bold', paddingBottom: 5}}>Press the plus sign to add an academic year</Text>
+        );
+        return(
             <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
                 <FlatList
                     style={{width: '90%'}}
                     data={years}
-                    keyExtractor={(item, index) => item.id}
+                    keyExtractor={(item) => item.id}
                     removeClippedSubviews={false}
                     ItemSeparatorComponent={() => <View style={{height: 20}}/>}
                     renderItem={curr_year => {
+                        /*
+                        NAME
+
+                            chgYrsHandler - a function component that handles the updating of a given year's data by editing the years state array.
+
+                        SYNOPSIS
+
+                            void chgYrsHandler(new_year)
+                                new_year --> year object in question to update to.
+                            
+                        DESCRIPTION
+
+                            Iterate through all of the years in the years state array to create a new array with the respective year
+                            modified with the data of parameter new_year. Update the state and the global profile context to reflect
+                            the changes.
+
+                        RETURNS
+
+                            Returns void.
+                        */
                         const chgYrsHandler = (new_year) => {
                             const new_years = years.map((y) => {
-                                if(y.id != new_year.id) return y;
+                                if(y.id !== new_year.id) return y;
                                 return new_year;
                             })
                             setYears(new_years)
                             updateYearsInProfile(new_years);
                         }
                 
+                        /*
+                        NAME
+
+                            chgSemestersInYrHandler - a function component that handles the updating of semesters for a given year.
+
+                        SYNOPSIS
+
+                            void chgYrsHandler(new_year, new_semesters)
+                                new_year --> year object in question to update to.
+                                new_semesters --> new semesters array to update to.
+
+                        DESCRIPTION
+
+                            Iterate through all of the years in the years state array to create a new array with the respective year
+                            modified with its semesters set to parameter new_semesters. Update the state years and years array in the
+                            global profile context.
+
+                        RETURNS
+
+                            Returns void.
+                        */
                         const chgSemestersInYrHandler = (new_year, new_semesters) => {
                             const new_years = years.map(y => {
                                 console.log(`${y.id} == ${new_year.id}:`, (y.id == new_year.id));
@@ -682,18 +724,65 @@ const YearsScreen = ({navigation}) => {
                             updateYearsInProfile(new_years);
                         }
 
+                        /*
+                        NAME
+
+                            deleteYearFromYears - a function component that handles the deletion of an academic year from the academic years array in the profile in question.
+
+                        SYNOPSIS
+
+                            void deleteYearFromYears(year)
+                                year --> year object in question to delete.
+
+                        DESCRIPTION
+
+                            Filter through the years in the current years state array to exclude the parameter year from the years array
+                            and store that new array into new_years. Update the state years array and the global years context with this
+                            new_years array.
+
+                        RETURNS
+
+                            Returns void.
+                        */
                         const deleteYearFromYears = (year) => {
-                            setYears(years.filter((y) => y.id !== year.id));
-                            updateYearsInProfile(years.filter((y) => y.id !== year.id));
+                            const new_years = years.filter((y) => y.id !== year.id);
+                            setYears(new_years);
+                            updateYearsInProfile(new_years);
                         }
-                
+                        
+                        // Render current semester in a custom SemesterView component.
                         return(
-                            // Render current semester in a custom SemesterView component
                             <YearView key={curr_year.item.id} year={curr_year.item} updateYears={chgYrsHandler} updateSemestersInYear={chgSemestersInYrHandler} deleteYear={deleteYearFromYears} navigation={navigation}/>
                         );
                     }}
                 />
             </View>
+        );
+    }
+
+    return(
+        <View style={styles.container}>
+            <View style={{width: 80, height: 80}}>
+                {/* Button that adds years */}
+                <TouchableOpacity 
+                    activeOpacity={0.5} 
+                    onPress={() => {
+                        let new_year: YearContent = {
+                            id: findNextID(years),
+                            semesters: [],
+                            beg_year: -1,
+                            end_year: -1
+                        }
+                        setYears([
+                            ...years,
+                            new_year
+                        ])
+                        addYearToProfile(new_year.id);
+                    }}>
+                    <AntDesign name="pluscircleo" style={styles.plus_icon} size={80}/>
+                </TouchableOpacity>
+            </View>
+            { renderAcademicYears() }
             {!keyboard_showing && (
                 <View style={{width: '100%'}}>
                     <View style={{backgroundColor: '#c6e3ba', padding: 20, marginVertical: 10, borderRadius: 30}}>
@@ -711,6 +800,14 @@ const YearsScreen = ({navigation}) => {
 export default YearsScreen;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingTop: 10,
+        gap: 10
+    },
+
     semester: {
         width: '100%',
         backgroundColor: '#b8b8b8',
