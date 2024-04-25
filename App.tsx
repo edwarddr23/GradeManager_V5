@@ -265,6 +265,7 @@ function App(): React.JSX.Element {
                       )}
                     </View>
                   )}
+                  hasSaveButton={true}
                 />
               )
             })}/>

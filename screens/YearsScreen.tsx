@@ -620,7 +620,6 @@ const YearsScreen = ({navigation}) => {
         })
         // Navigation listener that rerenders the years, calculated cumulative gpa, and expected cumulative gpa when the user navigates back to YearsScreen.
         navigation.addListener('focus', () => {
-            // setYears(profile_context.years);
             setCumulativeGPA(calculateCumulativeGPA(years));
             setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
         })

@@ -87,12 +87,12 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
             Toast.show('Please enter an integer for the numerator', Toast.SHORT);
             return false;
         }
-        else if(numerator < 0){
+        else if(parseInt(numerator) < 0){
             Toast.show('Please enter a numerator greater or equal to 0', Toast.SHORT);
             return false;
         }
         
-        if( type=== 'Percentage' && numerator > denominator){
+        if(type=== 'Percentage' && parseInt(numerator) > parseInt(denominator)){
             Toast.show('Percentage cannot be higher than 100', Toast.SHORT);
             return false;
         }
@@ -110,11 +110,11 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
                 Toast.show('Please enter an integer for the denominator', Toast.SHORT);
                 return false;
             }
-            else if(denominator < 0){
+            else if(parseInt(denominator) < 0){
                 Toast.show('Please enter a denominator greater or equal to 0', Toast.SHORT);
                 return false;
             }
-            else if(denominator < numerator){
+            else if(parseInt(denominator) < parseInt(numerator)){
                 Toast.show('Please enter a denominator greater or equal to the numerator', Toast.SHORT);
                 return false;
             }

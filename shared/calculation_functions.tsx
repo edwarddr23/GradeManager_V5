@@ -24,6 +24,26 @@ const getValidAssignments = (assignments) => {
     })
 }
 
+/*
+NAME
+
+    calculateSectionAverage - a function that calculates the calculated average of a section.
+
+SYNOPSIS
+
+    float calculateSectionAverage(assignments)
+        assignments --> array of assignment objects to determine average for.
+
+DESCRIPTION
+
+    Filter through the assignments in parameter array assignments to return only assignments that are valid. The valid
+    assignemnts are the ones with a defined numerator and denominator (and thus, actually have a grade). This function
+    is exclusively for this calculation_functions.tsx file, so it will not be exported for other files.
+
+RETURNS
+
+    Returns an array of AssignmentContent objects from parameter array assignemnts that have a defined numerator and denominator.
+*/
 export function calculateSectionAverage(assignments) {
     let total = 0;
     const valid_assignments = getValidAssignments(assignments);

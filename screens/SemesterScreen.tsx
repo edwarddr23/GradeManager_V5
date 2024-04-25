@@ -57,7 +57,6 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     useEffect(() => {
         // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
         navigation.addListener('focus', () => {
-            // setYears(profile_context.years);
             setAssignments(section.assignments);
         })
     });
@@ -207,7 +206,7 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     */
     const renderSectionAssignments = () => {
         if(assignments.length === 0) return (
-            <Text style={common_style.defaultText}>No assignments yet!</Text>
+            <Text style={common_style.defaultText}>No {section.name.toLowerCase()} yet!</Text>
         )
         return (
             <View>
@@ -265,23 +264,31 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
             {/* Editing state of section. */}
             {is_editing && (
                 <View style={{flexDirection: 'row'}}>
-                    <TextInput
+                    {/* <TextInput
                         style={styles.inputText}
                         value={name}
                         placeholder="Name"
                         onChangeText={text => {
                             setName(text);
                         }}
+                    /> */}
+                    <InputWithLabel
+                        style={{flex: 1}}
+                        textStyle={styles.inputText}
+                        value={name}
+                        onChangeText={setName}
+                        placeholder='Name'
+                        hasLabel={false}
                     />
                     {/* Done button to change the name of a section. */}
                     <TouchableOpacity
                         style={{marginLeft: 'auto', alignSelf: 'center'}}
                         onPress={() => {
                             // If the name entered is currently empty, then do not let the user enter exit the editing state and notify them that they need to enter a name.
-                            if(name.trim() === ''){
-                                Toast.show('Please enter name', Toast.SHORT);
-                                return;
-                            }
+                            // if(name.trim() === ''){
+                            //     Toast.show('Please enter name', Toast.SHORT);
+                            //     return;
+                            // }
                             // Otherwise, then trim the name entered and change the name in state and in the global profile context.
                             setName(name.trim());
                             const new_section = {
@@ -443,7 +450,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                 {/* Display each letter grade's thresholds when the letter grading component is expanded. */}
                 {grading_expanded && (
                     <View>
-                        <Text style={[common_style.defaultText, {fontSize: 15}]}>(Last number is non-inclusive.)</Text>
+                        <Text style={[common_style.defaultText, {fontSize: 15}]}>(Last number for every letter except A is non-inclusive.)</Text>
                         {letter_grading.map((l) => {
                             return(
                                 <Text key={l.id} style={common_style.defaultText}>{l.letter}: {l.beg}-{l.end}</Text>
@@ -537,7 +544,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                                 <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}]}>New Class: {calculateClassLetterGrade(curr_class)}</Text>
                             )}
                         </View>
-                        <View style={{flexDirection: 'row'}}>
+                        <View style={{flexDirection: 'row', alignSelf: 'center'}}>
                             {/* Edit button for class, which changes the state of the top section of SectionView to its editing state. */}
                             <TouchableOpacity
                                 style={{marginLeft: 'auto'}}
@@ -547,9 +554,9 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                                 }}>
                                 <AntDesign name="edit" size={50} color='black'/>
                             </TouchableOpacity>
+                            {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
+                            { renderClassArrowIcon() }
                         </View>
-                        {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
-                        { renderClassArrowIcon() }
                     </View>
                 )}
                 {/* Editing state of top section of SectionView. */}
