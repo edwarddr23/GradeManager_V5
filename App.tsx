@@ -1,10 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React, { useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
@@ -43,10 +36,11 @@ import SectionScreen from './screens/SectionScreen';
 import SemesterScreen from './screens/SemesterScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
 import ConfigureLetterGradingScreen from './screens/ConfigureLetterGradingScreen';
+import common_style from './shared/common_style';
 
-const HeaderView = ({navigation, backButtonOnPress, titleView}) => {
+const HeaderView = ({navigation, backButtonOnPress, titleView, hasSaveButton}) => {
   return(
-    <View style={{width: '100%', height: 65, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
+    <View style={{width: '100%', backgroundColor: 'white', height: 65, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
       {/* Back button */}
       <View style={{marginRight: 20}}>
         <TouchableOpacity
@@ -60,14 +54,16 @@ const HeaderView = ({navigation, backButtonOnPress, titleView}) => {
         { titleView }
       </View>
       {/* Save Button */}
-      <View style={{width: 100, height: 45, marginLeft: 'auto'}}>
-        <FlatButton
-          text="Save"
-          onPress={() => {
-            navigation.navigate("Save");
-          }}
-        />
-      </View>
+      {hasSaveButton && (
+        <View style={{width: 100, height: 45, marginLeft: 'auto'}}>
+          <FlatButton
+            text="Save"
+            onPress={() => {
+              navigation.navigate("Save");
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -90,17 +86,31 @@ function App(): React.JSX.Element {
             name="Years"
             component={YearsScreen}
             options={({navigation}) => ({
-              title: 'Academic Years',
-              headerRight: () => (
-                <View style={{width: 100, height: 45}}>
-                  <FlatButton
-                    text="Save"
-                    onPress={() => {
-                      navigation.navigate("Save");
-                    }}
-                  />
-                </View>
+              header: () => (
+                <HeaderView
+                  navigation={navigation}
+                  backButtonOnPress={() => {
+                    navigation.navigate('Create Profile');
+                  }}
+                  titleView={(
+                    <View>
+                      <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>Academic Years</Text>
+                    </View>
+                  )}
+                  hasSaveButton={true}
+                />
               )
+              // title: 'Academic Years',
+              // headerRight: () => (
+              //   <View style={{width: 100, height: 45}}>
+              //     <FlatButton
+              //       text="Save"
+              //       onPress={() => {
+              //         navigation.navigate("Save");
+              //       }}
+              //     />
+              //   </View>
+              // )
             })}/>
             <Stack.Screen
               name="Semester"
@@ -116,14 +126,15 @@ function App(): React.JSX.Element {
                       <View>
                         {/* If the semester season and name are initialized, display them. */}
                         {route.params.semester.season !== '' && route.params.semester.year !== '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>{route.params.semester.season} {route.params.semester.year}</Text>
+                          <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}]}>{route.params.semester.season} {route.params.semester.year}</Text>
                         )}
                         {/* If the semester season and name are not initialized, display "New Semester". */}
                         {route.params.semester.season === '' && route.params.semester.year === -1 && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>New Semester</Text>
+                          <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}]}>New Semester</Text>
                         )}
                       </View>
                     )}
+                    hasSaveButton={true}
                   />
                 )
                 // headerRight: () => (
@@ -136,7 +147,8 @@ function App(): React.JSX.Element {
                 //     />
                 //   </View>
                 // )
-              })}/>
+              })}
+            />
             <Stack.Screen
               name="Configure Sections"
               component={ConfigureSectionsScreen}
@@ -156,13 +168,14 @@ function App(): React.JSX.Element {
                     titleView={(
                       <View>
                         {route.params.curr_class.name !== '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>Configure Sections in {route.params.curr_class.name}</Text>
+                          <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}]}>Configure Sections in {route.params.curr_class.name}</Text>
                         )}
                         {route.params.curr_class.name === '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>Configure Sections in New Class</Text>
+                          <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}]}>Configure Sections in New Class</Text>
                         )}
                       </View>
                     )}
+                    hasSaveButton={false}
                   />
                 )
               })}
@@ -175,19 +188,51 @@ function App(): React.JSX.Element {
                   <HeaderView
                     navigation={navigation}
                     backButtonOnPress={() => {
-                      const { curr_class, semester } = route.params;
+                      const { semester, letter_grading } = route.params;
+                      console.log(`Back button: letter_grading[0]: ${JSON.stringify(letter_grading[0])}`);
+                      // "A" must end at 100%.
+                      if(parseInt(letter_grading[0].end) !== 100){
+                        Toast.show('"A" grade must end at 100%', Toast.SHORT);
+                        return;
+                      }
+                      // "F" must begin at 0%.
+                      else if(parseInt(letter_grading[10].beg) !== 0){
+                        Toast.show(`"F" grade msut begin at 0%`, Toast.SHORT);
+                        return;
+                      }
+                      // Check if letter grading is contiguous.
+                      function isContiguous(){
+                        let contiguous = true;
+
+                        for(let i = 0; i < letter_grading.length; i++){
+                          let curr_letter_grade = letter_grading[i];
+                          // Validate with letter after as long as the current letter is not "F" (the last one).
+                          if(curr_letter_grade.letter !== "F"){
+                            if(parseInt(curr_letter_grade.beg) !== parseInt(letter_grading[i + 1].end)){
+                              Toast.show(`${curr_letter_grade.letter} and ${letter_grading[i + 1].letter} are not contiguous`, Toast.SHORT);
+                              contiguous = false;
+                              break;
+                            }
+                          }
+                        };
+
+                        return contiguous
+                      }
+                      // If the letter_grading is not contiguous, then a Toast would have already displayed from isContiguous(). Return so that user cannot navigate back.
+                      if(!isContiguous()) return;
                       navigation.navigate('Semester', {semester: semester});
                     }}
                     titleView={(
                       <View>
                         {route.params.curr_class.name !== '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>Letter Grading in {route.params.curr_class.name}</Text>
+                          <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>Letter Grading in {route.params.curr_class.name}</Text>
                         )}
                         {route.params.curr_class.name === '' && (
-                          <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>Letter Grading in New Class</Text>
+                          <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>Letter Grading in New Class</Text>
                         )}
                       </View>
                     )}
+                    hasSaveButton={false}
                   />
                 ),
               })}
@@ -207,16 +252,16 @@ function App(): React.JSX.Element {
                   titleView={(
                     <View>
                       {route.params.section.name !== '' && route.params.curr_class.name !== '' && (
-                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>{route.params.section.name} in {route.params.curr_class.name}</Text>
+                        <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>{route.params.section.name} in {route.params.curr_class.name}</Text>
                       )}
                       {route.params.section.name === '' && route.params.curr_class.name !== '' && (
-                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>New Section in {route.params.curr_class.name}</Text>
+                        <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>New Section in {route.params.curr_class.name}</Text>
                       )}
                       {route.params.section.name !== '' && route.params.curr_class.name === '' && (
-                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>{route.params.section.name} in New Class</Text>
+                        <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>{route.params.section.name} in New Class</Text>
                       )}
                       {route.params.section.name === '' && route.params.curr_class.name === '' && (
-                        <Text style={{flexWrap: 'wrap', fontSize: 20, fontWeight: 'bold'}}>New Section in New Class</Text>
+                        <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>New Section in New Class</Text>
                       )}
                     </View>
                   )}

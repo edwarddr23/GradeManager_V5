@@ -11,6 +11,7 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native';
 
 import FlatButton from '../shared/custom_buttons';
+import commonStyle from '../shared/common_style';
 
 /*
 NAME
@@ -31,7 +32,7 @@ const HomeScreen = ({navigation}) => {
     return(
         <View style={styles.container}>
             <View style={{flex: 1}}>
-                <Text style={{marginTop: 'auto', fontSize: 50, fontWeight: 'bold', paddingBottom: 20, textAlign: 'center'}}>Welcome to Grade Manager!</Text>
+                <Text style={[commonStyle.defaultText, {marginTop: 'auto', fontSize: 50, fontWeight: 'bold', paddingBottom: 20, textAlign: 'center'}]}>Welcome to Grade Manager!</Text>
             </View>
             <View style={{flex: 1, width: '70%', gap: 30}}>
                 <View style={{flex: 1}}>

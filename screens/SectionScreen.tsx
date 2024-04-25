@@ -16,6 +16,8 @@ import Toast from 'react-native-simple-toast';
 
 import { findNextID } from '../shared/key_functions';
 import Footer from '../shared/custom_footer';
+import common_style from '../shared/common_style';
+import { InputWithLabel } from '../shared/custom_text_Inputs';
 
 /*
 NAME
@@ -71,8 +73,9 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
             Toast.show('Please enter a name', Toast.SHORT);
             return false;
         }
+        else if(type === '') return true;
         // Regardless of the type, validate the numerator.
-        if(numerator === -1 || numerator === ''){
+        else if(numerator === -1 || numerator === ''){
             Toast.show('Please enter numerator', Toast.SHORT);
             return false;
         }
@@ -128,17 +131,20 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
                     <View style={{flexDirection: 'column', paddingLeft: 10}}>
                         {/* Display assignment's name. */}
                         {assignment.name === '' && (
-                            <Text style={{fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}}>New Assignment</Text>
+                            <Text style={[common_style.defaultText, {fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}]}>New Assignment</Text>
                         )}
                         {assignment.name !== '' && (
-                            <Text style={{fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}}>{name}:{'\t\t'}</Text>
+                            <Text style={[common_style.defaultText, {fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}]}>{name}:{'\t\t'}</Text>
                         )}
                         {/* Display assignment's type and the percentage or ratio. */}
+                        {type === '' && (
+                            <Text style={[common_style.defaultText, {fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}]}>Grade: N/A</Text>
+                        )}
                         {type === 'Percentage' && (
-                            <Text style={{fontSize: 25, textAlignVertical: 'center'}}>Grade: {((numerator / denominator) * 100).toFixed(2)}%</Text>
+                            <Text style={[common_style.defaultText, {fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}]}>Grade: {((numerator / denominator) * 100).toFixed(2)}%</Text>
                         )}
                         {type === 'Ratio' && (
-                            <Text style={{fontSize: 25, textAlignVertical: 'center'}}>Grade: {numerator}/{denominator}</Text>
+                            <Text style={[common_style.defaultText, {fontSize: 25, textAlignVertical: 'center', fontWeight: 'bold'}]}>Grade: {numerator}/{denominator}</Text>
                         )}
                     </View>
                     {/* Edit button to change name of assignment. */}
@@ -166,13 +172,21 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
             <View style={styles.assignmentStyle}>
                 <View style={{flexDirection: 'row', marginVertical: 10}}>
                     {/* TextInput that changes the name of an assignment in question. */}
-                    <TextInput
+                    {/* <TextInput
                         style={styles.inputText}
                         value={name}
                         placeholder="Name"
                         onChangeText={(text) => {
                             setName(text);
                         }}
+                    /> */}
+                    <InputWithLabel
+                        style={{flex: 1}}
+                        textStyle={styles.inputText}
+                        value={name}
+                        onChangeText={setName}
+                        placeholder='Name'
+                        hasLabel={false}
                     />
                     {/* Done button to update name and/or the type, numerator, and denominator for the assignment in question. */}
                     <TouchableOpacity
@@ -194,13 +208,15 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
                                 updateAssignmentInProfile(new_assignment);
                             }
                         }}>
-                        <AntDesign name="checkcircleo" size={40} color='green'/>
+                        <AntDesign name="checkcircleo" size={50} color='green'/>
                     </TouchableOpacity>
                 </View>
                 <View style={{flexDirection: 'row'}}>
-                    <View style={{flex: 2, justifyContent: 'center'}}>
+                    <View style={{flex: 1, justifyContent: 'center'}}>
                         {/* SelectList that lets a user select between types "Percentage" and "Ratio". */}
                         <SelectList
+                            dropdownTextStyles={common_style.defaultText}
+                            inputStyles={common_style.defaultText}
                             // Placeholder is type so that the selected type will show after the exam is closed and reopened.
                             placeholder={type}
                             setSelected={(val) => setType(val)}
@@ -222,30 +238,46 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
                     {/* If a type is selected, for either type, a numerator TextInput is needed for the user to enter a numerator.  */}
                     {type !== '' && (
                         // TextInput for numerator of an assignment.
-                        <View style={{flex: 2, flexDirection: 'row'}}>
-                            <TextInput
+                        <View style={{flexDirection: 'row'}}>
+                            {/* <TextInput
                                 style={styles.inputText}
                                 value={numerator}
                                 onChangeText={(text) => {
                                     setNumerator(text);
                                 }}
+                            /> */}
+                            <InputWithLabel
+                                // style={{flex: 1}}
+                                textStyle={styles.inputText}
+                                value={numerator}
+                                onChangeText={setNumerator}
+                                placeholder='Num'
+                                hasLabel={false}
                             />
-                            <Text style={{fontSize: 30, textAlignVertical: 'center'}}>/</Text>
+                            <Text style={[common_style.defaultText, {fontSize: 30, textAlignVertical: 'center'}]}>/</Text>
                         </View>
                     )}
                     {/* If the type is a Percentage, then the denominator should not be entered, as it should be out of 100%. */}
                     {type === 'Percentage' && (
-                        <Text style={{flex: 1, fontSize: 25, textAlignVertical: 'center'}}>100%</Text>
+                        <Text style={[common_style.defaultText, {fontSize: 25, textAlignVertical: 'center'}]}>100%</Text>
                     )}
                     {/* If the type is a Ratio, then another TextInput is needed for the user to enter a denominator. */}
                     {type === 'Ratio' && (
                         // TextInput for denominator of an assignment.
-                        <TextInput
-                            style={styles.inputText}
+                        // <TextInput
+                        //     style={styles.inputText}
+                        //     value={denominator}
+                        //     onChangeText={(text) => {
+                        //         setDenominator(text);
+                        //     }}
+                        // />
+                        <InputWithLabel
+                            // style={{flex: 1}}
+                            textStyle={styles.inputText}
                             value={denominator}
-                            onChangeText={(text) => {
-                                setDenominator(text);
-                            }}
+                            onChangeText={setDenominator}
+                            placeholder='Denom'
+                            hasLabel={false}
                         />
                     )}
                 </View>
@@ -263,20 +295,20 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
 /*
 NAME
 
-        SectionScreen - a component that handles the UI elements and functionalities associated with the screen responsible for adding and editing assignments within a section.
+    SectionScreen - a component that handles the UI elements and functionalities associated with the screen responsible for adding and editing assignments within a section.
 SYNOPSIS
 
-        <View> SectionScreen({navigation, route})
-            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
-            route --> the route object also inherited from the NavigationContainer.
+    <View> SectionScreen({navigation, route})
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+        route --> the route object also inherited from the NavigationContainer.
 
 DESCRIPTION
 
-        If the user presses the plus button, a new assignment object will be created, with an accompanying View that can be
-        interacted with to edit that object. The object will be updated in state and context.
+    If the user presses the plus button, a new assignment object will be created, with an accompanying View that can be
+    interacted with to edit that object. The object will be updated in state and context.
 RETURNS
 
-        Returns View that lets the user add assignments and edit them within a section.
+    Returns View that lets the user add assignments and edit them within a section.
 */
 const SectionScreen = ({navigation, route}) => {
     const { addAssignmentToProfile, updateSectionAssignmentsInProfile } = useProfileContext();
@@ -334,6 +366,9 @@ const SectionScreen = ({navigation, route}) => {
                 }}>
                 <AntDesign name="pluscircleo" size={70} color={'black'}/>
             </TouchableOpacity>
+            {assignments.length === 0 && (
+                <Text style={common_style.defaultText}>Add {section.name.toLowerCase()}!</Text>
+            )}
             <View style={{flex: 1, alignItems: 'center', width: '100%'}}>
                 {/* FlatList that holds all of the assignment views for the section in question. */}
                 <FlatList

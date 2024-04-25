@@ -16,6 +16,7 @@ import FlatButton from '../shared/custom_buttons';
 import { useProfileContext } from '../shared/profile_context';
 import { getAllSaveFileNames, importData } from '../shared/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import common_style from '../shared/common_style';
 
 /*
 NAME
@@ -154,6 +155,8 @@ const LoadScreen = ({navigation}) => {
             {/* SelectList that lets a user select a saved profile. */}
             <View>
                 <SelectList
+                    dropdownTextStyles={common_style.defaultText}
+                    inputStyles={common_style.defaultText}
                     // Placeholder is type so that the selected type will show after the exam is closed and reopened.
                     placeholder={'Select a profile name here'}
                     setSelected={(val) => setSelected(val)}
@@ -175,11 +178,11 @@ const LoadScreen = ({navigation}) => {
                     )}
                     {/* If there is a profile name entered but no file is found, then let the user know that no user is found. */}
                     {fileExists === false && selected !== '' && (
-                        <Text>Profile: "{selected}" could not be found.</Text>
+                        <Text style={common_style.defaultText}>Profile: "{selected}" could not be found.</Text>
                     )}
                     {/* If there is no profile name entered, then return to a resting state and do not do anything. */}
                     {selected === '' && (
-                        <Text>Profile Preview here...</Text>
+                        <Text style={common_style.defaultText}>Profile Preview here...</Text>
                     )}
                 </ScrollView>
             </View>

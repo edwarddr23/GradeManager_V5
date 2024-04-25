@@ -17,6 +17,8 @@ import Toast from 'react-native-simple-toast';
 import { findNextID } from '../shared/key_functions';
 import Footer from '../shared/custom_footer';
 import { validPositiveIntInputs } from '../shared/input_validation_functions';
+import common_style from '../shared/common_style';
+import { InputWithLabel } from '../shared/custom_text_Inputs';
 
 /*
 NAME
@@ -59,11 +61,11 @@ const SectionView = ({updateTotal, section, deleteSection}) => {
                 <View style={{flexDirection: 'row'}}>
                     {/* By default, a new section object created will have '' as a name. If this component is initialized and the name is empty, then it must be a new section.*/}
                     {name === '' && (
-                        <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
+                        <Text style={[common_style.defaultText, {fontSize: 30, fontWeight: 'bold'}]}>New Section</Text>
                     )}
                     {/* Otherwise, the section object in question has been fully initialized. Print out the name and the weight. */}
                     {name !== '' && (
-                        <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}: {weight}%</Text>
+                        <Text style={[common_style.defaultText, {fontSize: 30, fontWeight: 'bold'}]}>{section.name}: {weight}%</Text>
                     )}
                     {/* Edit button that changes the state of the View returned by SectionView to editing state.*/}
                     <TouchableOpacity
@@ -78,15 +80,22 @@ const SectionView = ({updateTotal, section, deleteSection}) => {
                 <View style={{alignItems: 'center', gap: 15}}>
                     <View style={{flexDirection: 'row'}}>
                         {/* TextInputs that allow for the editing of the section name and weight. */}
-                        <TextInput
+                        {/* <TextInput
                             style={styles.inputText}
                             value={name}
                             placeholder="Name"
                             onChangeText={text => {
                                 setName(text);
                             }}
+                        /> */}
+                        <InputWithLabel
+                            textStyle={styles.inputText}
+                            value={name}
+                            onChangeText={setName}
+                            placeholder='Name'
+                            hasLabel={false}
                         />
-                        <TextInput
+                        {/* <TextInput
                             style={styles.inputText}
                             value={weight}
                             placeholder="Weight"
@@ -94,6 +103,13 @@ const SectionView = ({updateTotal, section, deleteSection}) => {
                                 setWeight(text);
                             }}
                             keyboardType='numeric'
+                        /> */}
+                        <InputWithLabel
+                            textStyle={styles.inputText}
+                            value={weight}
+                            onChangeText={setWeight}
+                            placeholder='Weight'
+                            hasLabel={false}
                         />
                         {/* Done button to change the name and weight of a section. */}
                         <TouchableOpacity
@@ -314,7 +330,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                 </TouchableOpacity>
                 {/* If there are no sections yet, display a text to notify the user to press the plus button to add sections. */}
                 {sections.length === 0 && (
-                    <Text style={{textAlign: 'center', fontSize: 20}}>Press this button to add sections</Text>
+                    <Text style={[common_style.defaultText, {textAlign: 'center'}]}>Press this button to add sections</Text>
                 )}
                 {/* Display of sections of the current class in question. */}
                 <View style={{flex: 1}}>

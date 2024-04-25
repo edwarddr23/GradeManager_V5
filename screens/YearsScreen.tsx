@@ -17,6 +17,8 @@ import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calcula
 import { useProfileContext, YearContent, SemesterContent } from '../shared/profile_context'
 import { SelectList } from 'react-native-dropdown-select-list';
 import { validPositiveIntInputs } from '../shared/input_validation_functions';
+import common_style from '../shared/common_style';
+import { InputWithLabel } from '../shared/custom_text_Inputs';
 
 /*
 NAME
@@ -88,11 +90,11 @@ const SemesterView = ({ years_range, semester, updateSemesters, deleteSemester, 
         if(!is_editing){
             // If the season and year are initialized, display the season and year recorded.
             if(season !== '' && year !== -1) return(
-                <Text style={{fontSize: 20}}>{season} {year}</Text>
+                <Text style={common_style.defaultText}>{season} {year}</Text>
             );
             // Otherwise, it is not initialized, so display "New Semester" instead.
             return(
-                <Text style={{fontSize: 20}}>New Semester</Text>
+                <Text style={common_style.defaultText}>New Semester</Text>
             )
         }
         // If the SemesterView is in its editing state, instead display a SelectList so the user can change the semester's season and year based on a predetermined list. It is assumed that the beginning and end year range of its parent YearView have already been set.
@@ -100,6 +102,8 @@ const SemesterView = ({ years_range, semester, updateSemesters, deleteSemester, 
             <View style={{flexDirection: 'row', gap: 10}}>
                 <SelectList
                     // Placeholder is type so that the selected type will show after the exam is closed and reopened.
+                    dropdownTextStyles={common_style.defaultText}
+                    inputStyles={common_style.defaultText}
                     placeholder={seasonAndYear}
                     setSelected={(val) => setSeasonAndYear(val)}
                     data={[`Fall ${years_range[0]}`, `Winter ${years_range[0]}`, `Spring ${years_range[1]}`, `Summer ${years_range[1]}`]}
@@ -227,8 +231,8 @@ const SemesterView = ({ years_range, semester, updateSemesters, deleteSemester, 
                     <View style={{flex: 1, flexDirection: 'row'}}>
                         <View style={{flex: 1}}>
                             { renderSeasonAndYear() }
-                            <Text style={{fontSize: 20}}>Semester GPA: {semesterGPA}</Text>
-                            <Text style={{fontSize: 20}}>Expected Semester GPA: {expectedSemesterGPA}</Text>
+                            <Text style={common_style.defaultText}>Semester GPA: {semesterGPA}</Text>
+                            <Text style={common_style.defaultText}>Expected Semester GPA: {expectedSemesterGPA}</Text>
                         </View>
                     </View>
                     { renderDoneOrEdit() }
@@ -304,36 +308,32 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
         // Viewing state of beginning and end year. Display the beginning and end year.
         if(!is_editing){
             if(beg_year !== -1 && end_year !== -1) return (
-                <Text style={{textAlignVertical: 'center', fontSize: 20, flex: 1}}>Academic Year {beg_year}-{end_year}</Text>
+                <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 20, flex: 1}]}>Academic Year {beg_year}-{end_year}</Text>
             )
             else if(beg_year === -1 && end_year === -1) return (
-                <Text style={{textAlignVertical: 'center', fontSize: 20, flex: 1}}>New Academic Year</Text>
+                <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 20, flex: 1}]}>New Academic Year</Text>
             )
         }
         // Editing state of beginning and end year, so display the TextInputs that change them.
         return(
             <View>
-                <Text style={{textAlignVertical: 'center', fontSize: 20, flex: 1}}>Academic Year:</Text>
+                <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 20, flex: 1}]}>Academic Year:</Text>
                 <View style={{flexDirection: 'row', gap: 10}}>
-                    {/*TextInput that lets the user edit the beg year for a given academic year. */}
-                    <TextInput
-                        style={styles.inputText}
+                    {/* TextInput that lets the user edit the beg year for a given academic year. */}
+                    <InputWithLabel
+                        textStyle={styles.inputText}
                         value={beg_year}
-                        placeholder="Start"
-                        onChangeText={text => {
-                            setBeg_year(text);
-                        }}
-                        keyboardType="numeric"
+                        onChangeText={setBeg_year}
+                        placeholder='Start'
+                        hasLabel={false}
                     />
-                    {/*TextInput that lets the user edit the end year for a given academic year. */}
-                    <TextInput
-                        style={styles.inputText}
+                    {/* TextInput that lets the user edit the end year for a given academic year. */}
+                    <InputWithLabel
+                        textStyle={styles.inputText}
                         value={end_year}
-                        placeholder="End"
-                        onChangeText={text => {
-                            setEnd_year(text);
-                        }}
-                        keyboardType="numeric"
+                        onChangeText={setEnd_year}
+                        placeholder='End'
+                        hasLabel={false}
                     />
                 </View>
             </View>
@@ -550,7 +550,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
             )
             // If there are no existing semesters, let the user know that there are none yet.
             if(semesters.length === 0) return (
-                <Text style={{textAlign: 'center', fontSize: 20}}>No semesters yet!</Text>
+                <Text style={[common_style.defaultText, {textAlign: 'center', fontSize: 20}]}>No semesters yet!</Text>
             );
         }
     }
@@ -562,8 +562,8 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                     onPress={() => setExpanded(!expanded)}>
                     <View style={{flexDirection: 'column', flex: 1}}>
                         { renderBegAndEnd() }
-                        <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Year GPA: {yearGPA}</Text>
-                        <Text style={{textAlignVertical: 'center', fontSize: 18, flex: 1}}>Expected Year GPA: {expectedYearGPA}</Text>
+                        <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 18, flex: 1}]}>Year GPA: {yearGPA}</Text>
+                        <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 18, flex: 1}]}>Expected Year GPA: {expectedYearGPA}</Text>
                     </View>
                     { renderEditOrDoneButton() }
                     {/* Expand Button to see semesters. */}
@@ -648,7 +648,7 @@ const YearsScreen = ({navigation}) => {
     */
     const renderAcademicYears = () => {
         if(years.length === 0) return(
-            <Text style={{flex: 1, fontSize: 17, fontWeight: 'bold', paddingBottom: 5}}>Press the plus sign to add an academic year</Text>
+            <Text style={[common_style.defaultText, {flex: 1, fontSize: 17, fontWeight: 'bold', paddingBottom: 5}]}>Press the plus sign to add an academic year</Text>
         );
         return(
             <View style={{flex: 1, width: '100%', alignItems: 'center'}}>
@@ -786,8 +786,8 @@ const YearsScreen = ({navigation}) => {
             {!keyboard_showing && (
                 <View style={{width: '100%'}}>
                     <View style={{backgroundColor: '#c6e3ba', padding: 20, marginVertical: 10, borderRadius: 30}}>
-                        <Text style={{fontSize: 30, textAlign: 'center'}}>Cumulative GPA: {cumulativeGPA}</Text>
-                        <Text style={{fontSize: 25, textAlign: 'center'}}>Expected Cumulative GPA: {expectedCumulativeGPA}</Text>
+                        <Text style={[common_style.defaultText, {fontSize: 30, textAlign: 'center'}]}>Cumulative GPA: {cumulativeGPA}</Text>
+                        <Text style={[common_style.defaultText, {fontSize: 25, textAlign: 'center'}]}>Expected Cumulative GPA: {expectedCumulativeGPA}</Text>
                     </View>
                     {/* FOOTER */}
                     <Footer navigation={navigation}/>

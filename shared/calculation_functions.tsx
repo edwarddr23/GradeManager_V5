@@ -1,5 +1,23 @@
-import React from 'react'
+/*
+NAME
 
+    getValidAssignments - a function component that returns all initialized assignments (ones that actually have a numerator and denominator defined by the user).
+
+SYNOPSIS
+
+    AssignmentContent array getValidAssignments(assignments)
+        assignments --> Array of assignments to look through for valid assignments.
+
+DESCRIPTION
+
+    Filter through the assignments in parameter array assignments to return only assignments that are valid. The valid
+    assignemnts are the ones with a defined numerator and denominator (and thus, actually have a grade). This function
+    is exclusively for this calculation_functions.tsx file, so it will not be exported for other files.
+
+RETURNS
+
+    Returns an array of AssignmentContent objects from parameter array assignemnts that have a defined numerator and denominator.
+*/
 const getValidAssignments = (assignments) => {
     return assignments.filter((a) => {
         if(a.numerator !== -1 && a.denominator !== -1) return a;

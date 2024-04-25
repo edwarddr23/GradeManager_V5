@@ -1,35 +1,37 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet, TextInput } from 'react-native'
+import common_style from './common_style';
 
-export default function InputWithLabel ({value, setValue, extraOnChangeText, placeholder, label}) {
+export const InputWithLabel = ({style, textStyle, labelStyle, value, onChangeText, placeholder, hasLabel, label}) => {
     const [isFocus, setIsFocus] = useState(false);
 
-    const renderLabel = (label) => {
-        // console.log('custom_text_inputs.js: renderLabel(): value: ', value);
-        // console.log('custom_text_inputs.js: renderLabel(): isFocus: ', isFocus);
-        if (value || isFocus) {
-            // console.log('custom_text_inputs.js: renderLabel(): returning label...');
-            return(
-                <Text style={[styles.label, isFocus && {color: 'blue'}]}>{label + ":"}</Text>
-            );
-        }
-        return null;
-    }
+    // const renderLabel = (label) => {
+    //     // console.log('custom_text_inputs.js: renderLabel(): value: ', value);
+    //     // console.log('custom_text_inputs.js: renderLabel(): isFocus: ', isFocus);
+    //     if (value || isFocus) {
+    //         // console.log('custom_text_inputs.js: renderLabel(): returning label...');
+    //         return(
+    //             <Text style={[styles.label, isFocus && {color: 'blue'}]}>{label + ":"}</Text>
+    //         );
+    //     }
+    //     return null;
+    // }
     
     return(
-        <View>
+        <View style={style}>
             {/* {renderLabel(label)} */}
-            <Text style={styles.label}>{label}</Text>
+            {hasLabel && (
+                <Text style={[styles.label, labelStyle]}>{label}</Text>
+            )}
             <TextInput
-                style={styles.input}
+                style={[common_style.defaultText, styles.input, textStyle]}
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
                 value={value}
                 placeholder={placeholder}
                 placeholderTextColor='#808080'
                 onChangeText={text => {
-                    setValue(text);
-                    extraOnChangeText();
+                    onChangeText(text)
                 }}
                 onSubmitEditing={() => {
                     // console.log('custom :D');
@@ -53,13 +55,15 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         // flex: 1,
-        fontSize: 20
+        fontSize: 20,
+        maxWidth: 'auto'
     },
 
     label: {
         position: 'relative',
         left: 10,
         fontWeight: 'bold',
-        fontSize: 20
+        fontSize: 20,
+        color: 'black'
     },
 })

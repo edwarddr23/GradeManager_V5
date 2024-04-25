@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 // import RNFS from 'react-native-fs';
 
-import InputWithLabel from '../shared/custom_text_Inputs';
+import { InputWithLabel } from '../shared/custom_text_Inputs';
 import FlatButton from '../shared/custom_buttons';
 import storage from '../shared/storage';
 import { PrintData } from '../shared/profile_functions';

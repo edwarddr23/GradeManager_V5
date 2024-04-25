@@ -19,6 +19,8 @@ import { calculateSectionAverage, calculateClassAverage, calculateClassLetterGra
 import Footer from '../shared/custom_footer';
 import Toast from 'react-native-simple-toast';
 import FlatButton from '../shared/custom_buttons';
+import common_style from '../shared/common_style';
+import { InputWithLabel } from '../shared/custom_text_Inputs';
 
 /*
 NAME
@@ -51,6 +53,15 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     const[name, setName] = useState(section.name);
     const[assignments, setAssignments] = useState(section.assignments);
 
+    // Hook that runs upon rerender.
+    useEffect(() => {
+        // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
+        navigation.addListener('focus', () => {
+            // setYears(profile_context.years);
+            setAssignments(section.assignments);
+        })
+    });
+
     /*
     NAME
 
@@ -73,10 +84,10 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
         return(
             <View>
                 {section.name === '' && (
-                    <Text style={{fontSize: 30, fontWeight: 'bold'}}>New Section</Text>
+                    <Text style={[common_style.defaultText, {fontSize: 30, fontWeight: 'bold'}]}>New Section</Text>
                 )}
                 {section.name !== '' && (
-                    <Text style={{fontSize: 30, fontWeight: 'bold'}}>{section.name}</Text>
+                    <Text style={[common_style.defaultText, {fontSize: 30, fontWeight: 'bold'}]}>{section.name}</Text>
                 )}
             </View>
         );
@@ -106,11 +117,11 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
             <View>
                 {/* If a section's calculated average cannot be determined, just display the "N/A" returned */}
                 {calculateSectionAverage(assignments) === 'N/A' && (
-                    <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {calculateSectionAverage(assignments)}</Text>
+                    <Text style={[common_style.defaultText, {textDecorationLine: 'underline'}]}>Section Average: {calculateSectionAverage(assignments)}</Text>
                 )}
                 {/* If a section's calculated average can be determined, display it as a percentage. */}
                 {calculateSectionAverage(assignments) !== 'N/A' && (
-                    <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Section Average: {(calculateSectionAverage(assignments) * 100).toFixed(2)}%</Text>
+                    <Text style={[common_style.defaultText, {textDecorationLine: 'underline'}]}>Section Average: {(calculateSectionAverage(assignments) * 100).toFixed(2)}%</Text>
                 )}
             </View>
         );
@@ -140,11 +151,11 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
             <View>
                 {/* If a section's expected average cannot be determined, just display the "N/A" returned */}
                 {calculateExpectedSectionAverage(assignments) === 'N/A' && (
-                    <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {calculateExpectedSectionAverage(assignments)}</Text>
+                    <Text style={[common_style.defaultText, {textDecorationLine: 'underline'}]}>Expected Average: {calculateExpectedSectionAverage(assignments)}</Text>
                 )}
                 {/* If a section's expected average can be determined, display it as a percentage. */}
                 {calculateExpectedSectionAverage(assignments) !== 'N/A' && (
-                    <Text style={{fontSize: 20, textDecorationLine: 'underline'}}>Expected Average: {(calculateExpectedSectionAverage(assignments) * 100).toFixed(2)}%</Text>
+                    <Text style={[common_style.defaultText, {textDecorationLine: 'underline'}]}>Expected Average: {(calculateExpectedSectionAverage(assignments) * 100).toFixed(2)}%</Text>
                 )}
             </View>
         );
@@ -171,9 +182,9 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     const renderSectionWeight = () => {
         if(section.weight !== -1) return(
             // The section's weight needs to have operations performed on it as the weights in context are recorded as decimals rather than percentages (e.g. 0.3 instead of 30%).
-            <Text style={{fontSize: 20}}>Section Weight: {(section.weight * 100).toFixed(0)}%</Text>
+            <Text style={common_style.defaultText}>Section Weight: {(section.weight * 100).toFixed(0)}%</Text>
         );
-        return <Text style={{fontSize: 20}}>Section Weight: N/A</Text>
+        return <Text style={common_style.defaultText}>Section Weight: N/A</Text>
     }
 
     /*
@@ -196,11 +207,11 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     */
     const renderSectionAssignments = () => {
         if(assignments.length === 0) return (
-            <Text style={{fontSize: 20}}>No assignments yet!</Text>
+            <Text style={common_style.defaultText}>No assignments yet!</Text>
         )
         return (
             <View>
-                <Text style={{fontSize: 20}}>Assignments:</Text>
+                <Text style={common_style.defaultText}>Assignments:</Text>
                 {/* The Text component returned will vary based on several factors. If the assignment in question
                 has a type, then there must be a name (as the validation when editing a section in the SectionScreen
                 component requires a name to be specified when a type is specified). Therefore, display the name and
@@ -210,16 +221,16 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
                 If the section name in context is uninitialized (is ''), then display "New Assignment". */}
                 {assignments.map((a) => {
                     if(a.type === 'Ratio') return(
-                        <Text key={a.id}>{a.name}: {a.numerator} / {a.denominator}</Text>
+                        <Text style={common_style.defaultText} key={a.id}>{a.name}: {a.numerator} / {a.denominator}</Text>
                     );
                     else if(a.type === 'Percentage') return(
-                        <Text key={a.id}>{a.name}: {a.numerator}% / {a.denominator}%</Text>
+                        <Text style={common_style.defaultText} key={a.id}>{a.name}: {a.numerator}% / {a.denominator}%</Text>
                     );
                     else if(a.name !== '') return (
-                        <Text key={a.id}>{a.name}: N/A</Text>
+                        <Text style={common_style.defaultText} key={a.id}>{a.name}: N/A</Text>
                     );
                     else if(a.name === '') return (
-                        <Text key={a.id}>New Assignment</Text>
+                        <Text style={common_style.defaultText} key={a.id}>New Assignment</Text>
                     );
                 })}
             </View>
@@ -325,9 +336,9 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     const[is_expanded, setIsExpanded] = useState(false);
 
     useEffect(() => {
-        // navigation.addListener('focus', () => {
-        //     setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-        // })
+        navigation.addListener('focus', () => {
+            setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+        })
         // setLetter_grading(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
     }, [])
 
@@ -351,10 +362,10 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     */
     const renderCalculatedClassAverage = () => {
         if(calculateClassAverage(sections) === 'N/A') return (
-            <Text style={{fontSize: 20}}>Class Average%: {calculateClassAverage(sections)}</Text>
+            <Text style={common_style.defaultText}>Class Average%: {calculateClassAverage(sections)}</Text>
         );
         return (
-            <Text style={{fontSize: 20}}>Class Average%: {(calculateClassAverage(sections) * 100).toFixed(2)}%</Text>
+            <Text style={common_style.defaultText}>Class Average%: {(calculateClassAverage(sections) * 100).toFixed(2)}%</Text>
         )
     }
 
@@ -378,10 +389,10 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     */
     const renderExpectedClassAverage = () => {
         if(calculateExpectedClassAverage(sections) === 'N/A') return (
-            <Text style={{fontSize: 20}}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
+            <Text style={common_style.defaultText}>Expected Average%: {calculateExpectedClassAverage(sections)}</Text>
         )
         return(
-            <Text style={{fontSize: 20}}>Expected Average%: {(calculateExpectedClassAverage(sections) * 100).toFixed(2)}%</Text>
+            <Text style={common_style.defaultText}>Expected Average%: {(calculateExpectedClassAverage(sections) * 100).toFixed(2)}%</Text>
         )
     }
 
@@ -415,10 +426,10 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                 <TouchableOpacity style={{flexDirection: 'row', gap: 10}}
                     onPress={() => setGrading_expanded(!grading_expanded)}
                     activeOpacity={0.5}>
-                    <Text style={{flex: 1, fontSize: 28, textAlignVertical: 'center'}}>Letter Grading:</Text>
+                    <Text style={[common_style.defaultText, {flex: 1, fontSize: 28, textAlignVertical: 'center'}]}>Letter Grading:</Text>
                     {/* Button to configure letter grades and their thresholds.*/}
                     <TouchableOpacity
-                        onPress={() => { navigation.navigate('Configure Letter Grading', {semester: semester, curr_class: curr_class})}}>
+                        onPress={() => { navigation.navigate('Configure Letter Grading', {semester: semester, curr_class: curr_class, letter_grading: curr_class.letter_grading})}}>
                         <AntDesign name="edit" size={45} color='black'/>
                     </TouchableOpacity>
                     {/* Render the up arrow icon or down arrow icon depending on whether the ClassView is expanded or not. If it is not expanded, set it to the down icon. If it is expanded, set it to the up icon. */}
@@ -432,10 +443,10 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                 {/* Display each letter grade's thresholds when the letter grading component is expanded. */}
                 {grading_expanded && (
                     <View>
-                        <Text style={{fontSize: 15}}>(Last number is non-inclusive.)</Text>
+                        <Text style={[common_style.defaultText, {fontSize: 15}]}>(Last number is non-inclusive.)</Text>
                         {letter_grading.map((l) => {
                             return(
-                                <Text key={l.id} style={{fontSize: 20}}>{l.letter}: {l.beg}-{l.end}</Text>
+                                <Text key={l.id} style={common_style.defaultText}>{l.letter}: {l.beg}-{l.end}</Text>
                             );
                         })}
                     </View>
@@ -517,13 +528,13 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                         <View style={{flex: 1}}>
                             {/* Display class name and letter grade, if possible. */}
                             {name !== '' && (
-                                <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>{name}: {calculateClassLetterGrade(curr_class)}</Text>
+                                <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}]}>{name}: {calculateClassLetterGrade(curr_class)}</Text>
                             )}
                             {name === '' && calculateClassLetterGrade(curr_class) === 'N/A' && (
-                                <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class</Text>
+                                <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}]}>New Class</Text>
                             )}
                             {name === '' && calculateClassLetterGrade(curr_class) !== 'N/A' && (
-                                <Text style={{textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}}>New Class: {calculateClassLetterGrade(curr_class)}</Text>
+                                <Text style={[common_style.defaultText, {textAlignVertical: 'center', fontSize: 30, flex: 1, flexWrap: 'wrap'}]}>New Class: {calculateClassLetterGrade(curr_class)}</Text>
                             )}
                         </View>
                         <View style={{flexDirection: 'row'}}>
@@ -546,23 +557,24 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                     <View style={{alignItems: 'center', gap: 10}}>
                         <View style={{flexDirection: 'row'}}>
                             {/* TextInput that allows the name of the current class in question to be changed. */}
-                            <TextInput
-                                style={styles.inputText}
+                            <InputWithLabel
+                                style={{flex: 1}}
+                                textStyle={styles.inputText}
                                 value={name}
-                                placeholder="Name"
-                                onChangeText={text => {
-                                    setName(text);
-                                }}
+                                onChangeText={setName}
+                                placeholder='Name'
+                                hasLabel={false}
                             />
                             {/* Done Button to change name of class, which also changes the state of the top section of SectionView to its viewing state. */}
                             <TouchableOpacity
                                 style={{marginLeft: 'auto'}}
                                 activeOpacity={0.5}
                                 onPress={() => {
+                                    setName(name.trim());
                                     // A copy of the old curr_class object is made, changing only the name.
                                     const new_class = {
                                         ...curr_class,
-                                        name: name
+                                        name: name.trim()
                                     }
                                     // Update the global context to reflect the name change.
                                     updateClassInProfile(new_class);
@@ -589,7 +601,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
                     { renderCalculatedClassAverage() }
                     <View>
                         {/* Render the expected letter grade */}
-                        <Text style={{fontSize: 20}}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
+                        <Text style={common_style.defaultText}>Expected Letter Grade: {calculateExpectedClassLetterGrade(curr_class)}</Text>
                         { renderExpectedClassAverage() }
                     </View>
                     {/* Expandable letter grading component that displays the letter grade thresholds. */}
@@ -789,7 +801,7 @@ const SemesterScreen = ({navigation, route}) => {
             </TouchableOpacity>
             {/* If there's no classes, but a Text component that lets the user know that the add button is to add classes to a semester. */}
             {classes.length === 0 && (
-                <Text style={{fontSize: 30}}>Add classes</Text>
+                <Text style={[common_style.defaultText, {fontSize: 30}]}>Add classes</Text>
             )}
             {/* FlatList of ClassViews that lets the user view and modify classes within the current semester in question. */}
             <View style={{flex: 1, alignItems: 'center', width: '100%'}}>

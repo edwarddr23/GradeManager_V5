@@ -12,9 +12,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Keyboard } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useProfileContext } from '../shared/profile_context';
+import Toast from 'react-native-simple-toast';
 
 import { validPositiveIntInputs } from '../shared/input_validation_functions';
 import Footer from '../shared/custom_footer';
+import common_style from '../shared/common_style';
+import { InputWithLabel } from '../shared/custom_text_Inputs';
 
 /*
 NAME
@@ -43,7 +46,7 @@ RETURNS
         depending on whether the is_editing state variable is true or false (this variable, which,
         will change depending on whether the user pressed the editing button or the done button).
 */
-const LetterGradeView = ({letter_grade}) => {
+const LetterGradeView = ({letter_grade, updateRoute}) => {
     const { updateLetterGradeInProfile } = useProfileContext();
     // State variables to allow for the editing and viewing behaviors of component LetterGradeView.
     const[is_editing, setIs_editing] = useState(false);
@@ -56,7 +59,7 @@ const LetterGradeView = ({letter_grade}) => {
             {/* If the user is not editing, then they must be viewing the letter grade. Return a View that displays its letter and its beginning to end range, along with an edit button that can change the state of LetterGradeView and allow the user to edit the beginning and end range. */}
             {!is_editing && (
                 <View style={styles.letterGrade}>
-                    <Text style={{fontSize: 30}}>{letter_grade.letter}: {beg}%-{end}%</Text>
+                    <Text style={[common_style.defaultText, {fontSize: 30}]}>{letter_grade.letter}: {beg}%-{end}%</Text>
                     <TouchableOpacity style={{marginLeft: 'auto'}}
                         onPress={() => {
                             setIs_editing(!is_editing);
@@ -70,26 +73,61 @@ const LetterGradeView = ({letter_grade}) => {
             {is_editing && (
                 <View style={styles.letterGrade}>
                     {/* Inputs for the user to enter the beginning and end ranges for the letter grade in question. When the text in the TextInput is changed, the state variables for the beginning and end ranges are mutated in real-time. This is so that the inputs could be validated as is when the user presses the done button. */}
-                    <TextInput
+                    {/* <TextInput
                         style={styles.inputText}
                         value={beg}
                         placeholder="Beg"
                         onChangeText={text => {
                             setBeg(text);
                         }}
+                    /> */}
+                    <InputWithLabel
+                        style={{flex: 1}}
+                        textStyle={styles.inputText}
+                        value={beg}
+                        onChangeText={setBeg}
+                        placeholder='Beg'
+                        hasLabel={false}
                     />
-                    <TextInput
+                    {/* <TextInput
                         style={styles.inputText}
                         value={end}
                         placeholder="End"
                         onChangeText={text => {
                             setEnd(text);
                         }}
+                    /> */}
+                    <Text style={[common_style.defaultText, {fontSize: 30}]}>-</Text>
+                    <InputWithLabel
+                        style={{flex: 1}}
+                        textStyle={styles.inputText}
+                        value={end}
+                        onChangeText={setEnd}
+                        placeholder='End'
+                        hasLabel={false}
                     />
                     {/* Done button for the letter grade in question. When the user presses this, the inputs (the beginning and end ranges, saved in the state variables beg and end, respectively) will be validated on whether they are positive and integers. For semantics on this function, see its declaration. */}
                     <TouchableOpacity style={{flex: 1}}
                         onPress={() => {
                             const valid_inputs = validPositiveIntInputs([beg, end], ['Beginning Range', 'End Range']);
+                            // Beginning% cannot be greater than End%.
+                            if(parseInt(beg) > parseInt(end)){
+                                Toast.show('The beginning% cannot be greater than the end%', Toast.SHORT);
+                                return;
+                            }
+                            // The beginning% and end% cannot be equal.
+                            else if(parseInt(beg) === parseInt(end)){
+                                Toast.show('The beginning% and the end% cannot be equal', Toast.SHORT);
+                                return;
+                            }
+                            else if(parseInt(beg) > 99){
+                                Toast.show('The beginning% cannot be greater than 99%', Toast.SHORT);
+                                return;
+                            }
+                            else if(parseInt(end) > 100){
+                                Toast.show('The end% cannot be greater than 100%', Toast.SHORT);
+                                return;
+                            }
                             // Given the inputs pass all of the tests in validPositiveIntInputs(), then change the state of this component to its viewing state and keep the changes to the beginning and end ranges to the state as well as save them to the global profile object.
                             if(valid_inputs){
                                 setIs_editing(!is_editing);
@@ -141,8 +179,15 @@ const ConfigureLetterGradingScreen = ({navigation, route}) => {
     // Attach the current class's letter_grading property in state so that it can be edited in state.
     const[letter_grading, setLetter_grading] = useState(curr_class.letter_grading);
 
+    // Initially attach the letter grading to the route.
+    // navigation.setParams({letter_grading: letter_grading});
+
     // Keyboard flags in state that indicate whether the keyboard is showing or not. This will be used mainly to make certain views invisible when the keyboard comes up.
     const[keyboard_showing, setKeyboard_showing] = useState(false);
+
+    useEffect(() => {
+        console.log(`route.params.letter_grading: ${route.params.letter_grading}`);
+    });
 
     // useEffect(() => {
     //     const title = () => {
@@ -184,9 +229,12 @@ const ConfigureLetterGradingScreen = ({navigation, route}) => {
                     keyExtractor={(item, index) => item.id}
                     removeClippedSubviews={false}
                     renderItem={(letter_grade) => {
+                        function updateRoute(){
+                            navigation.setParams({letter_grading: letter_grading});
+                        }
                         // For each letter grade found in the letter_grading state array, create a LetterGradeView component based on its properties.
                         return(
-                            <LetterGradeView letter_grade={letter_grade.item}/>
+                            <LetterGradeView letter_grade={letter_grade.item} updateRoute={updateRoute}/>
                         );
                     }}
                     contentContainerStyle={{marginTop: 30}}

@@ -1,6 +1,7 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import { useProfileContext } from './profile_context';
+import common_style from './common_style';
 
 export const PrintClassesFromProfile = () => {
     const profile_content = useProfileContext();
@@ -30,10 +31,10 @@ function PrintSemesters(year) {
                 return(
                     <View key={s.id}>
                         {(s.season === '') && (
-                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>New Semester</Text>
+                            <Text style={[common_style.defaultText, {textDecorationLine: 'underline'}]} key={child_key}>New Semester</Text>
                         )}
                         {s.season !== '' && (
-                            <Text key={child_key} style={{textDecorationLine: 'underline'}}>{s.season} {s.year}</Text>
+                            <Text style={[common_style.defaultText, {textDecorationLine: 'underline'}]} key={child_key}>{s.season} {s.year}</Text>
                         )}
                         {PrintClasses(s)}
                     </View>
@@ -54,10 +55,10 @@ function PrintClasses(semester) {
                 return(
                     <View key={child_key}>
                         {c.name !== '' && (
-                            <Text key={child_key++}>{'\t' + c.name}</Text>
+                            <Text style={common_style.defaultText} key={child_key++}>{'\t' + c.name}</Text>
                         )}
                         {c.name === '' && (
-                            <Text key={child_key++}>{'\t'}New Class</Text>
+                            <Text style={common_style.defaultText} key={child_key++}>{'\t'}New Class</Text>
                         )}
                         {/* {PrintLetterGrading(c)} */}
                         {PrintSections(c)}
@@ -66,7 +67,7 @@ function PrintClasses(semester) {
             })}
         </View>
     )
-    // return(<Text>Class here</Text>)
+    // return(<Text style={common_style.defaultText} style={common_style.defaultText}>Class here</Text>)
 }
 
 function PrintLetterGrading(curr_class) {
@@ -76,10 +77,10 @@ function PrintLetterGrading(curr_class) {
     // ))}
     return(
         <View>
-            <Text>{'\t\t'}Letter Grading</Text>
+            <Text style={common_style.defaultText}>{'\t\t'}Letter Grading</Text>
             {curr_class.letter_grading.map((l) => {
                 return(
-                    <Text>{'\t\t\t' + l.letter}: {l.beg}-{l.end}</Text>
+                    <Text style={common_style.defaultText}>{'\t\t\t' + l.letter}: {l.beg}-{l.end}</Text>
                 )
             })}
         </View>
@@ -91,28 +92,28 @@ function PrintSections(curr_class) {
     if(curr_class.sections === undefined || curr_class.sections.length == 0){
         return(
             <View>
-                <Text>{'\t\t'}Sections:</Text>
-                <Text>{'\t\t\t'}No sections yet!</Text>
+                <Text style={common_style.defaultText}>{'\t\t'}Sections:</Text>
+                <Text style={common_style.defaultText}>{'\t\t\t'}No sections yet!</Text>
             </View>
         );
     }
 
     return(
         <View>
-            <Text>{'\t\t'}Sections:</Text>
+            <Text style={common_style.defaultText}>{'\t\t'}Sections:</Text>
             {curr_class.sections.map((s) => {
                 child_key++;
                 if(s.name != ''){
                     return(
                         <View key={child_key}>
-                            <Text>{'\t\t\t' + s.name + ': ' + (s.weight * 100).toFixed(0) + '%'}</Text>
+                            <Text style={common_style.defaultText}>{'\t\t\t' + s.name + ': ' + (s.weight * 100).toFixed(0) + '%'}</Text>
                             { PrintAssignments(s) }
                         </View>
                     );
                 }
                 return(
                     <View key={child_key}>
-                        <Text>{'\t\t\tNew Section'}</Text>
+                        <Text style={common_style.defaultText}>{'\t\t\tNew Section'}</Text>
                     </View>
                 );
             })}
@@ -124,33 +125,33 @@ function PrintAssignments(section) {
     let child_key = 0;
     if(section.assignments.length === 0){
         return(
-            <Text>{'\t\t\t\t'}No assignments yet!</Text>
+            <Text style={common_style.defaultText}>{'\t\t\t\t'}No assignments yet!</Text>
         );
     }
     else{
         return(
             <View>
-                {/* <Text>{'\t\t\t\t'}Assignments:</Text> */}
+                {/* <Text style={common_style.defaultText}>{'\t\t\t\t'}Assignments:</Text> */}
                 {section.assignments.map((a) => {
                     child_key++;
                     if(a.name === ''){
                         return(
-                            <Text key={child_key}>{'\t\t\t\t'}New Assignment</Text>
+                            <Text style={common_style.defaultText} key={child_key}>{'\t\t\t\t'}New Assignment</Text>
                         );
                     }
                     else if(a.type === 'Percentage'){
                         return(
-                            <Text key={child_key}>{'\t\t\t\t' + a.name}: {(a.numerator / a.denominator) * 100}%</Text>
+                            <Text style={common_style.defaultText} key={child_key}>{'\t\t\t\t' + a.name}: {(a.numerator / a.denominator) * 100}%</Text>
                         );
                     }
                     else if(a.type === 'Ratio'){
                         return(
-                            <Text key={child_key}>{'\t\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
+                            <Text style={common_style.defaultText} key={child_key}>{'\t\t\t\t' + a.name}: {a.numerator} / {a.denominator}</Text>
                         );
                     }
                     else{
                         return(
-                            <Text key={child_key}>{'\t\t\t\t' + a.name}: N/A</Text>
+                            <Text style={common_style.defaultText} key={child_key}>{'\t\t\t\t' + a.name}: N/A</Text>
                         );
                     }
                 })}
@@ -161,22 +162,22 @@ function PrintAssignments(section) {
 
 // The Profile context is passed in rather than called within this component as it led to inconsistent hook calls from the caller.
 export const PrintData = (profile_context) => {
-    console.log('PrintData(): profile_context.years:', profile_context.years);
+    // console.log('PrintData(): profile_context.years:', profile_context.years);
     let child_key = 0;
 
     return(
         <View>
-            <Text style={{fontWeight: 'bold', textAlign: 'center'}}>Profile Data for "{profile_context.profile_name}":</Text>
+            <Text style={[common_style.defaultText, {fontWeight: 'bold', textAlign: 'center'}]}>Profile Data for "{profile_context.profile_name}":</Text>
             {profile_context.years.map((year) => {
                 child_key++
                 // console.log(`PrintData(): year: ${year}`);
                 return(
                     <View key={child_key}>
                         {year.beg_year === -1 && (
-                            <Text style={{fontWeight: 'bold'}}>New Academic Year</Text>
+                            <Text style={[common_style.defaultText, {fontWeight: 'bold'}]}>New Academic Year</Text>
                         )}
                         {year.beg_year !== -1 && (
-                            <Text style={{fontWeight: 'bold'}}>Academic Year {year.beg_year}-{year.end_year}:</Text>
+                            <Text style={[common_style.defaultText, {fontWeight: 'bold'}]}>Academic Year {year.beg_year}-{year.end_year}:</Text>
                         )}
                         { PrintSemesters(year) }
                         {/* {PrintClasses(year)} */}
@@ -185,6 +186,6 @@ export const PrintData = (profile_context) => {
             })}
             {/* {PrintAcademicYrs(profile)} */}
         </View>
-        // <Text>Hello</Text>
+        // <Text style={common_style.defaultText}>Hello</Text>
     );
 }
