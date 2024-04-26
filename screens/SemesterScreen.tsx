@@ -9,6 +9,7 @@
 */
 
 import React, { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, FlatList, Keyboard, StyleSheet, TextInput } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, ClassContent } from '../shared/profile_context';
@@ -53,13 +54,19 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     const[name, setName] = useState(section.name);
     const[assignments, setAssignments] = useState(section.assignments);
 
+    // Hook that returns true if focused and false if not.
+    const isFocused = useIsFocused();
+
     // Hook that runs upon rerender.
     useEffect(() => {
         // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
-        navigation.addListener('focus', () => {
+        // navigation.addListener('focus', () => {
+        //     setAssignments(section.assignments);
+        // })
+        if(isFocused){
             setAssignments(section.assignments);
-        })
-    });
+        }
+    }, [assignments]);
 
     /*
     NAME
@@ -205,9 +212,18 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
         Returns a Text component that displays the assignment information, depending on what in that assignment object in context is initialized.
     */
     const renderSectionAssignments = () => {
-        if(assignments.length === 0) return (
-            <Text style={common_style.defaultText}>No {section.name.toLowerCase()} yet!</Text>
-        )
+        if(assignments.length === 0) {
+            return(
+                <View>
+                    {section.name !== '' && (
+                        <Text style={common_style.defaultText}>No {section.name.toLowerCase()} yet!</Text>
+                    )}
+                    {section.name === '' && (
+                        <Text style={common_style.defaultText}>No Assignments yet!</Text>
+                    )}
+                </View>
+            );
+        }
         return (
             <View>
                 <Text style={common_style.defaultText}>Assignments:</Text>
@@ -342,12 +358,17 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     const[is_editing, setIs_editing] = useState(false);
     const[is_expanded, setIsExpanded] = useState(false);
 
+    const isFocused = useIsFocused();
+
     useEffect(() => {
-        navigation.addListener('focus', () => {
+        // navigation.addListener('focus', () => {
+        //     setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+        // })
+        if(isFocused){
             setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-        })
+        }
         // setLetter_grading(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
-    }, [])
+    }, [sections])
 
     /*
     NAME

@@ -356,8 +356,29 @@ export function calculateExpectedClassLetterGrade(curr_class) {
     return determineLetterGrade(curr_class.letter_grading, expected_class_average);
 }
 
-function determineGPAWithLetterGrades(letter_grades) {
-    let total = 0.0;
+/*
+NAME
+
+    determineGPAWithLetterGrades - a function that determines the letter grade for an expected average of a class.
+
+SYNOPSIS
+
+    string calculateExpectedClassLetterGrade(curr_class)
+        curr_class --> a ClassContent object that a letter grade will be determined for.
+
+DESCRIPTION
+
+    If no letter grade could be determined using the calculated class average, then neither can the expected letter grade. Otherwise,
+    The expected average of the class in question is extracted, and a letter grade is then determined for that value.The average 
+    extracted from calculateExpectedClassAverage is a decimal, whereas the letter grading beginning and end values are integers, so
+    the average must be multiplied by 100 for them to be in the same relative value.
+
+RETURNS
+
+    Returns a string that is either the expected letter grade determined for the class or 'N/A', if one cannot be determined.
+*/
+function determineGPAWithLetterGrade(letter_grade) {
+    // let total = 0.0;
     const gpas_for_letters = {
         'A': 4.0,
         'A-': 3.7,
@@ -371,10 +392,11 @@ function determineGPAWithLetterGrades(letter_grades) {
         'D': 1.0,
         'F': 0.0
     }
-    letter_grades.forEach((l) => {
-        total += gpas_for_letters[l];
-    })
-    return (total / letter_grades.length).toFixed(2);
+    return(gpas_for_letters[letter_grade]);
+    // letter_grades.forEach((l) => {
+    //     total += gpas_for_letters[l];
+    // })
+    // return (total / letter_grades.length).toFixed(2);
 }
 
 export function calculateSemesterGPA(semester) {
@@ -388,7 +410,12 @@ export function calculateSemesterGPA(semester) {
         if(l !== 'N/A') return l;
     });
     if(valid_letter_grades.length === 0) return 'N/A';
-    return determineGPAWithLetterGrades(valid_letter_grades);
+    
+    const valid_semester_GPAs = valid_letter_grades.map((v) => {
+        return determineGPAWithLetterGrade(v)
+    })
+    return floatAverage(valid_semester_GPAs);
+    // return determineGPAWithLetterGrades(valid_letter_grades);
 }
 
 export function calculateExpectedSemesterGPA(semester) {
@@ -400,7 +427,11 @@ export function calculateExpectedSemesterGPA(semester) {
     const valid_expected_letter_grades = expected_letter_grades.filter((l) => {
         if(l !== 'N/A') return l;
     });
-    return determineGPAWithLetterGrades(valid_expected_letter_grades);
+    const valid_expected_semester_GPAs = valid_expected_letter_grades.map((v) => {
+        return determineGPAWithLetterGrade(v)
+    })
+    return floatAverage(valid_expected_semester_GPAs);
+    // return determineGPAWithLetterGrades(valid_expected_letter_grades);
 }
 
 function floatAverage(arr) {
@@ -422,11 +453,6 @@ export function calculateYearGPA(year) {
     });
     if(valid_semester_gpas.length === 0) return 'N/A';
     return floatAverage(valid_semester_gpas);
-    // let total = 0;
-    // valid_semester_gpas.forEach((v) => {
-    //     total += parseFloat(v);
-    // });
-    // return (total / valid_semester_gpas.length).toFixed(2);
 }
 
 export function calculateExpectedYearGPA(year) {
