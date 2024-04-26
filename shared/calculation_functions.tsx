@@ -173,16 +173,16 @@ export function calculateExpectedSectionAverage(assignments) {
 /*
 NAME
 
-    calculateClassAverage - a function that calculates the expected average of a section by using the line of best fit for the assignemnt grades from parameter assignments.
+    calculateClassAverage - a function that calculates the calculated average of a class by using only the valid sections with an average that is not 'N/A'.
 
 SYNOPSIS
 
-    string or float calculateExpectedSectionAverage(assignments)
-        assignments --> array of assignment objects to determine the expected average for.
+    string or float calculateClassAverage(sections)
+        sections --> array of section objects to determine the calculated average for.
 
 DESCRIPTION
 
-    Averages for each section and their relative weights will be accumulated into an array. Then, only the valid
+    Calculated averages for each section and their relative weights will be accumulated into an array. Then, only the valid
     sections are kept in the array based on whether their average is not 'N/A'. If there are no valid sections, then
     the average of the class cannot be determined either, so return 'N/A'. Otherwise, accumulate the total of weighted
     averages (each section average multiplied by their relative weights) and the total relative weights to determine the
@@ -192,7 +192,7 @@ DESCRIPTION
 
 RETURNS
 
-    Returns a float that represents the expected average grade for parameter assignments using Linear Regression. Otherwise, if an average cannot be determined, 'N/A' will be returned.
+    Returns a float that represents the average grade for parameter sections. Otherwise, if an average cannot be determined, 'N/A' will be returned.
 */
 export function calculateClassAverage(sections) {
     // Accumulate each section's calculated average and relative weight into an array of arrays.
@@ -207,7 +207,7 @@ export function calculateClassAverage(sections) {
     });
     // If there are no sections with an actual average, then an average for the class cannot be determined either. Return 'N/A'.
     if(valid_section_averages.length === 0) return 'N/A';
-    // Otherwise, accumulate the averages and weights of every section. The weights 
+    // Otherwise, accumulate the averages and weights of every section. The total weights need to be tracked as there will be situations wehre they will not total 100%.
     let total_averages = 0;
     let total_weights = 0;
     valid_section_averages.map((v) => {
@@ -219,29 +219,84 @@ export function calculateClassAverage(sections) {
     return (total_averages / total_weights);
 }
 
+/*
+NAME
+
+    calculateExpectedClassAverage - a function that calculates the expected average of a class by using only the valid sections with an expected average that is not 'N/A'.
+
+SYNOPSIS
+
+    string or float calculateExpectedClassAverage(sections)
+        sections --> array of section objects to determine the calculated average for.
+
+DESCRIPTION
+
+    Expected averages for each section and their relative weights will be accumulated into an array. Then, only the valid
+    sections are kept in the array based on whether their average is not 'N/A'. If there are no valid sections, then
+    the average of the class cannot be determined either, so return 'N/A'. Otherwise, accumulate the total of weighted
+    averages (each section average multiplied by their relative weights) and the total relative weights to determine the
+    average of all of the sections with each section's weight in mind. This function allows for the average of sections
+    that total less than 100%, as mathematically, there is nothing inherently wrong with that, as long as the relative
+    weights are kept in mind.
+
+RETURNS
+
+    Returns a float that represents the expected average grade for parameter sections. Otherwise, if an average cannot be determined, 'N/A' will be returned.
+*/
 export function calculateExpectedClassAverage(sections) {
     // If a calculated average of the class's sections cannot be determined, then neither can the projected average. Return 'N/A'.
     if(calculateClassAverage(sections) === 'N/A') return 'N/A';
     
-    // Accumulate all the expected averages for each section.
+    // Accumulate all the expected averages for each section and each respective section weight.
     const exp_section_averages = sections.map((s) => {
-        return calculateExpectedSectionAverage(s.assignments);
+        const expected_section_average = calculateExpectedSectionAverage(s.assignments);
+        return [expected_section_average, s.weight];
     });
     // Filter out any expected section averages that are invalid. There must be at least one valid expected section average, otherwise, a calculated section average would not be determined either, so we will not need to check if any valid expected section averages exist.
     const valid_exp_section_averages = exp_section_averages.filter((e) => {
         if(e !== 'N/A') return e;
     });
-    let total = 0;
+    // Otherwise, accumulate the averages and weights of every section. The total weights need to be tracked as there will be situations wehre they will not total 100%.
+    let total_averages = 0;
+    let total_weights = 0;
     valid_exp_section_averages.map((v) => {
-        total += parseFloat(v);
+        // Each section average must be multiplied with its relative weight to keep the values relative to their relative weights. This becomes useful also for when the valid sections do not total 100% in relative weight.
+        total_averages += parseFloat(v[0]) * parseFloat(v[1]);
+        // The weights are accumulated to determine the average with the total relative weights in mind, as there will be situations where the total relative weight will not equal 100%.
+        total_weights += parseFloat(v[1]);
     });
-    return (total / valid_exp_section_averages.length);
+    return (total_averages / total_weights);
 }
 
+/*
+NAME
+
+    determineLetterGrade - a function that calculates the letter grade for the given class average.
+
+SYNOPSIS
+
+    string determineLetterGrade(letter_grading, class_average)
+        letter_grading --> array of LetterGradeContent that represents the current class's letter grading parameters.
+        class_average --> the class average in question to determine the letter grade for.
+
+DESCRIPTION
+
+    Each letter grade in letter_grading will be iterated through to determine whether the class_average is within the current
+    letter grade in question. The average must be greater or equal to the letter grade's beginning value, but less than the end
+    value, as the end value is non-inclusive, the only exclusive being the letter 'A'.
+
+RETURNS
+
+    If a letter grade can be determined, a letter will be returned. Otherwise, 'N/A'. will be returned.
+*/
 function determineLetterGrade(letter_grading, class_average) {
+    // Until a letter grade can be determined, result will be given the value 'N/A'.
     let result = 'N/A';
+    // Iterate through the letter_grading array given.
     letter_grading.forEach((l) => {
+        // If the class average is 100, then the letter grade must be 'A'. This must be specifically defined as 'A' is the only letter grade where its end value is inclusive.
         if(class_average === 100) result = 'A';
+        // Otherwise, each letter within letter_grading will be evaluated using the class_average. If the class_average is within the bouts of the letter grade's beginning and end (with the end value being non-inclusive), then the letter grade for the class must be that letter.
         if(class_average >= l.beg && class_average < l.end){
             result = l.letter;
         }
@@ -249,11 +304,52 @@ function determineLetterGrade(letter_grading, class_average) {
     return result;
 }
 
+/*
+NAME
+
+    calculateClassLetterGrade - a function that determines the letter grade for a calculated average of a class.
+
+SYNOPSIS
+
+    string calculateClassLetterGrade(curr_class)
+        curr_class --> a ClassContent object that a letter grade will be determined for.
+
+DESCRIPTION
+
+    The calculated average of the class in question is extracted, and a letter grade is then determined for that value.
+    The average extracted from calculateClassAverage is a decimal, whereas the letter grading beginning and end values are
+    integers, so the average must be multiplied by 100 for them to be in the same relative value.
+
+RETURNS
+
+    Returns a string that is either the letter grade determined for the class or 'N/A', if one cannot be determined.
+*/
 export function calculateClassLetterGrade(curr_class) {
     const class_average = calculateClassAverage(curr_class.sections) * 100;
     return determineLetterGrade(curr_class.letter_grading, class_average);
 }
 
+/*
+NAME
+
+    calculateExpectedClassLetterGrade - a function that determines the letter grade for an expected average of a class.
+
+SYNOPSIS
+
+    string calculateExpectedClassLetterGrade(curr_class)
+        curr_class --> a ClassContent object that a letter grade will be determined for.
+
+DESCRIPTION
+
+    If no letter grade could be determined using the calculated class average, then neither can the expected letter grade. Otherwise,
+    The expected average of the class in question is extracted, and a letter grade is then determined for that value.The average 
+    extracted from calculateExpectedClassAverage is a decimal, whereas the letter grading beginning and end values are integers, so
+    the average must be multiplied by 100 for them to be in the same relative value.
+
+RETURNS
+
+    Returns a string that is either the expected letter grade determined for the class or 'N/A', if one cannot be determined.
+*/
 export function calculateExpectedClassLetterGrade(curr_class) {
     if(calculateClassLetterGrade(curr_class) === 'N/A') return 'N/A';
     const expected_class_average = calculateExpectedClassAverage(curr_class.sections) * 100;
@@ -262,43 +358,22 @@ export function calculateExpectedClassLetterGrade(curr_class) {
 
 function determineGPAWithLetterGrades(letter_grades) {
     let total = 0.0;
+    const gpas_for_letters = {
+        'A': 4.0,
+        'A-': 3.7,
+        'B+': 3.3,
+        'B': 3.0,
+        'B-': 2.7,
+        'C+': 2.3,
+        'C': 2.0,
+        'C-': 1.7,
+        'D+': 1.3,
+        'D': 1.0,
+        'F': 0.0
+    }
     letter_grades.forEach((l) => {
-        switch(l){
-            case 'A':
-                total += 4.0;
-                break;
-            case 'A-':
-                total += 3.7;
-                break;
-            case 'B+':
-                total += 3.3;
-                break;
-            case 'B':
-                total += 3.0;
-                break;
-            case 'B-':
-                total += 2.7;
-                break;
-            case 'C+':
-                total += 2.3;
-                break;
-            case 'C':
-                total += 2.0;
-                break;
-            case 'C-':
-                total += 1.7;
-                break;
-            case 'D+':
-                total += 1.3;
-                break;
-            case 'D':
-                total += 1.0;
-                break;
-            case 'F':
-                total += 0.0;
-                break;
-        }
-    });
+        total += gpas_for_letters[l];
+    })
     return (total / letter_grades.length).toFixed(2);
 }
 
@@ -364,7 +439,6 @@ export function calculateExpectedYearGPA(year) {
         if(e !== 'N/A') return e;
     });
     return floatAverage(valid_expected_semester_gpas);
-    // return 'hehe';
 }
 
 export function calculateCumulativeGPA(years) {
