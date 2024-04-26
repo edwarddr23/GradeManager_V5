@@ -31,23 +31,24 @@ NAME
 
 SYNOPSIS
 
-    float calculateSectionAverage(assignments)
+    float or string calculateSectionAverage(assignments)
         assignments --> array of assignment objects to determine average for.
 
 DESCRIPTION
 
-    Filter through the assignments in parameter array assignments to return only assignments that are valid. The valid
-    assignemnts are the ones with a defined numerator and denominator (and thus, actually have a grade). This function
-    is exclusively for this calculation_functions.tsx file, so it will not be exported for other files.
+    Extract only the valid assignments from the parameter assignments and iterate through each valid assignment to accumulate a total of
+    each assignment's grade. Then return that total over the number of valid assignments. If there are no valid assignments in the first
+    place, then instead return a string that says 'N/A'.
 
 RETURNS
 
-    Returns an array of AssignmentContent objects from parameter array assignemnts that have a defined numerator and denominator.
+    Returns a float that represents the section's average given parameter assignments or string 'N/A' if no valid assignments exist in the parameter.
 */
 export function calculateSectionAverage(assignments) {
     let total = 0;
     const valid_assignments = getValidAssignments(assignments);
     
+    // If there are no valid assignments, there is no average to determine.
     if(valid_assignments.length === 0) return 'N/A';
     
     valid_assignments.map((a) => {
@@ -56,6 +57,29 @@ export function calculateSectionAverage(assignments) {
     return (total / valid_assignments.length);
 }
 
+/*
+NAME
+
+    simpleLinearRegression - a function that calculates the line of best fit given the data within parameter dataset.
+
+SYNOPSIS
+
+    Array of numbers simpleLinearRegression(dataset)
+        dataset --> array, of presumably assignment objects, to determine the line of best fit for.
+
+DESCRIPTION
+
+    Each of the variables for the line of best fit will be extracted from parameter dataset directly or
+    indirectly. x and y will be determined directly using the values in the dataset, determining x by
+    simply recording indices from each value in the dataset. Each point in y is determined by calculating
+    the grade for each assignment in the dataset. All of the other variables needed are derived from x and y.
+    Using the simple equation for a line, y = mx + b, we will solve for m (slope of the line) and b (y-intercept
+    of the line) using the variables derived from the parameter dataset.
+
+RETURNS
+
+    Returns an array of numbers that represent the slope and y-intercept (m and b, respectively) for the line of best fit for the parameter dataset.
+*/
 // Algorithm for simple linear regression taken from here: https://www.youtube.com/watch?v=YC0bvIxR6t4
 export function simpleLinearRegression(dataset) {
     // Use simple linear regression to find b and a in y = mx + b, where m is the slope and b is the y-intercept.
@@ -73,98 +97,137 @@ export function simpleLinearRegression(dataset) {
     const x_sqr = x.map((x) => {
         return x * x;
     });
-    // console.log(`x_sqr: ${x_sqr}`)
     const sum_x_sqr = x_sqr.reduce((a, b) => a + b, 0);
 
     const y_sqr = y.map((y) => {
         return y * y;
     });
-    const sum_y_sqr = y_sqr.reduce((a, b) => a + b, 0);
+    // const sum_y_sqr = y_sqr.reduce((a, b) => a + b, 0);
     
     const xy = x.map((element, idx) => {
-        // console.log(`forEach: x[${idx}]: ${x[idx]}`)
-        // console.log(`forEach: y[${idx}]: ${y[idx].numerator / y[idx].denominator}`)
         return x[idx] * y[idx];
     });
-    // console.log(`simpleLinearRegression(): xy: ${xy}`);
     const sum_xy = xy.reduce((a, b) => a + b, 0);
 
-    // console.log(`simpleLinearRegression(): sum_xy: ${sum_xy}`);
-    // console.log(`simpleLinearRegression(): sum_x: ${sum_x}`);
-    // console.log(`simpleLinearRegression(): sum_x_sqr: ${sum_x_sqr}`);
-    // console.log(`simpleLinearRegression(): sum_y: ${sum_y}`);
-    // console.log(`simpleLinearRegression(): sum_y_sqr: ${sum_y_sqr}`);
-    // console.log(`simpleLinearRegression(): x.length: ${x.length}`);
-    // console.log(`simpleLinearRegression(): top thing: ${(sum_xy - ((sum_x * sum_y) / x.length))}`);
-    // console.log(`simpleLinearRegression(): bottom thing: ${(sum_x_sqr - ((sum_x * sum_x) / x.length))}`);
     const m = (sum_xy - ((sum_x * sum_y) / x.length)) / (sum_x_sqr - ((sum_x * sum_x) / x.length))
-    // console.log(`simpleLinearRegression(): m: ${m}`);
     const b = (sum_y - (m * sum_x)) / x.length;
-    // console.log(`simpleLinearRegression(): b: ${b}`);
     return [m, b];
 }
 
+/*
+NAME
+
+    calculateExpectedSectionAverage - a function that calculates the expected average of a section by using the line of best fit for the assignemnt grades from parameter assignments.
+
+SYNOPSIS
+
+    string or float calculateExpectedSectionAverage(assignments)
+        assignments --> array of assignment objects to determine the expected average for.
+
+DESCRIPTION
+
+    Take the slope and y-intercept of the line of best fit for parameter assignments. Using the slope and u-intercept
+    of that line, calculate the projected grade for each uninitialized assignment in parameter assignments. Then, calculate
+    all the average with all of these modified values in mind.
+
+RETURNS
+
+    Returns a float that represents the expected average grade for parameter assignments using Linear Regression.
+*/
 export function calculateExpectedSectionAverage(assignments) {
+    // If a calculated average of the assignments within a section cannot be determined, then neither can a projected average be determined.
     if(calculateSectionAverage(assignments) === 'N/A') return 'N/A';
     
+    // Extract the slope and y-intercept (m and b, respectively) from the line of best fit found for assignments.
     const [m, b] = simpleLinearRegression(getValidAssignments(assignments));
 
     if(getValidAssignments(assignments).length > 1){
         let assignment_num = 0;
         let total = 0;
+        // Create an array of assignment grades that reflects all of the recorded grades and the new projected grades for any uninitialized assignments found in the array assignments.
         const expected_assignment_grades = assignments.map((a) => {
             assignment_num++;
+            // If the current assignment in question is uninitialized, then this will be a datapoint to predict. Using the linear regression model: y = mx + b, we will find the expected grade, y, by plugging in values for m, x, and b. m and b were already determined before, and x is determined by finding the "index" of the current assignment in question. Accumulate this y value into total for the average as well
             if(a.numerator === -1 && a.denominator === -1){
                 total += m * assignment_num + b;
+                // Add this y point to expected_assignment_grades.
                 return m * assignment_num + b;
             }
+            // Otherwise, add the recorded grade of the assignment to expected_assignment_grades and the total.
             total += a.numerator / a.denominator;
             return a.numerator / a.denominator;
         });
 
         // It is assumed that a section average cannot exceed 100%, and linear regression can easily lead to an average beyond 100% depending on the grades, the trend of the grades, and number of assignemnts. So, if it does exceed 100%, then return only 100%.
         if((total / expected_assignment_grades.length) > 1) return 1;
+        // Otherwise, return the average determined.
         return (total / expected_assignment_grades.length);
     }
+    // If there's only 1 valid assignment, then any subsequent expected grades are the grade of the only valid assignment. Mathematically, no matter how many points are added, since they will all have the same y value, the average of the line will always just be the value of the 1 valid assignemnt.
     else if(getValidAssignments(assignments).length === 1) {
         const valid_assignment = getValidAssignments(assignments)[0];
-        const valid_grade = valid_assignment.numerator / valid_assignment.denominator;
-        // console.log(`valid_grade: ${valid_grade}`);
-        let total = 0;
-        assignments.map((a) => {
-            total += valid_grade; 
-        });
-        console.log(`total: ${total}`);
-        return total / assignments.length;
+        return valid_assignment.numerator / valid_assignment.denominator;
     }
 }
 
+/*
+NAME
+
+    calculateClassAverage - a function that calculates the expected average of a section by using the line of best fit for the assignemnt grades from parameter assignments.
+
+SYNOPSIS
+
+    string or float calculateExpectedSectionAverage(assignments)
+        assignments --> array of assignment objects to determine the expected average for.
+
+DESCRIPTION
+
+    Averages for each section and their relative weights will be accumulated into an array. Then, only the valid
+    sections are kept in the array based on whether their average is not 'N/A'. If there are no valid sections, then
+    the average of the class cannot be determined either, so return 'N/A'. Otherwise, accumulate the total of weighted
+    averages (each section average multiplied by their relative weights) and the total relative weights to determine the
+    average of all of the sections with each section's weight in mind. This function allows for the average of sections
+    that total less than 100%, as mathematically, there is nothing inherently wrong with that, as long as the relative
+    weights are kept in mind.
+
+RETURNS
+
+    Returns a float that represents the expected average grade for parameter assignments using Linear Regression. Otherwise, if an average cannot be determined, 'N/A' will be returned.
+*/
 export function calculateClassAverage(sections) {
+    // Accumulate each section's calculated average and relative weight into an array of arrays.
     let section_averages = [];
     sections.map((s) => {
         const section_average = calculateSectionAverage(s.assignments);
         section_averages.push([section_average, s.weight]);
     })
+    // Take out all of the sections from this array which have average 'N/A', as that means that an average could not be determined and thus should not be considered. A proper average of a class can be deterimined without every section if evaluated on how much percentage of the total grade can be calculated with.
     const valid_section_averages = section_averages.filter((s) => {
         if(s[0] !== 'N/A') return s;
     });
+    // If there are no sections with an actual average, then an average for the class cannot be determined either. Return 'N/A'.
     if(valid_section_averages.length === 0) return 'N/A';
+    // Otherwise, accumulate the averages and weights of every section. The weights 
     let total_averages = 0;
     let total_weights = 0;
     valid_section_averages.map((v) => {
+        // Each section average must be multiplied with its relative weight to keep the values relative to their relative weights. This becomes useful also for when the valid sections do not total 100% in relative weight.
         total_averages += parseFloat(v[0]) * parseFloat(v[1]);
+        // The weights are accumulated to determine the average with the total relative weights in mind, as there will be situations where the total relative weight will not equal 100%.
         total_weights += parseFloat(v[1]);
     });
-
     return (total_averages / total_weights);
 }
 
 export function calculateExpectedClassAverage(sections) {
+    // If a calculated average of the class's sections cannot be determined, then neither can the projected average. Return 'N/A'.
     if(calculateClassAverage(sections) === 'N/A') return 'N/A';
-    // return 69;
+    
+    // Accumulate all the expected averages for each section.
     const exp_section_averages = sections.map((s) => {
         return calculateExpectedSectionAverage(s.assignments);
     });
+    // Filter out any expected section averages that are invalid. There must be at least one valid expected section average, otherwise, a calculated section average would not be determined either, so we will not need to check if any valid expected section averages exist.
     const valid_exp_section_averages = exp_section_averages.filter((e) => {
         if(e !== 'N/A') return e;
     });
@@ -172,9 +235,6 @@ export function calculateExpectedClassAverage(sections) {
     valid_exp_section_averages.map((v) => {
         total += parseFloat(v);
     });
-    // console.log(`calculateExpectedClassAverage(): valid_exp_section_averages: ${valid_exp_section_averages}`);
-    // console.log(`calculateExpectedClassAverage(): total / valid_exp_section_averages.length: ${total / valid_exp_section_averages.length}`);
-    // if((total / valid_exp_section_averages.length) > 1) return 1;
     return (total / valid_exp_section_averages.length);
 }
 
