@@ -454,7 +454,7 @@ function floatAverage(arr) {
     arr.forEach((a) => {
         total += parseFloat(a);
     });
-    console.log(`floatAverage(): total / arr.length: ${total / arr.length}`);
+    // console.log(`floatAverage(): total / arr.length: ${total / arr.length}`);
     return (total / arr.length).toFixed(2);
 }
 
@@ -484,19 +484,16 @@ export function calculateExpectedYearGPA(year) {
 }
 
 export function calculateCumulativeGPA(years) {
-    console.log(`calculateCumulativeGPA(): This ran`)
-    console.log(`calculateCumulativeGPA(): years.length: ${years.length}`)
     if(years.length === 0) return 'N/A';
 
     let year_gpas = [];
-    years.forEach((y) => {
-        console.log(`calculateCumulativeGPA(): calculateYearGPA(y): ${calculateYearGPA(y)}`);
-        year_gpas.push(calculateYearGPA(y));
-    })
+    for(let year of years){
+        year_gpas.push(calculateYearGPA(year))
+    }
+
     const valid_year_gpas = year_gpas.filter((y) => {
         if(y !== 'N/A') return y;
     });
-    console.log(`calculateCumulativeGPA(): valid_year_gpas: ${valid_year_gpas}`);
     if(valid_year_gpas.length === 0) return 'N/A';
     return floatAverage(valid_year_gpas);
     // return 'hehe';

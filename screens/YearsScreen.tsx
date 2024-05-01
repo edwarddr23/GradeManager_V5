@@ -625,6 +625,37 @@ const YearsScreen = ({navigation}) => {
         })
         // Navigation listener that rerenders the years, calculated cumulative gpa, and expected cumulative gpa when the user navigates back to YearsScreen.
         navigation.addListener('focus', () => {
+            // function floatAverage(arr) {
+            //     let total = 0;
+            //     arr.forEach((a) => {
+            //         total += parseFloat(a);
+            //     });
+            //     // console.log(`floatAverage(): total / arr.length: ${total / arr.length}`);
+            //     return (total / arr.length).toFixed(2);
+            // }
+            // let yearGPAS = [];
+            // for(let year of years){
+            //     yearGPAS.push(calculateYearGPA(year))
+            // }
+            // console.log(`yearGPAS: ${yearGPAS}`);
+            // console.log(`floatAverage(yearGPAS): ${floatAverage(yearGPAS)}`);
+            // setCumulativeGPA(floatAverage(yearGPAS))
+
+            // setCumulativeGPA(() => {
+            //     if(years.length === 0) return 'N/A';
+
+            //     let year_gpas = [];
+            //     years.forEach((y) => {
+            //         console.log(`calculateCumulativeGPA(): calculateYearGPA(y): ${calculateYearGPA(y)}`);
+            //         year_gpas.push(calculateYearGPA(y));
+            //     })
+            //     const valid_year_gpas = year_gpas.filter((y) => {
+            //         if(y !== 'N/A') return y;
+            //     });
+            //     console.log(`calculateCumulativeGPA(): valid_year_gpas: ${valid_year_gpas}`);
+            //     if(valid_year_gpas.length === 0) return 'N/A';
+            //     return floatAverage(valid_year_gpas);
+            // })
             setCumulativeGPA(calculateCumulativeGPA(years));
             setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
         })
@@ -633,7 +664,7 @@ const YearsScreen = ({navigation}) => {
         //     setCumulativeGPA(calculateCumulativeGPA(years));
         //     setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
         // }
-    }, []);
+    }, [years]);
 
     /*
     NAME
