@@ -11,6 +11,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, Keyboard
 import Toast from 'react-native-simple-toast';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Footer from '../shared/custom_footer';
+import { useIsFocused } from '@react-navigation/native';
 
 import { findNextID } from '../shared/key_functions'
 import { calculateYearGPA, calculateSemesterGPA, calculateCumulativeGPA, calculateExpectedSemesterGPA, calculateExpectedYearGPA, calculateExpectedCumulativeGPA } from '../shared/calculation_functions'
@@ -58,11 +59,13 @@ const SemesterView = ({ years_range, semester, updateSemesters, deleteSemester, 
     const[semesterGPA, setSemesterGPA] = useState(calculateSemesterGPA(semester));
     const[expectedSemesterGPA, setExpectedSemesterGPA] = useState(calculateExpectedSemesterGPA(semester));
 
+    
+
     // Hook that handles the rerendering of the gpa and expected semester gpa for the current semester in question when the YearsScreen comes back into focus.
     useEffect(() => {
         navigation.addListener('focus', () => {
             setSemesterGPA(calculateSemesterGPA(semester));
-            setExpectedSemesterGPA(calculateExpectedSemesterGPA(semester))
+            setExpectedSemesterGPA(calculateExpectedSemesterGPA(semester));
         })
     });
 
@@ -609,6 +612,8 @@ const YearsScreen = ({navigation}) => {
     const[cumulativeGPA, setCumulativeGPA] = useState(calculateCumulativeGPA(years));
     const[expectedCumulativeGPA, setExpectedCumulativeGPA] = useState(calculateExpectedCumulativeGPA(years));
 
+    const isFocused = useIsFocused();
+
     // Hook that handles the tracking of the keyboard on rerender and rerendering of the calculated cumulative gpa and expected cumulative gpa for the current semester in question when the YearsScreen comes back into focus.
     useEffect(() => {
         // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
@@ -623,6 +628,11 @@ const YearsScreen = ({navigation}) => {
             setCumulativeGPA(calculateCumulativeGPA(years));
             setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
         })
+        // if(isFocused){
+        //     console.log(`useEffect(): This ran`);
+        //     setCumulativeGPA(calculateCumulativeGPA(years));
+        //     setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
+        // }
     }, []);
 
     /*

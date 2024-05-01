@@ -378,7 +378,6 @@ RETURNS
     Returns a string that is either the expected letter grade determined for the class or 'N/A', if one cannot be determined.
 */
 function determineGPAWithLetterGrade(letter_grade) {
-    // let total = 0.0;
     const gpas_for_letters = {
         'A': 4.0,
         'A-': 3.7,
@@ -393,15 +392,31 @@ function determineGPAWithLetterGrade(letter_grade) {
         'F': 0.0
     }
     return(gpas_for_letters[letter_grade]);
-    // letter_grades.forEach((l) => {
-    //     total += gpas_for_letters[l];
-    // })
-    // return (total / letter_grades.length).toFixed(2);
 }
 
+/*
+NAME
+
+    determineGPAWithLetterGrades - a function that determines the letter grade for an expected average of a class.
+
+SYNOPSIS
+
+    string calculateExpectedClassLetterGrade(curr_class)
+        curr_class --> a ClassContent object that a letter grade will be determined for.
+
+DESCRIPTION
+
+    If no letter grade could be determined using the calculated class average, then neither can the expected letter grade. Otherwise,
+    The expected average of the class in question is extracted, and a letter grade is then determined for that value.The average 
+    extracted from calculateExpectedClassAverage is a decimal, whereas the letter grading beginning and end values are integers, so
+    the average must be multiplied by 100 for them to be in the same relative value.
+
+RETURNS
+
+    Returns a string that is either the expected letter grade determined for the class or 'N/A', if one cannot be determined.
+*/
 export function calculateSemesterGPA(semester) {
     let letter_grades = [];
-    // console.log(`calculateSemesterGPA(): semester: ${JSON.stringify(semester)}`);
     if(semester.classes.length === 0) return 'N/A';
     semester.classes.forEach((c) => {
         letter_grades.push(calculateClassLetterGrade(c));
@@ -439,6 +454,7 @@ function floatAverage(arr) {
     arr.forEach((a) => {
         total += parseFloat(a);
     });
+    console.log(`floatAverage(): total / arr.length: ${total / arr.length}`);
     return (total / arr.length).toFixed(2);
 }
 
@@ -468,15 +484,19 @@ export function calculateExpectedYearGPA(year) {
 }
 
 export function calculateCumulativeGPA(years) {
+    console.log(`calculateCumulativeGPA(): This ran`)
+    console.log(`calculateCumulativeGPA(): years.length: ${years.length}`)
     if(years.length === 0) return 'N/A';
 
     let year_gpas = [];
     years.forEach((y) => {
+        console.log(`calculateCumulativeGPA(): calculateYearGPA(y): ${calculateYearGPA(y)}`);
         year_gpas.push(calculateYearGPA(y));
     })
     const valid_year_gpas = year_gpas.filter((y) => {
         if(y !== 'N/A') return y;
     });
+    console.log(`calculateCumulativeGPA(): valid_year_gpas: ${valid_year_gpas}`);
     if(valid_year_gpas.length === 0) return 'N/A';
     return floatAverage(valid_year_gpas);
     // return 'hehe';

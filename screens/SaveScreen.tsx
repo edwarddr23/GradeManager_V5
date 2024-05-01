@@ -48,8 +48,7 @@ const SaveScreen = ({navigation}) => {
             <View>
                 <InputWithLabel
                     value={saveFileName}
-                    setValue={setSaveFileName}
-                    extraOnChangeText={() => {}}
+                    onChangeText={setSaveFileName}
                     placeholder={'Suggestion: \"' + profile_context.profile_name + '\"?'}
                     label="Save File Name:"
                 />
