@@ -1,23 +1,12 @@
-import React from 'react'
-import { StyleSheet, Text } from 'react-native'
+/* 
+    common_style.tsx
+    PURPOSE
 
-// export class CustomText extends React.Component {
-//     constructor(props){
-//         super(props);
-//     }
-    
-//     render(){
-//         return(
-//             <Text style={[styles.defaultStyle, this.props.style]}>{this.props.children}</Text>
-//         );
-//     }
-// }
+        The purpose of this file is to define the global styling that will be universally used within the scope
+        of this project.
+*/
 
-// const styles = StyleSheet.create({
-//     defaultStyle: {
-//         color: 'black'
-//     }
-// });
+import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
     defaultText: {
