@@ -397,43 +397,90 @@ function determineGPAWithLetterGrade(letter_grade) {
 /*
 NAME
 
-    determineGPAWithLetterGrades - a function that determines the letter grade for an expected average of a class.
+    floatAverage - a utility function used only for this file that calculates and returns the average of of the values passed in.
 
 SYNOPSIS
 
-    string calculateExpectedClassLetterGrade(curr_class)
-        curr_class --> a ClassContent object that a letter grade will be determined for.
+    float floatAverage(arr)
+        arr --> an array, presumably of a numeric datatype.
 
 DESCRIPTION
 
-    If no letter grade could be determined using the calculated class average, then neither can the expected letter grade. Otherwise,
-    The expected average of the class in question is extracted, and a letter grade is then determined for that value.The average 
-    extracted from calculateExpectedClassAverage is a decimal, whereas the letter grading beginning and end values are integers, so
-    the average must be multiplied by 100 for them to be in the same relative value.
+    Sums up the values in parameter arr and divides that by the length of the array.
 
 RETURNS
 
-    Returns a string that is either the expected letter grade determined for the class or 'N/A', if one cannot be determined.
+    Returns a float that represents the average of the values in parameter arr.
+*/
+function floatAverage(arr) {
+    let total = 0;
+    arr.forEach((a) => {
+        total += parseFloat(a);
+    });
+    return (total / arr.length).toFixed(2);
+}
+
+/*
+NAME
+
+    calculateSemesterGPA - a function that calculates and returns the calculated GPA for the semester in question.
+
+SYNOPSIS
+
+    string or float calculateSemesterGPA(semester)
+        semester --> a SemesterContent object that a calculated GPA will be determined for.
+
+DESCRIPTION
+
+    If there are no classes or valid letter grades from them, then a GPA cannot be determined for the semester, return 'N/A'. Otherwise,
+    determine the GPA for each of the letter grades found in the classes of the semester and return the average of those values.
+
+RETURNS
+
+    Returns a string or float that is either the semester's GPA or 'N/A', if one cannot be determined.
 */
 export function calculateSemesterGPA(semester) {
-    let letter_grades = [];
     if(semester.classes.length === 0) return 'N/A';
+    // Accumulate all the letter grades of the semesters.
+    let letter_grades = [];
     semester.classes.forEach((c) => {
         letter_grades.push(calculateClassLetterGrade(c));
     })
+    // Take out all letter grades of 'N/A'.
     const valid_letter_grades = letter_grades.filter((l) => {
         if(l !== 'N/A') return l;
     });
     if(valid_letter_grades.length === 0) return 'N/A';
     
+    // Determine GPAs for each respective letter grade and accumulate them.
     const valid_semester_GPAs = valid_letter_grades.map((v) => {
         return determineGPAWithLetterGrade(v)
     })
     return floatAverage(valid_semester_GPAs);
-    // return determineGPAWithLetterGrades(valid_letter_grades);
 }
 
+/*
+NAME
+
+    calculateExpectedSemesterGPA - a function that calculates and returns the expected GPA for the semester in question.
+
+SYNOPSIS
+
+    string or float calculateExpectedSemesterGPA(semester)
+        semester --> a SemesterContent object that an expected GPA will be determined for.
+
+DESCRIPTION
+
+    If a calculated GPA could not be determined for the semester in questio, then an expected GPA cannot be determined either, return 'N/A'.
+    Otherwise, calculate and accumulate the expected letter grades for every class in the given semester, and filter out all 'N/A' values. Then,
+    convert each of these letter grades to GPAs, and then return the average of these GPAs.
+
+RETURNS
+
+    Returns a string or float that is either the semester's expected GPA or 'N/A', if one cannot be determined.
+*/
 export function calculateExpectedSemesterGPA(semester) {
+    // If a calculated GPA could not be determined for the semester, then neither can an expected GPA.
     if(calculateSemesterGPA(semester) === 'N/A') return 'N/A';
     let expected_letter_grades = [];
     semester.classes.forEach((c) => {
@@ -446,18 +493,28 @@ export function calculateExpectedSemesterGPA(semester) {
         return determineGPAWithLetterGrade(v)
     })
     return floatAverage(valid_expected_semester_GPAs);
-    // return determineGPAWithLetterGrades(valid_expected_letter_grades);
 }
 
-function floatAverage(arr) {
-    let total = 0;
-    arr.forEach((a) => {
-        total += parseFloat(a);
-    });
-    // console.log(`floatAverage(): total / arr.length: ${total / arr.length}`);
-    return (total / arr.length).toFixed(2);
-}
+/*
+NAME
 
+    calculateYearGPA - a function that calculates and returns the calculated GPA for the year in question.
+
+SYNOPSIS
+
+    string or float calculateYearGPA(year)
+        year --> a YearContent object that a calculated GPA will be determined for.
+
+DESCRIPTION
+
+    If there are no semesters in the year in question, then a GPA cannot be determined. Otherwise, calculate and accumulate the GPAs
+    for all the semesters within the year in question. Filter out the invalid semester GPAs by filtering out 'N/A' values. Then, return
+    the float average of all these accumulated valid semester GPAs.
+
+RETURNS
+
+    Returns a string or float that is either the years's calculated GPA or 'N/A', if one cannot be determined.
+*/
 export function calculateYearGPA(year) {
     if(year.semesters.length === 0) return 'N/A';
     let semester_gpas = [];
@@ -471,6 +528,26 @@ export function calculateYearGPA(year) {
     return floatAverage(valid_semester_gpas);
 }
 
+/*
+NAME
+
+    calculateExpectedYearGPA - a function that calculates and returns the expected GPA for the year in question.
+
+SYNOPSIS
+
+    string or float calculateExpectedYearGPA(year)
+        year --> a YearContent object that an expected GPA will be determined for.
+
+DESCRIPTION
+
+    If a calculated GPA could not be determined for the year in question, then an expected GPA cannot be determined either, return 'N/A'.
+    Otherwise, calculate and accumulate the expected semester GPAs, and filter out all 'N/A' values. Then, return the average of these
+    semester expected GPAs.
+
+RETURNS
+
+    Returns a string or float that is either the years's expected GPA or 'N/A', if one cannot be determined.
+*/
 export function calculateExpectedYearGPA(year) {
     if(calculateYearGPA(year) === 'N/A') return 'N/A';
     let expected_semester_gpas = [];
@@ -483,6 +560,25 @@ export function calculateExpectedYearGPA(year) {
     return floatAverage(valid_expected_semester_gpas);
 }
 
+/*
+NAME
+
+    calculateCumulativeGPA - a function that calculates and returns the calculated cumulative GPA for all the academic years in the profile.
+
+SYNOPSIS
+
+    string or float calculateCumulativeGPA(years)
+        years --> a YearContent array that a calculated cumulative GPA will be determined for.
+
+DESCRIPTION
+
+    If there are no academic years in the years parameter, then return 'N/A', as a cumulative GPA cannot be determined. Otherwise, accumulate
+    all the GPAs for each year in years, and then filter out all invalid 'N/A' values. Then, return the average of these calculated year GPAs.
+
+RETURNS
+
+    Returns a string or float that is either the calculated cumulative GPA or 'N/A', if one cannot be determined.
+*/
 export function calculateCumulativeGPA(years) {
     if(years.length === 0) return 'N/A';
 
@@ -496,14 +592,28 @@ export function calculateCumulativeGPA(years) {
     });
     if(valid_year_gpas.length === 0) return 'N/A';
     return floatAverage(valid_year_gpas);
-    // return 'hehe';
-    // let total = 0;
-    // valid_year_gpas.forEach((v) => {
-    //     total += v;
-    // });
-    // return (total / valid_year_gpas.length).toFixed(2);
 }
 
+/*
+NAME
+
+    calculateExpectedCumulativeGPA - a function that calculates and returns the expected cumulative GPA for all the academic years in the profile.
+
+SYNOPSIS
+
+    string or float calculateExpectedCumulativeGPA(years)
+        years --> a YearContent array that a expected cumulative GPA will be determined for.
+
+DESCRIPTION
+
+    If a calculated cumulative GPA could not be determined for the academic years in question, then an expected cumulative GPA cannot be determined
+    either, return 'N/A'. Otherwise, calculate and accumulate the expected year GPAs, and filter out all 'N/A' values. Then, return the average of these
+    year expected GPAs.
+
+RETURNS
+
+    Returns a string or float that is either the expected cumulative GPA or 'N/A', if one cannot be determined.
+*/
 export function calculateExpectedCumulativeGPA(years) {
     if(calculateCumulativeGPA(years) === 'N/A') return 'N/A';
     let expected_year_gpas = [];
@@ -514,5 +624,4 @@ export function calculateExpectedCumulativeGPA(years) {
         if(e !== 'N/A') return e;
     });
     return floatAverage(valid_expected_year_gpas);
-    // return 'hehe';
 }
