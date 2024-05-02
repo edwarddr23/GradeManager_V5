@@ -1,5 +1,6 @@
 /* 
     input_validation_functions.js
+    
     PURPOSE
 
         The purpose of this file is to define logic for input handling given certain inputs. This will

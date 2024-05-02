@@ -1,5 +1,6 @@
 /* 
     common_style.tsx
+    
     PURPOSE
 
         The purpose of this file is to define the global styling that will be universally used within the scope

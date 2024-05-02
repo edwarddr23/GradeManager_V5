@@ -1,5 +1,6 @@
 /* 
     SectionScreen.tsx
+    
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen

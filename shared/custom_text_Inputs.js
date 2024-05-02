@@ -1,5 +1,6 @@
 /* 
     custom_text_inputs.js
+    
     PURPOSE
 
         The purpose of this file is to define the custom text input component that will be used for almost all

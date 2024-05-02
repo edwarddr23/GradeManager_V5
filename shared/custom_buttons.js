@@ -1,5 +1,6 @@
 /* 
     custom_buttons.js
+    
     PURPOSE
 
         The purpose of this file is to define the custom FlatButton component that will be used for UI elements

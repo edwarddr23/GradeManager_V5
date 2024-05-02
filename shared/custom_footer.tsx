@@ -1,5 +1,6 @@
 /* 
     custom_footer.js
+    
     PURPOSE
 
         The purpose of this file is to define the custom Footer component that will be used for almost all
