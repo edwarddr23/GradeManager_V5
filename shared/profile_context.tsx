@@ -293,11 +293,11 @@ export function ProfileProvider({children}) {
     SYNOPSIS
 
         void updateLetterGradeInProfile(new_letter_grade)
-            new_letter_grade --> a LetterGradeContent object whose information will be updated.
+            new_letter_grade --> a LetterGradeContent object whose information will be updated to.
 
     DESCRIPTION
 
-        Using the information found in parameter new_letter_grade, find the respective letter grade to update, and modify it's
+        Using the information found in parameter new_letter_grade, find the respective letter grade to update, and modify its
         properties beg and end to the ones found in new_letter_grade.
 
     RETURNS
@@ -336,17 +336,17 @@ export function ProfileProvider({children}) {
     /*
     NAME
 
-        updateSectionInProfile - function component that updates a letter grade object in object profile_context.
+        updateSectionInProfile - function component that updates a SectionContent object in object profile_context.
 
     SYNOPSIS
 
-        void updateLetterGradeInProfile(new_letter_grade)
-            new_letter_grade --> a LetterGradeContent object whose information will be updated.
+        void updateSectionInProfile(new_section)
+            new_section --> a SectionContent object whose information will be updated to.
 
     DESCRIPTION
 
-        Using the information found in parameter new_letter_grade, find the respective letter grade to update, and modify it's
-        properties beg and end to the ones found in new_letter_grade.
+        Using the information found in parameter new_section, find the respective section to update, and modify its
+        properties name, weight, and average to the ones found in new_section.
 
     RETURNS
 
@@ -359,15 +359,72 @@ export function ProfileProvider({children}) {
         curr_section.average = new_section.average;
     }
 
+    /*
+    NAME
+
+        updateClassSectionsInProfile - function component that updates a ClassContent object in object profile_context.
+
+    SYNOPSIS
+
+        void updateClassSectionsInProfile(curr_class, new_sections)
+            curr_class --> a ClassContent object whose sections will be updated.
+            new_sections --> a SectionContent object, which will be the sections replacement in curr_class.
+
+    DESCRIPTION
+
+        Using the information found in parameter curr_class, find the respective class to update, and modify its
+        property sections to the parameter new_sections.
+
+    RETURNS
+
+        Returns void.
+    */
     const updateClassSectionsInProfile = (curr_class, new_sections) => {
         years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections = new_sections;
-        // console.log(`updateClassSectionsInProfile(): c_class.sections: ${c_class.sections}`);
     }
     
+    /*
+    NAME
+
+        addAssignmentToProfile - function component that adds an AssignmentContent object to object profile_context.
+
+    SYNOPSIS
+
+        void addAssignmentToProfile(new_assignment)
+            new_assignment --> an AssignmentContent object which will be added to the profile_context's respective SectionContent object.
+
+    DESCRIPTION
+
+        Using the information found in parameter new_assignment, find the respective section to update, and modify its
+        property assignments to append the parameter new_assignment.
+
+    RETURNS
+
+        Returns void.
+    */
     const addAssignmentToProfile = (new_assignment) => {
         years.find((y) => y.id === new_assignment.year_id).semesters.find((s) => s.id === new_assignment.semester_id).classes.find((c) => c.id === new_assignment.class_id).sections.find((s) => s.id === new_assignment.section_id).assignments.push(new_assignment);
     }
 
+    /*
+    NAME
+
+        updateAssignmentInProfile - function component that updates an AssignmentContent object in object profile_context.
+
+    SYNOPSIS
+
+        void updateAssignmentInProfile(new_assignment)
+            new_assignment --> an AssignmentContent object whose information will update the assignment object it refers to by id.
+
+    DESCRIPTION
+
+        Using the information found in parameter new_assignment, find the respective assignment to update, and modify its
+        properties name, type, numerator, and denominator to the ones found in parameter new_assignment.
+
+    RETURNS
+
+        Returns void.
+    */
     const updateAssignmentInProfile = (new_assignment) => {
         let curr_assignment = years.find((y) => y.id === new_assignment.year_id).semesters.find((s) => s.id === new_assignment.semester_id).classes.find((c) => c.id === new_assignment.class_id).sections.find((s) => s.id === new_assignment.section_id).assignments.find((a) => a.id === new_assignment.id);
         curr_assignment.name = new_assignment.name;
@@ -376,10 +433,31 @@ export function ProfileProvider({children}) {
         curr_assignment.denominator = new_assignment.denominator;
     }
 
+    /*
+    NAME
+
+        updateSectionAssignmentsInProfile - function component that updates an SectionContent object in object profile_context.
+
+    SYNOPSIS
+
+        void updateSectionAssignmentsInProfile(section, new_assignments)
+            section --> a SectionContent object whose assignments will be updated.
+            new_assignments --> an array of AssignmentContent objects which will replace the assignments found in parameter section.
+
+    DESCRIPTION
+
+        Using the information found in parameter section, find the respective section to update, and modify its
+        assignments property to the assignments in parameter new_assignments.
+
+    RETURNS
+
+        Returns void.
+    */
     const updateSectionAssignmentsInProfile = (section, new_assignments) => {
         years.find((y) => y.id === section.year_id).semesters.find((s) => s.id === section.semester_id).classes.find((c) => c.id === section.class_id).sections.find((s) => s.id === section.id).assignments = new_assignments;
     }
 
+    // Whatever is within the children of the provider component will receive the profile_context object and all of the additional functions to that object. So whatever is in the body of this component will get what is provided.
     return(
         <ProfileContext.Provider value={{
                 profile_context,
