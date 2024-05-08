@@ -298,7 +298,7 @@ RETURNS
 
     If a letter grade can be determined, a letter will be returned. Otherwise, 'N/A'. will be returned.
 */
-function determineLetterGrade(letter_grading, class_average) {
+export function determineLetterGrade(letter_grading, class_average) {
     // Until a letter grade can be determined, result will be given the value 'N/A'.
     let result = 'N/A';
     // Iterate through the letter_grading array given.
