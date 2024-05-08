@@ -3,33 +3,37 @@
 
     PURPOSE
 
-        The purpose of this file is to define the logic 
+        The purpose of this file is to define the logic and components created
+        to print out the profile data when loading or saving a profile.
 */
 
-import React from 'react'
-import { View, Text } from 'react-native'
-import { useProfileContext } from './profile_context';
+import React from 'react';
+import { View, Text } from 'react-native';
 import common_style from './common_style';
 import { determineLetterGrade, calculateClassAverage } from './calculation_functions';
 
-export const PrintClassesFromProfile = () => {
-    const profile_content = useProfileContext();
-    const parsed_profile_content = JSON.stringify(profile_content);
-    console.log(`PrintClassesFromProfile(): profile_content: ${profile_content}`);
-    // console.log(`PrintClassesFromProfile(): parsed_profile_content.years: ${parsed_profile_content.years}`);
-    console.log(`PrintClassesFromProfile(): Classes in parsed_profile_content:`)
-    // console.log(`PrintClassesFromProfile(): Classes in profile ${profile_content.profile_name}`);
-    // profile_content.years.map(year => {
-    //     console.log(`PrintClassesFromProfile(): year: ${year}`);
-    // });
-    // parsed_profile_content.years.map(year => {
-    //     console.log(`PrintClassesFromProfile(): year:`, year);
-    // });
-    console.log(`PrintClassesFromProfile(): parsed_profile_content.years: ${parsed_profile_content.years}`);
-}
-
 // Functions used for PrintData():
 
+/*
+NAME
+
+    PrintSemesters - a function that prints the semesters found in parameter year.
+    
+SYNOPSIS
+
+    <View> findNextID(arr)
+        arr --> an array, of presumably objects, to determine the next ID for.
+
+DESCRIPTION
+
+    Iterate through every element within parameter arr. If the id in the current element in question is greater than the maxID,
+    then that is the new maxID. After all elements have been considered, the maxID + 1 will be returned, to ensure that the next
+    ID is different.
+
+RETURNS
+
+    Returns an int that represents the next id for a new object in the parameter arr.
+*/
 function PrintSemesters(year) {
     let child_key = 0;
     
