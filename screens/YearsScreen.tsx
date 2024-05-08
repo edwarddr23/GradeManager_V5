@@ -287,7 +287,10 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
             setYearGPA(calculateYearGPA(year));
             setExpectedYearGPA(calculateExpectedYearGPA(year));
         })
-    })
+        // The year's calculated and expected GPAs need to be calculated on rerender of YearView components too in the case that a semester is removed from the academic year in question.
+        setYearGPA(calculateYearGPA(year));
+        setExpectedYearGPA(calculateExpectedYearGPA(year));
+    }, [year])
 
     /*
     NAME
@@ -544,6 +547,10 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                             const new_semesters = semesters.filter((s) => s.id !== semester.id);
                             setSemesters(new_semesters);
                             updateSemestersInYear(year, new_semesters);
+                            // console.log(`deleteSemesterInYear(): calculateYearGPA(year): ${calculateYearGPA(year)}`);
+                            // console.log(`deleteSemesterInYear(): calculateExpectedYearGPA(year): ${calculateExpectedYearGPA(year)}`);
+                            // setYearGPA(calculateYearGPA(year))
+                            // setExpectedYearGPA(calculateExpectedYearGPA(year))
                         }
                         
                         return(
@@ -660,6 +667,10 @@ const YearsScreen = ({navigation}) => {
             setCumulativeGPA(calculateCumulativeGPA(years));
             setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
         })
+        // Calculated cumulative and expected cumulative GPAs must be updated on rerender in the case that a semester or academic year are removed on this screen.
+        console.log(`YearsScreen: UseEffect ran`);
+        setCumulativeGPA(calculateCumulativeGPA(years));
+        setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
         // if(isFocused){
         //     console.log(`useEffect(): This ran`);
         //     setCumulativeGPA(calculateCumulativeGPA(years));

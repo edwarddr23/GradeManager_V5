@@ -1,6 +1,6 @@
 /* 
     SemesterScreen.tsx
-    
+
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen
@@ -61,9 +61,6 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     // Hook that runs upon rerender.
     useEffect(() => {
         // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
-        // navigation.addListener('focus', () => {
-        //     setAssignments(section.assignments);
-        // })
         if(isFocused){
             setAssignments(section.assignments);
         }

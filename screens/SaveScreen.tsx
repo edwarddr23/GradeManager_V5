@@ -85,7 +85,7 @@ const SaveScreen = ({navigation}) => {
                 />
             </View>
             {/* Print the preview of data for the profile found in the profile context. */}
-            <ScrollView style={{paddingTop: '5%', flex: 1}}>
+            <ScrollView style={{flex: 1}}>
                 { PrintData(profile_context) }
             </ScrollView>
         </View>

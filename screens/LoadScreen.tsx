@@ -1,6 +1,6 @@
 /* 
     LoadScreen.tsx
-    
+
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen
@@ -15,7 +15,6 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { PrintData } from '../shared/profile_functions';
 import FlatButton from '../shared/custom_buttons';
 import { useProfileContext } from '../shared/profile_context';
-import { getAllSaveFileNames, importData } from '../shared/storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import common_style from '../shared/common_style';
 
@@ -62,7 +61,8 @@ const LoadScreen = ({navigation}) => {
     // Algorithm inspiration taken from https://stackoverflow.com/questions/68762079/why-is-this-async-function-infinite-looping.
     const getAllKeys = async() => {
         try{
-            setAll_keys(await AsyncStorage.getAllKeys());
+            // Key "__react_native_storage_test" always shows up when looking for all keys, which is not a profile_context object saved. Do not show it.
+            setAll_keys((await AsyncStorage.getAllKeys()).filter((key) => {if(key !== '__react_native_storage_test') return key}));
         }
         catch(error){
             console.error(`Error: ${error}`);
@@ -122,7 +122,7 @@ const LoadScreen = ({navigation}) => {
         storage.load({key: fileName})
             // If a file is found under fileName, modify the global profile_context to reflect this loaded profile if the user chooses to load it. Set state variable fileExists to true so that the profile preview and the load button can be rendered.
             .then((data) => {
-                console.log(`loading ${fileName}`)
+                console.log(`readFile(): loading ${fileName}`)
                 const profile = data.profile;
                 setProfile(profile);
                 profile_context.setProfile_name(profile.profile_name);
@@ -139,20 +139,6 @@ const LoadScreen = ({navigation}) => {
 
     return(
         <View style={styles.container}>
-            {/* The TextInput for the profile name to load and the TextView under it that tells the user to not put punctuation or an extension. */}
-            {/* <View style={{height: 70}}>
-                <TextInput
-                    style={styles.textInput}
-                    value={loadFileName}
-                    // As the text in the TextInput changes, change the fileName state variable for rerender handling, and read the file specified by the profile name entered.
-                    onChangeText={text => {
-                        setLoadFileName(text.trim());
-                        readFile(text.trim());
-                    }}
-                    placeholder='Enter profile name here'
-                />
-                <Text style={{textAlign: 'center'}}>Please do not put punctuation or an extension at the end.</Text>
-            </View> */}
             {/* SelectList that lets a user select a saved profile. */}
             <View>
                 <SelectList

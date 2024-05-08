@@ -1,6 +1,6 @@
 /* 
     calculation_functions.tsx
-    
+
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for calculated values that will be determined
@@ -632,5 +632,6 @@ export function calculateExpectedCumulativeGPA(years) {
     const valid_expected_year_gpas = expected_year_gpas.filter((e) => {
         if(e !== 'N/A') return e;
     });
+    console.log(`calculateExpectedCumulativeGPA(): valid_expected_year_gpas: ${valid_expected_year_gpas}`);
     return floatAverage(valid_expected_year_gpas);
 }

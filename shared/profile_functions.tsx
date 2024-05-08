@@ -50,7 +50,7 @@ function PrintClasses(semester) {
     return(
         <View>
             {semester.classes.map((c) => {
-                console.log(`PrintClasses(): c.letter_grading: ${c.letter_grading}`);
+                // console.log(`PrintClasses(): c.letter_grading: ${c.letter_grading}`);
                 child_key++;
                 return(
                     <View key={child_key}>
