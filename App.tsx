@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
-import type {PropsWithChildren} from 'react';
+/* 
+    App.tsx
+
+    PURPOSE
+
+        The purpose of this file is to define the starting point for the application. Most importantly, the profile 
+        context provider is defined here to provide the profile_context and its relevant functions to all of the children
+        (which are all of the other screen components, effectively making the profile context and its functions available
+        in the global scope).
+*/
+
+import React from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
   TouchableOpacity
 } from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
 import FlatButton from './shared/custom_buttons';
 
@@ -31,24 +29,26 @@ import CreateProfileScreen from './screens/CreateProfileScreen';
 import YearsScreen from './screens/YearsScreen';
 import SaveScreen from './screens/SaveScreen';
 import LoadScreen from './screens/LoadScreen';
-import { ProfileProvider, useProfileContext } from './shared/profile_context';
+import { ProfileProvider } from './shared/profile_context';
 import SectionScreen from './screens/SectionScreen';
 import SemesterScreen from './screens/SemesterScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
 import ConfigureLetterGradingScreen from './screens/ConfigureLetterGradingScreen';
 import common_style from './shared/common_style';
 
-const HeaderView = ({navigation, backButtonOnPress, titleView, hasSaveButton}) => {
+const HeaderView = ({navigation, backButtonOnPress, titleView, hasBackButton, hasSaveButton}) => {
   return(
     <View style={{width: '100%', backgroundColor: 'white', height: 65, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20}}>
       {/* Back button */}
-      <View style={{marginRight: 20}}>
-        <TouchableOpacity
-        activeOpacity={0.5}
-        onPress={backButtonOnPress}>
-          <AntDesign name="arrowleft" size={25} color='black'/>
-        </TouchableOpacity>
-      </View>
+      {hasBackButton && (
+        <View style={{marginRight: 20}}>
+          <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={backButtonOnPress}>
+            <AntDesign name="arrowleft" size={25} color='black'/>
+          </TouchableOpacity>
+        </View>
+      )}
       {/* Title */}
       <View style={{flex: 1}}>
         { titleView }
@@ -78,10 +78,43 @@ function App(): React.JSX.Element {
         <Stack.Navigator>
           <Stack.Screen
             name="Home"
-            component={HomeScreen}/>
+            component={HomeScreen}
+            options={({navigation}) => ({
+              header: () => (
+                <HeaderView
+                  navigation={navigation}
+                  hasBackButton={false}
+                  hasSaveButton={false}
+                  titleView={(
+                    <View>
+                      <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>Home</Text>
+                    </View>
+                  )}
+                />
+              )
+            })}
+          />
           <Stack.Screen
             name="Create Profile"
-            component={CreateProfileScreen}/>
+            component={CreateProfileScreen}
+            options={({navigation}) => ({
+              header: () => (
+                <HeaderView
+                  navigation={navigation}
+                  hasBackButton={true}
+                  backButtonOnPress={() => {
+                    navigation.goBack();
+                  }}
+                  hasSaveButton={false}
+                  titleView={(
+                    <View>
+                      <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>Home</Text>
+                    </View>
+                  )}
+                />
+              )
+            })}
+          />
           <Stack.Screen
             name="Years"
             component={YearsScreen}
@@ -89,8 +122,9 @@ function App(): React.JSX.Element {
               header: () => (
                 <HeaderView
                   navigation={navigation}
+                  hasBackButton={true}
                   backButtonOnPress={() => {
-                    navigation.navigate('Create Profile');
+                    navigation.goBack();
                   }}
                   titleView={(
                     <View>
@@ -100,17 +134,6 @@ function App(): React.JSX.Element {
                   hasSaveButton={true}
                 />
               )
-              // title: 'Academic Years',
-              // headerRight: () => (
-              //   <View style={{width: 100, height: 45}}>
-              //     <FlatButton
-              //       text="Save"
-              //       onPress={() => {
-              //         navigation.navigate("Save");
-              //       }}
-              //     />
-              //   </View>
-              // )
             })}/>
             <Stack.Screen
               name="Semester"
@@ -119,8 +142,9 @@ function App(): React.JSX.Element {
                 header: () => (
                   <HeaderView
                     navigation={navigation}
+                    hasBackButton={true}
                     backButtonOnPress={() => {
-                      navigation.navigate('Years');
+                      navigation.goBack();
                     }}
                     titleView={(
                       <View>
@@ -156,6 +180,7 @@ function App(): React.JSX.Element {
                 header: () => (
                   <HeaderView
                     navigation={navigation}
+                    hasBackButton={true}
                     backButtonOnPress={() => {
                       const { year, curr_class, total } = route.params;
                       if(total > 100){
@@ -187,6 +212,7 @@ function App(): React.JSX.Element {
                 header: () => (
                   <HeaderView
                     navigation={navigation}
+                    hasBackButton={true}
                     backButtonOnPress={() => {
                       const { semester, letter_grading } = route.params;
                       console.log(`Back button: letter_grading[0]: ${JSON.stringify(letter_grading[0])}`);
@@ -244,6 +270,7 @@ function App(): React.JSX.Element {
               header: () => (
                 <HeaderView
                   navigation={navigation}
+                  hasBackButton={true}
                   backButtonOnPress={() => {
                     const { semester } = route.params;
                     navigation.navigate('Semester', {semester: semester});
