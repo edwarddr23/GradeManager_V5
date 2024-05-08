@@ -1,6 +1,6 @@
 /* 
     ConfigureSectionsScreen.tsx
-    
+
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen
@@ -10,7 +10,7 @@
 */
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet, Keyboard } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet, Keyboard, BackHandler } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, SectionContent } from '../shared/profile_context';
 import Toast from 'react-native-simple-toast';
@@ -236,8 +236,20 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         return t;
     });
 
+    const handleBackButton = () => {
+        if(total > 100){
+            Toast.show(`The total weights cannot exceed 100% total: ${total}`, Toast.SHORT);
+        }
+        else{
+            navigation.goBack();
+        }
+        return true;
+    }
+
     // Hook that runs on rerender. On rerender or when state variable total changes, then put this total in the params as well as the current semester. These will be for the header in App.tsx.
     useEffect(() => {
+        const backhandler = BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+
         // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
         const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
             setKeyboard_showing(true);
@@ -287,6 +299,7 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         //         </View>
         //     )
         // });
+        return () => backhandler.remove();
     }, [total]);
 
     return(
