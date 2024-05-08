@@ -12,7 +12,7 @@ import { View, Text, ScrollView, TextInput, StyleSheet, Keyboard } from 'react-n
 
 import storage from '../shared/storage';
 import { SelectList } from 'react-native-dropdown-select-list';
-import { PrintData } from '../shared/profile_functions';
+import { PrintData } from '../shared/print_profile_data';
 import FlatButton from '../shared/custom_buttons';
 import { useProfileContext } from '../shared/profile_context';
 import AsyncStorage from '@react-native-async-storage/async-storage';

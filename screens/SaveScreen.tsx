@@ -14,7 +14,7 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { InputWithLabel } from '../shared/custom_text_Inputs';
 import FlatButton from '../shared/custom_buttons';
 import storage from '../shared/storage';
-import { PrintData } from '../shared/profile_functions';
+import { PrintData } from '../shared/print_profile_data';
 import { useProfileContext } from '../shared/profile_context';
 import Toast from 'react-native-simple-toast';
 

@@ -3,10 +3,7 @@
 
     PURPOSE
 
-        The purpose of this file is to define the logic and the global object that will be shared amongst all
-        the files in this project. This is what defines the global profile context that will be edited and
-        accessible from anywhere within the project. This is what is saved to the backend. Calculations using
-        the information in this global object will be defined here.
+        The purpose of this file is to define the logic 
 */
 
 import React from 'react'
@@ -62,10 +59,6 @@ function PrintClasses(semester) {
     return(
         <View>
             {semester.classes.map((c) => {
-                console.log(`PrintClasses(): c.sections: ${(JSON.stringify(c.sections))}`);
-                console.log(`PrintClasses(): c.letter_grading: ${(JSON.stringify(c.letter_grading))}`);
-                console.log(`PrintClasses(): calculateClassAverage(c.sections): ${calculateClassAverage(c.sections)}`);
-                console.log(`PrintClasses(): determineLetterGrade(c.letter_grading, calculateClassAverage(c.sections)): ${determineLetterGrade(c.letter_grading, calculateClassAverage(c.sections) * 100)}`);
                 child_key++;
                 return(
                     <View key={child_key}>
@@ -75,32 +68,13 @@ function PrintClasses(semester) {
                         {c.name === '' && (
                             <Text style={common_style.defaultText} key={child_key++}>{'\t'}New Class: {determineLetterGrade(c.letter_grading, calculateClassAverage(c.sections) * 100)}</Text>
                         )}
-                        {/* {PrintLetterGrading(c)} */}
                         {PrintSections(c)}
                     </View>
                 );
             })}
         </View>
     )
-    // return(<Text style={common_style.defaultText} style={common_style.defaultText}>Class here</Text>)
 }
-
-// function PrintLetterGrading(curr_class) {
-//     // console.log(`PrintLetterGrading(): curr_class.letter_grading:`);
-//     // {Object.keys(curr_class.letter_grading).map((key) => (
-//     //     console.log(`'\t\t\t' ${key}, ${curr_class.letter_grading[key][0]}% - ${curr_class.letter_grading[key][1]}%`)
-//     // ))}
-//     return(
-//         <View>
-//             <Text style={common_style.defaultText}>{'\t\t'}Letter Grading</Text>
-//             {curr_class.letter_grading.map((l) => {
-//                 return(
-//                     <Text style={common_style.defaultText}>{'\t\t\t' + l.letter}: {l.beg}-{l.end}</Text>
-//                 )
-//             })}
-//         </View>
-//     );
-// }
 
 function PrintSections(curr_class) {
     let child_key = 0;
