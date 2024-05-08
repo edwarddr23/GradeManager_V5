@@ -14,12 +14,14 @@ import { View, Text, FlatList, TouchableOpacity, TextInput, StyleSheet, Keyboard
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useProfileContext, SectionContent } from '../shared/profile_context';
 import Toast from 'react-native-simple-toast';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 
 import { findNextID } from '../shared/key_functions';
 import Footer from '../shared/custom_footer';
 import { validPositiveIntInputs } from '../shared/input_validation_functions';
 import common_style from '../shared/common_style';
 import { InputWithLabel } from '../shared/custom_text_Inputs';
+import { useForm } from 'antd/es/form/Form';
 
 /*
 NAME
@@ -236,20 +238,11 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         return t;
     });
 
-    const handleBackButton = () => {
-        if(total > 100){
-            Toast.show(`The total weights cannot exceed 100% total: ${total}`, Toast.SHORT);
-        }
-        else{
-            navigation.goBack();
-        }
-        return true;
-    }
+    // Hook that returns true if focused and false if not.
+    const isFocused = useIsFocused();
 
     // Hook that runs on rerender. On rerender or when state variable total changes, then put this total in the params as well as the current semester. These will be for the header in App.tsx.
     useEffect(() => {
-        const backhandler = BackHandler.addEventListener('hardwareBackPress', handleBackButton);
-
         // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
         const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
             setKeyboard_showing(true);
@@ -299,8 +292,81 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         //         </View>
         //     )
         // });
-        return () => backhandler.remove();
+        /*
+            NAME
+
+                    handleBackButton - a function component that handles the checking of the sections' relative weights when the user presses their hardware back button.
+                    
+            SYNOPSIS
+
+                    bool handleBackButton()
+
+            DESCRIPTION
+
+                    This function component will check to see if the sections' relative weights are greater than 100%. If they
+                    are, then send a toast and do not navigate back. Otherwise, navigate back.
+
+            RETURNS
+
+                    Returns true to prevent default back button behavior.
+            */
+            const handleBackButton = () => {
+                // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
+                if(isFocused){
+                    if(total > 100){
+                        Toast.show(`The total weights cannot exceed 100% total: ${total}`, Toast.SHORT);
+                    }
+                    else{
+                        navigation.goBack();
+                    }
+                    return true;
+                }
+                return false;
+            }
+            const backhandler = BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+            return () => backhandler.remove();
     }, [total]);
+    
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         /*
+    //         NAME
+
+    //                 handleBackButton - a function component that handles the checking of the sections' relative weights when the user presses their hardware back button.
+                    
+    //         SYNOPSIS
+
+    //                 bool handleBackButton()
+
+    //         DESCRIPTION
+
+    //                 This function component will check to see if the sections' relative weights are greater than 100%. If they
+    //                 are, then send a toast and do not navigate back. Otherwise, navigate back.
+
+    //         RETURNS
+
+    //                 Returns true to prevent default back button behavior.
+    //         */
+    //         const handleBackButton = () => {
+    //             console.log(`handleBackButton(): This ran.`);
+    //             // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
+    //             if(isFocused){
+    //                 console.log(`handleBackButton(): In ConfigureSectionsScreen.`);
+    //                 if(total > 100){
+    //                     Toast.show(`The total weights cannot exceed 100% total: ${total}`, Toast.SHORT);
+    //                 }
+    //                 else{
+    //                     navigation.goBack();
+    //                 }
+    //                 return true;
+    //             }
+    //             console.log(`handleBackButton(): Outside of ConfigureSectionsScreen.`);
+    //             return false;
+    //         }
+    //         const backhandler = BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+    //         return () => backhandler.remove();
+    //     }, [isFocused])
+    // )
 
     return(
         // The programmatically set view that displays existing sections and allows users to add sections.
