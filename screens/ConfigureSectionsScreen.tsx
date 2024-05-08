@@ -250,49 +250,9 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
-        // sections.map((s) => {
-        //     if(s.weight != -1 && s.weight != undefined){
-        //         total += parseInt(parseFloat(s.weight) * 100);
-        //     }
-        // });
         route.params.total = total;
-        // console.log(`useEffect: total: ${total}`);
         route.params.semester = profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id);
-        // let class_name;
-        // if(curr_class.name === ''){
-        //     class_name = 'New Class';
-        // }
-        // else{
-        //     class_name = curr_class.name;
-        // }
-        // navigation.setOptions({
-        //     title: `Sections in ${class_name}`,
-        //     headerLeft: () => (
-        //         <View style={{marginRight: 20}}>
-        //             <TouchableOpacity
-        //             activeOpacity={0.5}
-        //             onPress={() => {
-        //                 const { year, curr_class } = route.params;
-        //                 let total = 0;
-        //                 sections.map((s) => {
-        //                     if(s.weight != -1 && s.weight != undefined){
-        //                         total += parseInt(parseFloat(s.weight) * 100);
-        //                     }
-        //                 });
-        //                 // console.log(`useEffect(): total: ${total}`);
-        //                 if(total > 100){
-        //                     Toast.show('The total weights cannot exceed 100%', Toast.SHORT);
-        //                 }
-        //                 else{
-        //                     navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
-        //                 }
-        //             }}>
-        //             <AntDesign name="arrowleft" size={25} color='black'/>
-        //             </TouchableOpacity>
-        //         </View>
-        //     )
-        // });
-        /*
+            /*
             NAME
 
                     handleBackButton - a function component that handles the checking of the sections' relative weights when the user presses their hardware back button.
@@ -326,47 +286,6 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
             const backhandler = BackHandler.addEventListener('hardwareBackPress', handleBackButton);
             return () => backhandler.remove();
     }, [total]);
-    
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //         /*
-    //         NAME
-
-    //                 handleBackButton - a function component that handles the checking of the sections' relative weights when the user presses their hardware back button.
-                    
-    //         SYNOPSIS
-
-    //                 bool handleBackButton()
-
-    //         DESCRIPTION
-
-    //                 This function component will check to see if the sections' relative weights are greater than 100%. If they
-    //                 are, then send a toast and do not navigate back. Otherwise, navigate back.
-
-    //         RETURNS
-
-    //                 Returns true to prevent default back button behavior.
-    //         */
-    //         const handleBackButton = () => {
-    //             console.log(`handleBackButton(): This ran.`);
-    //             // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
-    //             if(isFocused){
-    //                 console.log(`handleBackButton(): In ConfigureSectionsScreen.`);
-    //                 if(total > 100){
-    //                     Toast.show(`The total weights cannot exceed 100% total: ${total}`, Toast.SHORT);
-    //                 }
-    //                 else{
-    //                     navigation.goBack();
-    //                 }
-    //                 return true;
-    //             }
-    //             console.log(`handleBackButton(): Outside of ConfigureSectionsScreen.`);
-    //             return false;
-    //         }
-    //         const backhandler = BackHandler.addEventListener('hardwareBackPress', handleBackButton);
-    //         return () => backhandler.remove();
-    //     }, [isFocused])
-    // )
 
     return(
         // The programmatically set view that displays existing sections and allows users to add sections.
