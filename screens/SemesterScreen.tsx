@@ -27,6 +27,7 @@ import { InputWithLabel } from '../shared/custom_text_Inputs';
 NAME
 
     SectionView - a dynamic component that allows the viewing and editing of a section from a given class.
+
 SYNOPSIS
 
     <View> SectionView({semester, section, curr_class, navigation})
@@ -274,14 +275,6 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
             {/* Editing state of section. */}
             {is_editing && (
                 <View style={{flexDirection: 'row'}}>
-                    {/* <TextInput
-                        style={styles.inputText}
-                        value={name}
-                        placeholder="Name"
-                        onChangeText={text => {
-                            setName(text);
-                        }}
-                    /> */}
                     <InputWithLabel
                         style={{flex: 1}}
                         textStyle={styles.inputText}
@@ -295,10 +288,6 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
                         style={{marginLeft: 'auto', alignSelf: 'center'}}
                         onPress={() => {
                             // If the name entered is currently empty, then do not let the user enter exit the editing state and notify them that they need to enter a name.
-                            // if(name.trim() === ''){
-                            //     Toast.show('Please enter name', Toast.SHORT);
-                            //     return;
-                            // }
                             // Otherwise, then trim the name entered and change the name in state and in the global profile context.
                             setName(name.trim());
                             const new_section = {
@@ -321,6 +310,7 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
 NAME
 
     ClassView - a dynamic component that allows the viewing and editing of a given class within a semester.
+
 SYNOPSIS
 
     <View> ClassView = ({semester, curr_class, deleteClass, navigation})
@@ -355,13 +345,9 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     const isFocused = useIsFocused();
 
     useEffect(() => {
-        // navigation.addListener('focus', () => {
-        //     setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-        // })
         if(isFocused){
             setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
         }
-        // setLetter_grading(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).letter_grading);
     }, [sections])
 
     /*
@@ -420,6 +406,7 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
 
     // State variables that handle the expanding and collapsing of the letter grading view.
     const[grading_expanded, setGrading_expanded] = useState(false);
+    
     /*
     NAME
 
@@ -677,26 +664,7 @@ const SemesterScreen = ({navigation, route}) => {
     // Keyboard state flag that will help in tracking whether the keyboard is up or not.
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
-    // Hook that returns true if focused and false if not.
-    // const isFocused = useIsFocused();
-
     useEffect(() => {
-        // setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
-        // navigation.setOptions({
-        //     title: `${semester.season} ${semester.year}`,
-        //     headerLeft: () => (
-        //         <View style={{marginRight: 20}}>
-        //             <TouchableOpacity
-        //             activeOpacity={0.5}
-        //             onPress={() => {
-        //                 console.log('SemesterScreen.tsx: CUSTOM BACK BUTTON');
-        //                 navigation.navigate('Years', {fromClassScreen: true});
-        //             }}>
-        //             <AntDesign name="arrowleft" size={25} color='black'/>
-        //             </TouchableOpacity>
-        //         </View>
-        //     )
-        // })
         // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
         const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
             setKeyboard_showing(true);
@@ -704,9 +672,6 @@ const SemesterScreen = ({navigation, route}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
-        // if(isFocused){
-        //     setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
-        // }
     }, [classes]);
 
     /*

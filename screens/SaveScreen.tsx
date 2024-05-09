@@ -9,7 +9,6 @@
 
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-// import RNFS from 'react-native-fs';
 
 import { InputWithLabel } from '../shared/custom_text_Inputs';
 import FlatButton from '../shared/custom_buttons';
@@ -21,21 +20,24 @@ import Toast from 'react-native-simple-toast';
 /*
 NAME
 
-        SaveScreen - a component that handles the UI elements and functionalities associated with the screen responsible for saving a profile to a file.
+    SaveScreen - a component that handles the UI elements and functionalities associated with the screen responsible for saving a profile to a file.
+
 SYNOPSIS
 
-        <View> SaveScreen({navigation})
-            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+    <View> SaveScreen({navigation})
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+
 DESCRIPTION
 
-        A user enters a filename to save the current profile context into. After pressing the "Save to File" button,
-        the global profile_context object is saved into storage using my storage.js wrapper with the save filename
-        as the key. The current profile_context name in question will be changed to this new save filename entered
-        so that the profile name and the save filename both match. This is to reduce confusion.
+    A user enters a filename to save the current profile context into. After pressing the "Save to File" button,
+    the global profile_context object is saved into storage using my storage.js wrapper with the save filename
+    as the key. The current profile_context name in question will be changed to this new save filename entered
+    so that the profile name and the save filename both match. This is to reduce confusion.
+
 RETURNS
 
-        Returns View that has a TextInput, a button to save to the file specified, and a preview of the profile data
-        so far (which is in the global profile_context object).
+    Returns View that has a TextInput, a button to save to the file specified, and a preview of the profile data
+    so far (which is in the global profile_context object).
 */
 const SaveScreen = ({navigation}) => {
     // The global profile_context object is extracted from the profile context so that it can be saved to a file.
@@ -79,7 +81,6 @@ const SaveScreen = ({navigation}) => {
                             },
                             expires: null
                         });
-                        console.log('SaveScreen.tsx: saveToFileHandler(): Save successful?');
                         navigation.goBack();
                     }}
                 />

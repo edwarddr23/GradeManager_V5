@@ -21,28 +21,27 @@ import Footer from '../shared/custom_footer';
 import { validPositiveIntInputs } from '../shared/input_validation_functions';
 import common_style from '../shared/common_style';
 import { InputWithLabel } from '../shared/custom_text_Inputs';
-import { useForm } from 'antd/es/form/Form';
 
 /*
 NAME
 
-        SectionView - a component that represents a section object within a class object.
+    SectionView - a component that represents a section object within a class object.
         
 SYNOPSIS
 
-        <View> ConfigureLetterGradingScreen({Object section, Object route})
-            section --> the object representing the current section to represent.
-            deleteSection --> a function that mutates the parent component's sections state array and the sections array in the profile context to reflect the deletion of a sections object.
+    <View> ConfigureLetterGradingScreen({Object section, Object route})
+        section --> the object representing the current section to represent.
+        deleteSection --> a function that mutates the parent component's sections state array and the sections array in the profile context to reflect the deletion of a sections object.
 
 DESCRIPTION
 
-        This component will return a View representing a certain section. A section's name and relative weight could be defined, and can also be removed entirely if the delete button is pressed.
+    This component will return a View representing a certain section. A section's name and relative weight could be defined, and can also be removed entirely if the delete button is pressed.
 
 RETURNS
 
-        Returns a View that displays the section object's name and relative weight
-        depending on whether the is_editing state variable is true or false (this variable, which,
-        will change depending on whether the user pressed the editing button or the done button).
+    Returns a View that displays the section object's name and relative weight
+    depending on whether the is_editing state variable is true or false (this variable, which,
+    will change depending on whether the user pressed the editing button or the done button).
 */
 const SectionView = ({updateTotal, section, deleteSection}) => {
     const { updateSectionInProfile } = useProfileContext();
@@ -83,14 +82,6 @@ const SectionView = ({updateTotal, section, deleteSection}) => {
                 <View style={{alignItems: 'center', gap: 15}}>
                     <View style={{flexDirection: 'row'}}>
                         {/* TextInputs that allow for the editing of the section name and weight. */}
-                        {/* <TextInput
-                            style={styles.inputText}
-                            value={name}
-                            placeholder="Name"
-                            onChangeText={text => {
-                                setName(text);
-                            }}
-                        /> */}
                         <InputWithLabel
                             textStyle={styles.inputText}
                             value={name}
@@ -98,15 +89,6 @@ const SectionView = ({updateTotal, section, deleteSection}) => {
                             placeholder='Name'
                             hasLabel={false}
                         />
-                        {/* <TextInput
-                            style={styles.inputText}
-                            value={weight}
-                            placeholder="Weight"
-                            onChangeText={text => {
-                                setWeight(text);
-                            }}
-                            keyboardType='numeric'
-                        /> */}
                         <InputWithLabel
                             textStyle={styles.inputText}
                             value={weight}
@@ -121,25 +103,25 @@ const SectionView = ({updateTotal, section, deleteSection}) => {
                                 /*
                                 NAME
 
-                                        validInputs - a function that validates the inputs for a section modification.
+                                    validInputs - a function that validates the inputs for a section modification.
                                         
                                 SYNOPSIS
 
-                                        bool validInputs()
+                                    bool validInputs()
                                         
                                 DESCRIPTION
 
-                                        Each of the inputs will go through their own validation. If the name is empty or pure whitespace,
-                                        or if the weight is not a positive integer or is greater than 100, then the inputs are not valid.
-                                        If the inputs are not valid, then the state of the View returned by SectionView will not change to
-                                        its viewing state and will remain in its editing state. The profile context will also not be updated,
-                                        as we do not want to save an improper section object. If the input is valid, however, the state and the
-                                        profile context will be updated and the state of the View returned by SectionView will change to its
-                                        viewing state.
+                                    Each of the inputs will go through their own validation. If the name is empty or pure whitespace,
+                                    or if the weight is not a positive integer or is greater than 100, then the inputs are not valid.
+                                    If the inputs are not valid, then the state of the View returned by SectionView will not change to
+                                    its viewing state and will remain in its editing state. The profile context will also not be updated,
+                                    as we do not want to save an improper section object. If the input is valid, however, the state and the
+                                    profile context will be updated and the state of the View returned by SectionView will change to its
+                                    viewing state.
                                         
                                 RETURNS
 
-                                        This function will return a boolean. If the inputs fail any of the tests, return false. Otherwise, the input must be true, so return true.
+                                    This function will return a boolean. If the inputs fail any of the tests, return false. Otherwise, the input must be true, so return true.
                                 */
                                 function validInputs() {
                                     // Check if name is empty.
@@ -198,23 +180,23 @@ const SectionView = ({updateTotal, section, deleteSection}) => {
 /*
 NAME
 
-        ConfigureSectionsScreen - a component that represents the screen that handles the configuration of a class's sections.
+    ConfigureSectionsScreen - a component that represents the screen that handles the configuration of a class's sections.
         
 SYNOPSIS
 
-        <View> ConfigureLetterGradingScreen({Object navigation, Object route})
-            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
-            route --> the route object also inherited from the NavigationContainer.
+    <View> ConfigureLetterGradingScreen({Object navigation, Object route})
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+        route --> the route object also inherited from the NavigationContainer.
 
 DESCRIPTION
 
-        This component allows sections of the current class in question to be viewed, and new sections can be added. Section names and relative weights for each section can be changed.
+    This component allows sections of the current class in question to be viewed, and new sections can be added. Section names and relative weights for each section can be changed.
 
 RETURNS
 
-        Returns a View that displays the section object's name and relative weight
-        depending on whether the is_editing state variable is true or false (this variable, which,
-        will change depending on whether the user pressed the editing button or the done button).
+    Returns a View that displays the section object's name and relative weight
+    depending on whether the is_editing state variable is true or false (this variable, which,
+    will change depending on whether the user pressed the editing button or the done button).
 */
 const ConfigureSectionsScreen = ({navigation, route}) => {
     const { profile_context, addSectionToProfile, updateClassSectionsInProfile } = useProfileContext();
@@ -255,20 +237,20 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
         /*
         NAME
 
-                handleBackButton - a function component that handles the checking of the sections' relative weights when the user presses their hardware back button.
+            handleBackButton - a function component that handles the checking of the sections' relative weights when the user presses their hardware back button.
                 
         SYNOPSIS
 
-                bool handleBackButton()
+            bool handleBackButton()
 
         DESCRIPTION
 
-                This function component will check to see if the sections' relative weights are greater than 100%. If they
-                are, then send a toast and do not navigate back. Otherwise, navigate back.
+            This function component will check to see if the sections' relative weights are greater than 100%. If they
+            are, then send a toast and do not navigate back. Otherwise, navigate back.
 
         RETURNS
 
-                Returns true to prevent default back button behavior.
+            Returns true to prevent default back button behavior.
         */
         const handleBackButton = () => {
             // Listener that runs when the ConfigureSectionsScreen is in focus. This check prevents this handler being run on other screens.
@@ -341,17 +323,19 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                             /*
                             NAME
 
-                                    deleteSectionFromClass - a function that handles the deletion of a section in the state and global profile context.
+                                deleteSectionFromClass - a function that handles the deletion of a section in the state and global profile context.
                             SYNOPSIS
 
-                                    void ConfigureLetterGradingScreen(Object section)
-                                        section --> a section object that represents the section to remove from the sections in state and sections in the global profile context.           
+                                void ConfigureLetterGradingScreen(Object section)
+                                    section --> a section object that represents the section to remove from the sections in state and sections in the global profile context.           
+                            
                             DESCRIPTION
 
-                                    This function allows for the handling of deleting a section from a class after the event that the user presses the delete button on a given section. A new section array is created that is based on the old one, but without the section that matches parameter section. The respective sections array is updated in the state and in the global profile context to instead use this new sections list.
+                                This function allows for the handling of deleting a section from a class after the event that the user presses the delete button on a given section. A new section array is created that is based on the old one, but without the section that matches parameter section. The respective sections array is updated in the state and in the global profile context to instead use this new sections list.
+                            
                             RETURNS
 
-                                    Returns void.
+                                Returns void.
                             */
                             function deleteSectionFromClass() {
                                 const new_sections = sections.filter((s) => s.id !== section.item.id);
@@ -362,17 +346,20 @@ const ConfigureSectionsScreen = ({navigation, route}) => {
                             /*
                             NAME
 
-                                    updateTotal - a function that handles the updating of the state total variable after a section object is modified.
+                                updateTotal - a function that handles the updating of the state total variable after a section object is modified.
+                            
                             SYNOPSIS
 
-                                    void updateTotal(new_section)
-                                        new_section --> a section object that represents the section in question that the user has finished editing (presumed to have valid values).
+                                void updateTotal(new_section)
+                                    new_section --> a section object that represents the section in question that the user has finished editing (presumed to have valid values).
+                            
                             DESCRIPTION
 
-                                    This function updates the total state variable after a section is updated. A new sections list is created to reflect the changed section which is now parameter new_section. A new total is calculated with this new sections array and this value is saved to the total state variable. This will be used in validating the total of the sections' weights after the back button in the header of the screen is pressed.
+                                This function updates the total state variable after a section is updated. A new sections list is created to reflect the changed section which is now parameter new_section. A new total is calculated with this new sections array and this value is saved to the total state variable. This will be used in validating the total of the sections' weights after the back button in the header of the screen is pressed.
+                            
                             RETURNS
 
-                                    Returns void.
+                                Returns void.
                             */
                             function updateTotal(new_section) {
                                 const new_sections = sections.map((s) => {

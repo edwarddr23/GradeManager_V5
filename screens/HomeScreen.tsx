@@ -1,6 +1,6 @@
 /* 
     HomeScreen.tsx
-    
+
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen
@@ -17,17 +17,20 @@ import commonStyle from '../shared/common_style';
 /*
 NAME
 
-        HomeScreen - a component that handles the home screen functionality.
+    HomeScreen - a component that handles the home screen functionality.
+
 SYNOPSIS
 
-        <View> HomeScreen({navigation})
-            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+    <View> HomeScreen({navigation})
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+
 DESCRIPTION
 
-        This component returns a View that displays the title text and the buttons that navigate to the CreateProfileScreen and LoadScreen.
+    This component returns a View that displays the title text and the buttons that navigate to the CreateProfileScreen and LoadScreen.
+
 RETURNS
 
-        Returns a View component.
+    Returns a View component.
 */
 const HomeScreen = ({navigation}) => {
     return(

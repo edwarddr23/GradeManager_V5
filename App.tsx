@@ -262,9 +262,6 @@ function App(): React.JSX.Element {
                   hasBackButton={true}
                   backButtonOnPress={() => {
                     navigation.goBack();
-                    // const { semester } = route.params;
-                    // navigation.navigate('Semester', {semester: semester});
-                    // navigation.navigate('Semester', {semester: semester});
                   }}
                   titleView={(
                     <View>

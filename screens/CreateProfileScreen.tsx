@@ -1,6 +1,6 @@
 /* 
     CreateProfileScreen.tsx
-    
+
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen
@@ -19,17 +19,17 @@ import { useProfileContext } from '../shared/profile_context';
 /*
 NAME
 
-        CreateProfileScreen - a component that displays and manages the screen which is responsible for the creation of a new profile object.
+    CreateProfileScreen - a component that displays and manages the screen which is responsible for the creation of a new profile object.
 SYNOPSIS
 
-        <View> updateTotal({navigation})
-            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+    <View> updateTotal({navigation})
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
 DESCRIPTION
 
-        This component returns a View that lets the user enter a new profile using a TextInput to enter a profile name. Once the user presses the "Create Profile" button, the profile context is set to an empty profile (empty years array) with the profile name set by the user.
+    This component returns a View that lets the user enter a new profile using a TextInput to enter a profile name. Once the user presses the "Create Profile" button, the profile context is set to an empty profile (empty years array) with the profile name set by the user.
 RETURNS
 
-        Returns a View component that displays the screen's components (the TextInput for the profile name and the "Create Profile" button).
+    Returns a View component that displays the screen's components (the TextInput for the profile name and the "Create Profile" button).
 */
 const CreateProfileScreen = ({navigation}) => {
     // profile_context extracted for profile initialization when the user presses the "Create Profile" button.

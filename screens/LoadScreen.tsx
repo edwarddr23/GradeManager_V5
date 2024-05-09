@@ -7,8 +7,8 @@
         responsible for loading a profile from a profile name.
 */
 
-import React, { useCallback, useEffect, useState } from 'react'
-import { View, Text, ScrollView, TextInput, StyleSheet, Keyboard } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Text, ScrollView, StyleSheet, Keyboard } from 'react-native'
 
 import storage from '../shared/storage';
 import { SelectList } from 'react-native-dropdown-select-list';
@@ -21,23 +21,25 @@ import common_style from '../shared/common_style';
 /*
 NAME
 
-        LoadScreen - a component that handles the load screen functionality.
+    LoadScreen - a component that handles the load screen functionality.
+
 SYNOPSIS
 
-        <View> LoadScreen({navigation})
-            navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+    <View> LoadScreen({navigation})
+        navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
+
 DESCRIPTION
 
-        This component renders the TextInput for the profile name to load, the profile information, 
-        and the button to load the profile in question if a profile with that name is found.
+    This component renders the TextInput for the profile name to load, the profile information, 
+    and the button to load the profile in question if a profile with that name is found.
+
 RETURNS
 
-        Returns a View component that holds a SelectList, a View that holds a preview for the profile, and a "load file" button.
+    Returns a View component that holds a SelectList, a View that holds a preview for the profile, and a "load file" button.
 */
 const LoadScreen = ({navigation}) => {
     const { profile_context } = useProfileContext();
     // State variables to keep track of the profile name to load and whether to allow the printing and loading of a profile if one is found.
-    // const[loadFileName, setLoadFileName] = useState('');
     const[fileExists, setFileExists] = useState(false);
     const[profile, setProfile] = useState({});
     const[selected, setSelected] = useState();
@@ -45,18 +47,20 @@ const LoadScreen = ({navigation}) => {
     /*
     NAME
 
-            getAllKeys - an async function that gets all of the saved profiles under a file name (key).
+        getAllKeys - an async function that gets all of the saved profiles under a file name (key).
+    
     SYNOPSIS
 
-            void getAllKeys()
+        void getAllKeys()
                 
     DESCRIPTION
 
-            This function is a promise that calls the AsyncStorage getAllKeys() function to get all of the filenames, as I saved all of the filenames as the key. This function
-            is called in the useEffect hook to avoid running this promise function as an infinite loop.
+        This function is a promise that calls the AsyncStorage getAllKeys() function to get all of the filenames, as I saved all of the filenames as the key. This function
+        is called in the useEffect hook to avoid running this promise function as an infinite loop.
+    
     RETURNS
 
-            Returns a View component.
+        Returns a View component.
     */
     // Algorithm inspiration taken from https://stackoverflow.com/questions/68762079/why-is-this-async-function-infinite-looping.
     const getAllKeys = async() => {
@@ -84,33 +88,30 @@ const LoadScreen = ({navigation}) => {
         navigation.addListener('focus', () => {
             getAllKeys();
         })
-        // const getAll = async() => {
-        //     return (await AsyncStorage.getAllKeys((values) => useCallback(values)));
-        // }
-        // console.log(`useEffect(): getAllSaveFileNames(): ${JSON.stringify(getAllSaveFileNames(setAll_keys))}`);
-        
-        // console.log(`useEffect(): all_keys: ${all_keys}`)
     }, []);
 
     /*
     NAME
 
-            readFile - a function that handles the search for a profile under the name specified by parameter fileName.
+        readFile - a function that handles the search for a profile under the name specified by parameter fileName.
+    
     SYNOPSIS
 
-            void readFile(fileName)
-                fileName --> a string that represents the filename entered from the TextInput on this screen.
+        void readFile(fileName)
+            fileName --> a string that represents the filename entered from the TextInput on this screen.
+    
     DESCRIPTION
 
-            If the fileName passed as a parameter is an empty string, then set the state fileExists variable to false to 
-            avoid unexpected behavior. The filename must be passed as a parameter and cannot use the state variable as the 
-            state variable is only updated after a rerender, when we want to read the file as it is entered (in other words,
-            before a rerender). Once the fileName parameter entered is not empty, then attempt to load a profile in storage
-            under the key name fileName. If a profile is found, set the profile variable in state to the data found. Edit the
-            global profile_context object to now hold the data that was found in the file loaded.
+        If the fileName passed as a parameter is an empty string, then set the state fileExists variable to false to 
+        avoid unexpected behavior. The filename must be passed as a parameter and cannot use the state variable as the 
+        state variable is only updated after a rerender, when we want to read the file as it is entered (in other words,
+        before a rerender). Once the fileName parameter entered is not empty, then attempt to load a profile in storage
+        under the key name fileName. If a profile is found, set the profile variable in state to the data found. Edit the
+        global profile_context object to now hold the data that was found in the file loaded.
+    
     RETURNS
 
-            Returns void.
+        Returns void.
     */
     // Inspired by https://www.waldo.com/blog/react-native-fs
     function readFile(fileName) {
@@ -179,7 +180,6 @@ const LoadScreen = ({navigation}) => {
                     <FlatButton 
                         text={'Load \"' +  selected + '\"'}
                         onPress={() => {
-                            // console.log('renderLoadProfileButton(): profile:', profile);
                             navigation.navigate('Years', {profile: profile});
                         }}
                     />

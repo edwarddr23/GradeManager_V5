@@ -215,7 +215,7 @@ const SemesterView = ({ years_range, semester, updateSemesters, deleteSemester, 
                     }
                     // Update semester object in state.
                     updateSemesters(updated_semester);
-                    // update semester object in global profile object.
+                    // Update semester object in global profile object.
                     updateSemesterInProfile(updated_semester);
                     setIs_editing(!is_editing);
                 }}>
@@ -547,10 +547,6 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                             const new_semesters = semesters.filter((s) => s.id !== semester.id);
                             setSemesters(new_semesters);
                             updateSemestersInYear(year, new_semesters);
-                            // console.log(`deleteSemesterInYear(): calculateYearGPA(year): ${calculateYearGPA(year)}`);
-                            // console.log(`deleteSemesterInYear(): calculateExpectedYearGPA(year): ${calculateExpectedYearGPA(year)}`);
-                            // setYearGPA(calculateYearGPA(year))
-                            // setExpectedYearGPA(calculateExpectedYearGPA(year))
                         }
                         
                         return(
@@ -620,8 +616,6 @@ const YearsScreen = ({navigation}) => {
     const[cumulativeGPA, setCumulativeGPA] = useState(calculateCumulativeGPA(years));
     const[expectedCumulativeGPA, setExpectedCumulativeGPA] = useState(calculateExpectedCumulativeGPA(years));
 
-    const isFocused = useIsFocused();
-
     // Hook that handles the tracking of the keyboard on rerender and rerendering of the calculated cumulative gpa and expected cumulative gpa for the current semester in question when the YearsScreen comes back into focus.
     useEffect(() => {
         // Keyboard listening to update keyboard_showing state. keyboard_state is used to indicate whether to hide certain views when keyboard is activated. Model taken from https://reactnative.dev/docs/keyboard.
@@ -633,49 +627,12 @@ const YearsScreen = ({navigation}) => {
         })
         // Navigation listener that rerenders the years, calculated cumulative gpa, and expected cumulative gpa when the user navigates back to YearsScreen.
         navigation.addListener('focus', () => {
-            // function floatAverage(arr) {
-            //     let total = 0;
-            //     arr.forEach((a) => {
-            //         total += parseFloat(a);
-            //     });
-            //     // console.log(`floatAverage(): total / arr.length: ${total / arr.length}`);
-            //     return (total / arr.length).toFixed(2);
-            // }
-            // let yearGPAS = [];
-            // for(let year of years){
-            //     yearGPAS.push(calculateYearGPA(year))
-            // }
-            // console.log(`yearGPAS: ${yearGPAS}`);
-            // console.log(`floatAverage(yearGPAS): ${floatAverage(yearGPAS)}`);
-            // setCumulativeGPA(floatAverage(yearGPAS))
-
-            // setCumulativeGPA(() => {
-            //     if(years.length === 0) return 'N/A';
-
-            //     let year_gpas = [];
-            //     years.forEach((y) => {
-            //         console.log(`calculateCumulativeGPA(): calculateYearGPA(y): ${calculateYearGPA(y)}`);
-            //         year_gpas.push(calculateYearGPA(y));
-            //     })
-            //     const valid_year_gpas = year_gpas.filter((y) => {
-            //         if(y !== 'N/A') return y;
-            //     });
-            //     console.log(`calculateCumulativeGPA(): valid_year_gpas: ${valid_year_gpas}`);
-            //     if(valid_year_gpas.length === 0) return 'N/A';
-            //     return floatAverage(valid_year_gpas);
-            // })
             setCumulativeGPA(calculateCumulativeGPA(years));
             setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
         })
         // Calculated cumulative and expected cumulative GPAs must be updated on rerender in the case that a semester or academic year are removed on this screen.
-        console.log(`YearsScreen: UseEffect ran`);
         setCumulativeGPA(calculateCumulativeGPA(years));
         setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
-        // if(isFocused){
-        //     console.log(`useEffect(): This ran`);
-        //     setCumulativeGPA(calculateCumulativeGPA(years));
-        //     setExpectedCumulativeGPA(calculateExpectedCumulativeGPA(years));
-        // }
     }, [years]);
 
     /*

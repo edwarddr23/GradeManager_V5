@@ -1,6 +1,6 @@
 /* 
     SectionScreen.tsx
-    
+
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen
@@ -23,19 +23,22 @@ import { InputWithLabel } from '../shared/custom_text_Inputs';
 /*
 NAME
 
-        AssignmentView - a dynamic component that allows the viewing and editing of an assignment of a given class.
+    AssignmentView - a dynamic component that allows the viewing and editing of an assignment of a given class.
+
 SYNOPSIS
 
-        <View> AssignmentView({assignment})
-            assignment --> the assignment object in question to display and edit.
+    <View> AssignmentView({assignment})
+        assignment --> the assignment object in question to display and edit.
+
 DESCRIPTION
 
-        This component has two states: viewing and editing. In the viewing state, the user can view the assignment's
-        name and its grade. In its editing state is a textInput for the assignment name and a SelectList with an
-        accompanying TextInput(s) for the numerator and denominator. The grade could be of type Percentage or Ratio.
-        If it is a percentage, the denominator will be 100%, and the numerator has to be a positive integer. If it is
-        a ratio, the numerator and the donominator have to be positive integers where the numerator has to be less than
-        or equall to the denominator.
+    This component has two states: viewing and editing. In the viewing state, the user can view the assignment's
+    name and its grade. In its editing state is a textInput for the assignment name and a SelectList with an
+    accompanying TextInput(s) for the numerator and denominator. The grade could be of type Percentage or Ratio.
+    If it is a percentage, the denominator will be 100%, and the numerator has to be a positive integer. If it is
+    a ratio, the numerator and the donominator have to be positive integers where the numerator has to be less than
+    or equall to the denominator.
+
 RETURNS
 
         Returns a dynamic View with a viewing and editing state for a given assignment.
@@ -53,21 +56,23 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
     /*
     NAME
 
-            validInput - a function that validates the input for an assignment.
+        validInput - a function that validates the input for an assignment.
+    
     SYNOPSIS
 
-            bool validInput()
+        bool validInput()
                
     DESCRIPTION
 
-            The name, numerator, and denominator will be validated. The name will be validated based on
-            whether it is an empty string or not after trailing whitespace is taken out. We do not want
-            to validate a name that is only whitespace. Then, if the type selected is "Percentage", then
-            we will check if a numerator was entered and if it is a positive integer. When the type selected
-            is "Ratio", we will validate both the numerator and the denominator the same way.
+        The name, numerator, and denominator will be validated. The name will be validated based on
+        whether it is an empty string or not after trailing whitespace is taken out. We do not want
+        to validate a name that is only whitespace. Then, if the type selected is "Percentage", then
+        we will check if a numerator was entered and if it is a positive integer. When the type selected
+        is "Ratio", we will validate both the numerator and the denominator the same way.
+    
     RETURNS
 
-            Returns a boolean that returns true if the input is valid and false if it is invalid.
+        Returns a boolean that returns true if the input is valid and false if it is invalid.
     */
     const validInput = () => {
         if(name.trim() === ''){
@@ -173,14 +178,6 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
             <View style={styles.assignmentStyle}>
                 <View style={{flexDirection: 'row', marginVertical: 10}}>
                     {/* TextInput that changes the name of an assignment in question. */}
-                    {/* <TextInput
-                        style={styles.inputText}
-                        value={name}
-                        placeholder="Name"
-                        onChangeText={(text) => {
-                            setName(text);
-                        }}
-                    /> */}
                     <InputWithLabel
                         style={{flex: 1}}
                         textStyle={styles.inputText}
@@ -240,13 +237,6 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
                     {type !== '' && (
                         // TextInput for numerator of an assignment.
                         <View style={{flexDirection: 'row'}}>
-                            {/* <TextInput
-                                style={styles.inputText}
-                                value={numerator}
-                                onChangeText={(text) => {
-                                    setNumerator(text);
-                                }}
-                            /> */}
                             <InputWithLabel
                                 // style={{flex: 1}}
                                 textStyle={styles.inputText}
@@ -265,13 +255,6 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
                     {/* If the type is a Ratio, then another TextInput is needed for the user to enter a denominator. */}
                     {type === 'Ratio' && (
                         // TextInput for denominator of an assignment.
-                        // <TextInput
-                        //     style={styles.inputText}
-                        //     value={denominator}
-                        //     onChangeText={(text) => {
-                        //         setDenominator(text);
-                        //     }}
-                        // />
                         <InputWithLabel
                             // style={{flex: 1}}
                             textStyle={styles.inputText}
@@ -297,6 +280,7 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
 NAME
 
     SectionScreen - a component that handles the UI elements and functionalities associated with the screen responsible for adding and editing assignments within a section.
+
 SYNOPSIS
 
     <View> SectionScreen({navigation, route})
@@ -307,6 +291,7 @@ DESCRIPTION
 
     If the user presses the plus button, a new assignment object will be created, with an accompanying View that can be
     interacted with to edit that object. The object will be updated in state and context.
+
 RETURNS
 
     Returns View that lets the user add assignments and edit them within a section.
@@ -381,19 +366,21 @@ const SectionScreen = ({navigation, route}) => {
                         /*
                         NAME
 
-                                deleteAssignmentFromSection - a function that handles the deletion of an assignment from a section.
+                            deleteAssignmentFromSection - a function that handles the deletion of an assignment from a section.
+                        
                         SYNOPSIS
 
-                                void SectionScreen()
+                            void SectionScreen()
                                 
                         DESCRIPTION
 
-                                A new_assignments array is created to be the same as the previous assignments array but without the current 
-                                assignment in question (which, would be the assignment to remove). Both the state and the global context are
-                                updated with this new_assignments array.
+                            A new_assignments array is created to be the same as the previous assignments array but without the current 
+                            assignment in question (which, would be the assignment to remove). Both the state and the global context are
+                            updated with this new_assignments array.
+                        
                         RETURNS
 
-                                Returns void.
+                            Returns void.
                         */
                         function deleteAssignmentFromSection(){
                             const new_assignments = assignments.filter((s) => s.id !== assignment.item.id);
