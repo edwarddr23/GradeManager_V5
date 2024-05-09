@@ -44,6 +44,7 @@ const ManageProfilesScreen = ({navigation}) => {
     const[profile, setProfile] = useState({});
     const[selected, setSelected] = useState('');
     const[all_keys, setAll_keys] = useState([]);
+    
     /*
     NAME
 
@@ -73,6 +74,26 @@ const ManageProfilesScreen = ({navigation}) => {
         }
     }
 
+    /*
+    NAME
+
+        removeItemAtKey - an async function that deletes the saved profile under a file name (key).
+    
+    SYNOPSIS
+
+        bool removeItemAtKey()
+                
+    DESCRIPTION
+
+        This function is a promise that calls the AsyncStorage removeItem() function to delete the entry at key
+        defined by parameter key. After deletion, state list all_keys and selected are both updated to prevent a
+        user from attempting to load or delete a profile that doesn't exist and also to update the list of profiles
+        the SelectList pulls up.
+    
+    RETURNS
+
+        Returns a boolean that returns true if successful and false if not.
+    */
     const removeItemAtKey = async(key) => {
         try{
             // console.log(`removeItemAtKey(): key: ${key}`);
