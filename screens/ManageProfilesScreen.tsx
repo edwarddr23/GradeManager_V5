@@ -1,10 +1,10 @@
 /* 
-    LoadScreen.tsx
+    ManageProfilesScreen.tsx
 
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen
-        responsible for loading a profile from a profile name.
+        responsible for loading or deleting a profile from a profile name.
 */
 
 import React, { useEffect, useState } from 'react'
@@ -21,11 +21,11 @@ import common_style from '../shared/common_style';
 /*
 NAME
 
-    LoadScreen - a component that handles the load screen functionality.
+    ManageProfilesScreen - a component that handles the load screen functionality.
 
 SYNOPSIS
 
-    <View> LoadScreen({navigation})
+    <View> ManageProfilesScreen({navigation})
         navigation --> the navigation object inherited by every child within the Stack.Navigator in the NavigationContainer. The navigation hierarchy can be seen in the root of this project, App.tsx.
 
 DESCRIPTION
@@ -37,12 +37,12 @@ RETURNS
 
     Returns a View component that holds a SelectList, a View that holds a preview for the profile, and a "load file" button.
 */
-const LoadScreen = ({navigation}) => {
+const ManageProfilesScreen = ({navigation}) => {
     const { profile_context } = useProfileContext();
     // State variables to keep track of the profile name to load and whether to allow the printing and loading of a profile if one is found.
     const[fileExists, setFileExists] = useState(false);
     const[profile, setProfile] = useState({});
-    const[selected, setSelected] = useState();
+    const[selected, setSelected] = useState('');
     const[all_keys, setAll_keys] = useState([]);
     /*
     NAME
@@ -73,6 +73,19 @@ const LoadScreen = ({navigation}) => {
         }
     }
 
+    const removeItemAtKey = async(key) => {
+        try{
+            // console.log(`removeItemAtKey(): key: ${key}`);
+            await AsyncStorage.removeItem(key);
+            setAll_keys(all_keys.filter((a) => a !== key));
+            setSelected('');
+            return true;
+        }
+        catch(e){
+            return false;
+        }
+    }
+
     // Keyboard flags in state that indicate whether the keyboard is showing or not. This will be used mainly to make certain views invisible when the keyboard comes up.
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
@@ -84,7 +97,7 @@ const LoadScreen = ({navigation}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
-        // A listener is added to the useEffect() hook so that when the LoadScreen comes back into focus, the save files available will be updated in the case that a user loads, saves to a new file, and then hits the back button until they go back to the load screen. Without this listener, useEffect() will not automatically run again once the back button brings the user back to LoadScreen.
+        // A listener is added to the useEffect() hook so that when the ManageProfilesScreen comes back into focus, the save files available will be updated in the case that a user loads, saves to a new file, and then hits the back button until they go back to the load screen. Without this listener, useEffect() will not automatically run again once the back button brings the user back to ManageProfilesScreen.
         navigation.addListener('focus', () => {
             getAllKeys();
         })
@@ -115,15 +128,13 @@ const LoadScreen = ({navigation}) => {
     */
     // Inspired by https://www.waldo.com/blog/react-native-fs
     function readFile(fileName) {
-        console.log(`readFile(): fileName: ${fileName}`);
-        if(fileName === ''){
+        if(fileName === '' || fileName === undefined){
             setFileExists(false);
             return;
         }
         storage.load({key: fileName})
             // If a file is found under fileName, modify the global profile_context to reflect this loaded profile if the user chooses to load it. Set state variable fileExists to true so that the profile preview and the load button can be rendered.
             .then((data) => {
-                console.log(`readFile(): loading ${fileName}`)
                 const profile = data.profile;
                 setProfile(profile);
                 profile_context.setProfile_name(profile.profile_name);
@@ -161,21 +172,21 @@ const LoadScreen = ({navigation}) => {
             <View style={{flex: 1}}>
                 <ScrollView>
                     {/* If there is a profile name entered and a file is found for that name, print the data loaded. */}
-                    {fileExists === true && selected !== '' && (
+                    {fileExists === true && selected !== '' && selected !== undefined && (
                         PrintData(profile_context)
                     )}
                     {/* If there is a profile name entered but no file is found, then let the user know that no user is found. */}
-                    {fileExists === false && selected !== '' && (
+                    {fileExists === false && selected !== '' && selected !== undefined && (
                         <Text style={common_style.defaultText}>Profile: "{selected}" could not be found.</Text>
                     )}
                     {/* If there is no profile name entered, then return to a resting state and do not do anything. */}
-                    {selected === '' && (
+                    {(selected === '' || selected === undefined) && (
                         <Text style={common_style.defaultText}>Profile Preview here...</Text>
                     )}
                 </ScrollView>
             </View>
             {/* Load button that lets a user load the profile loaded into the global profile_context in function readFile(). */}
-            <View style={{height: 70}}>
+            <View style={{height: 100}}>
                 {fileExists === true && selected !== '' && !keyboard_showing && (
                     <FlatButton 
                         text={'Load \"' +  selected + '\"'}
@@ -185,11 +196,24 @@ const LoadScreen = ({navigation}) => {
                     />
                 )}
             </View>
+            <View style={{height: 70}}>
+                {fileExists === true && selected !== '' && !keyboard_showing && (
+                    <FlatButton 
+                        text={'Delete \"' +  selected + '\"'}
+                        onPress={() => {
+                            removeItemAtKey(selected);
+                            // console.log(`all_keys after deletion: ${all_keys}`);
+                            // navigation.navigate('Delete');
+                            // navigation.navigate('Years', {profile: profile});
+                        }}
+                    />
+                )}
+            </View>
         </View>
     );
 }
 
-export default LoadScreen;
+export default ManageProfilesScreen;
 
 const styles = StyleSheet.create({
     container: {

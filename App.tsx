@@ -28,13 +28,14 @@ import HomeScreen from './screens/HomeScreen';
 import CreateProfileScreen from './screens/CreateProfileScreen';
 import YearsScreen from './screens/YearsScreen';
 import SaveScreen from './screens/SaveScreen';
-import LoadScreen from './screens/LoadScreen';
+// import LoadScreen from './screens/ManageProfilesScreen';
 import { ProfileProvider } from './shared/profile_context';
 import SectionScreen from './screens/SectionScreen';
 import SemesterScreen from './screens/SemesterScreen';
 import ConfigureSectionsScreen from './screens/ConfigureSectionsScreen';
 import ConfigureLetterGradingScreen from './screens/ConfigureLetterGradingScreen';
 import common_style from './shared/common_style';
+import ManageProfilesScreen from './screens/ManageProfilesScreen';
 
 const HeaderView = ({navigation, backButtonOnPress, titleView, hasBackButton, hasSaveButton}) => {
   return(
@@ -287,10 +288,10 @@ function App(): React.JSX.Element {
               name="Save"
               component={SaveScreen}/>
             <Stack.Screen
-              name="Load"
-              component={LoadScreen}
+              name="Manage Profiles"
+              component={ManageProfilesScreen}
               options={() => ({
-                title: 'Load a Profile'
+                title: 'Manage Profiles'
               })}/>
         </Stack.Navigator>
       </NavigationContainer>

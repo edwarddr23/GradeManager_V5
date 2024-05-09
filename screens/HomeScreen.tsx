@@ -38,20 +38,21 @@ const HomeScreen = ({navigation}) => {
             <View style={{flex: 1}}>
                 <Text style={[commonStyle.defaultText, {marginTop: 'auto', fontSize: 50, fontWeight: 'bold', paddingBottom: 20, textAlign: 'center'}]}>Welcome to Grade Manager!</Text>
             </View>
-            <View style={{flex: 1, width: '70%', gap: 30}}>
-                <View style={{flex: 1}}>
-                    <FlatButton
-                        text='Create New Profile'
-                        onPress={() => navigation.navigate('Create Profile')}
-                    />
+            <View style={{flex: 1, width: '70%'}}>
+                <View style={{height: '60%', marginBottom: 'auto', gap: 30}}>
+                    <View style={{flex: 1}}>
+                        <FlatButton
+                            text='Create New Profile'
+                            onPress={() => navigation.navigate('Create Profile')}
+                        />
+                    </View>
+                    <View style={{flex: 1}}>
+                        <FlatButton
+                            text='Manage Profiles'
+                            onPress={() => navigation.navigate('Manage Profiles')}
+                        />
+                    </View>
                 </View>
-                <View style={{flex: 1}}>
-                    <FlatButton
-                        text='Load Profile'
-                        onPress={() => navigation.navigate('Load')}
-                    />
-                </View>
-                <View style={{flex: 1}}/>
             </View>
         </View>
     );
