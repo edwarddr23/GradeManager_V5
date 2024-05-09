@@ -161,16 +161,6 @@ function App(): React.JSX.Element {
                     hasSaveButton={true}
                   />
                 )
-                // headerRight: () => (
-                //   <View style={{width: 100, height: 45}}>
-                //     <FlatButton
-                //       text="Save"
-                //       onPress={() => {
-                //         navigation.navigate("Save");
-                //       }}
-                //     />
-                //   </View>
-                // )
               })}
             />
             <Stack.Screen
@@ -182,12 +172,12 @@ function App(): React.JSX.Element {
                     navigation={navigation}
                     hasBackButton={true}
                     backButtonOnPress={() => {
-                      const { year, curr_class, total } = route.params;
+                      const { total } = route.params;
                       if(total > 100){
                           Toast.show(`The total weights cannot exceed 100% total: ${total}`, Toast.SHORT);
                       }
                       else{
-                          navigation.navigate('Semester', {semester: route.params.semester});
+                          navigation.goBack();
                       }
                     }}
                     titleView={(
@@ -215,7 +205,6 @@ function App(): React.JSX.Element {
                     hasBackButton={true}
                     backButtonOnPress={() => {
                       const { semester, letter_grading } = route.params;
-                      console.log(`Back button: letter_grading[0]: ${JSON.stringify(letter_grading[0])}`);
                       // "A" must end at 100%.
                       if(parseInt(letter_grading[0].end) !== 100){
                         Toast.show('"A" grade must end at 100%', Toast.SHORT);
@@ -246,7 +235,7 @@ function App(): React.JSX.Element {
                       }
                       // If the letter_grading is not contiguous, then a Toast would have already displayed from isContiguous(). Return so that user cannot navigate back.
                       if(!isContiguous()) return;
-                      navigation.navigate('Semester', {semester: semester});
+                      navigation.goBack();
                     }}
                     titleView={(
                       <View>
@@ -272,8 +261,9 @@ function App(): React.JSX.Element {
                   navigation={navigation}
                   hasBackButton={true}
                   backButtonOnPress={() => {
-                    const { semester } = route.params;
-                    navigation.navigate('Semester', {semester: semester});
+                    navigation.goBack();
+                    // const { semester } = route.params;
+                    // navigation.navigate('Semester', {semester: semester});
                     // navigation.navigate('Semester', {semester: semester});
                   }}
                   titleView={(

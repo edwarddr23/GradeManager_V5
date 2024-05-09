@@ -19,7 +19,6 @@ import { findNextID } from '../shared/key_functions';
 import { calculateSectionAverage, calculateClassAverage, calculateClassLetterGrade, calculateExpectedSectionAverage, calculateExpectedClassAverage, calculateExpectedClassLetterGrade } from '../shared/calculation_functions';
 
 import Footer from '../shared/custom_footer';
-import Toast from 'react-native-simple-toast';
 import FlatButton from '../shared/custom_buttons';
 import common_style from '../shared/common_style';
 import { InputWithLabel } from '../shared/custom_text_Inputs';
@@ -49,21 +48,18 @@ RETURNS
 */
 const SectionView = ({semester, curr_class, section, navigation}) => {
     // Context function to update the current section within the global profile context.
-    const { updateSectionInProfile } = useProfileContext();
+    const { profile_context, updateSectionInProfile } = useProfileContext();
     // State variables that track the changes the user makes to the current section in question.
     const[is_editing, setIs_editing] = useState(false);
     const[name, setName] = useState(section.name);
     const[assignments, setAssignments] = useState(section.assignments);
 
-    // Hook that returns true if focused and false if not.
-    const isFocused = useIsFocused();
-
     // Hook that runs upon rerender.
     useEffect(() => {
         // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
-        if(isFocused){
-            setAssignments(section.assignments);
-        }
+        navigation.addListener('focus', () => {
+            setAssignments(profile_context.years.find((y) => y.id === section.year_id).semesters.find((s) => s.id === section.semester_id).classes.find((c) => c.id === section.class_id).sections.find((s) => s.id === section.id).assignments);
+        })
     }, [assignments]);
 
     /*
@@ -224,7 +220,7 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
         }
         return (
             <View>
-                <Text style={common_style.defaultText}>Assignments:</Text>
+                <Text style={common_style.defaultText}>Assignments: {assignments.length}</Text>
                 {/* The Text component returned will vary based on several factors. If the assignment in question
                 has a type, then there must be a name (as the validation when editing a section in the SectionScreen
                 component requires a name to be specified when a type is specified). Therefore, display the name and
@@ -681,6 +677,9 @@ const SemesterScreen = ({navigation, route}) => {
     // Keyboard state flag that will help in tracking whether the keyboard is up or not.
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
+    // Hook that returns true if focused and false if not.
+    // const isFocused = useIsFocused();
+
     useEffect(() => {
         // setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
         // navigation.setOptions({
@@ -705,6 +704,9 @@ const SemesterScreen = ({navigation, route}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
+        // if(isFocused){
+        //     setClasses(profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).classes);
+        // }
     }, [classes]);
 
     /*
