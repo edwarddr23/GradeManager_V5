@@ -1,6 +1,6 @@
 /* 
     ConfigureLetterGradingScreen.tsx
-    
+
     PURPOSE
 
         The purpose of this file is to define all of the functionalities necessary for the screen
@@ -10,10 +10,11 @@
 */
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Keyboard } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Keyboard, BackHandler } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useProfileContext } from '../shared/profile_context';
 import Toast from 'react-native-simple-toast';
+import { useIsFocused } from '@react-navigation/native';
 
 import { validPositiveIntInputs } from '../shared/input_validation_functions';
 import Footer from '../shared/custom_footer';
@@ -186,30 +187,8 @@ const ConfigureLetterGradingScreen = ({navigation, route}) => {
     // Keyboard flags in state that indicate whether the keyboard is showing or not. This will be used mainly to make certain views invisible when the keyboard comes up.
     const[keyboard_showing, setKeyboard_showing] = useState(false);
 
-    useEffect(() => {
-        console.log(`route.params.letter_grading: ${route.params.letter_grading}`);
-    });
-
-    // useEffect(() => {
-    //     const title = () => {
-    //         if(curr_class.name === '') return `New Class`;
-    //         return curr_class.name;
-    //     };
-    //     navigation.setOptions({
-    //         title: `Letter Grading in ${title()}`,
-    //         // headerLeft: () => (
-    //         //     <View style={{marginRight: 20}}>
-    //         //         <TouchableOpacity
-    //         //         activeOpacity={0.5}
-    //         //         onPress={() => {
-    //         //             navigation.navigate('Semester', {semester: profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id)});
-    //         //         }}>
-    //         //         <AntDesign name="arrowleft" size={25} color='black'/>
-    //         //         </TouchableOpacity>
-    //         //     </View>
-    //         // )
-    //     });
-    // })
+    // Hook that returns true if focused and false if not.
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
@@ -218,6 +197,65 @@ const ConfigureLetterGradingScreen = ({navigation, route}) => {
         const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
             setKeyboard_showing(false)
         })
+        
+        /*
+        NAME
+
+                handleBackButton - a function component that handles the checking of the letter grades' beginning and end ranges when the user presses their hardware back button.
+                
+        SYNOPSIS
+
+                bool handleBackButton()
+
+        DESCRIPTION
+
+                This function component will check to see if the letter grades' beginning and end ranges are contiguous. If
+                not, then display a toast and do not navigate back. Otherwise, navigate back.
+
+        RETURNS
+
+                Returns true to prevent default back button behavior and false to resume normal back button behavior.
+        */
+        const handleBackButton = () => {
+            // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
+            if(isFocused){
+                // "A" must end at 100%.
+                if(parseInt(letter_grading[0].end) !== 100){
+                    Toast.show('"A" grade must end at 100%', Toast.SHORT);
+                    return;
+                }
+                // "F" must begin at 0%.
+                else if(parseInt(letter_grading[10].beg) !== 0){
+                    Toast.show(`"F" grade msut begin at 0%`, Toast.SHORT);
+                    return;
+                }
+                // Check if letter grading is contiguous.
+                function isContiguous(){
+                    let contiguous = true;
+
+                    for(let i = 0; i < letter_grading.length; i++){
+                        let curr_letter_grade = letter_grading[i];
+                        // Validate with letter after as long as the current letter is not "F" (the last one).
+                        if(curr_letter_grade.letter !== "F"){
+                            if(parseInt(curr_letter_grade.beg) !== parseInt(letter_grading[i + 1].end)){
+                                Toast.show(`${curr_letter_grade.letter} and ${letter_grading[i + 1].letter} are not contiguous`, Toast.SHORT);
+                                contiguous = false;
+                                break;
+                            }
+                        }
+                    };
+
+                    return contiguous
+                }
+                // If the letter_grading is not contiguous, then a Toast would have already displayed from isContiguous(). Return so that user cannot navigate back.
+                if(!isContiguous()) return true;
+                navigation.goBack();
+                return true;
+            }
+            return false;
+        }
+        const backhandler = BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+        return () => backhandler.remove();
     })
     
     return(
