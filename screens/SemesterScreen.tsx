@@ -351,9 +351,6 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
         navigation.addListener('focus', () => {
             setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
         })
-        // if(isFocused){
-        //     setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-        // }
     }, [sections])
 
     /*
