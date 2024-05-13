@@ -349,7 +349,10 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
 
     useEffect(() => {
         navigation.addListener('focus', () => {
-            setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+            // If the current class in question was not removed from the profile context, then
+            if(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id) !== undefined){
+                setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+            }
         })
     }, [sections])
 

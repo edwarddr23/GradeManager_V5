@@ -410,11 +410,13 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                         Toast.show('Beginning and end year cannot be the same value', Toast.SHORT);
                         return;
                     }
+                    setBeg_year(beg_year.trim());
+                    setEnd_year(end_year.trim());
                     updateYears(
                         {
                             ...year,
-                            beg_year: beg_year,
-                            end_year: end_year
+                            beg_year: parseInt(beg_year.trim()),
+                            end_year: parseInt(end_year.trim())
                         }
                     );
                     setIs_editing(!is_editing);

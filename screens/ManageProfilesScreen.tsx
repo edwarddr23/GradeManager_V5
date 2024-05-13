@@ -96,7 +96,6 @@ const ManageProfilesScreen = ({navigation}) => {
     */
     const removeItemAtKey = async(key) => {
         try{
-            // console.log(`removeItemAtKey(): key: ${key}`);
             await AsyncStorage.removeItem(key);
             setAll_keys(all_keys.filter((a) => a !== key));
             setSelected('');
@@ -122,7 +121,7 @@ const ManageProfilesScreen = ({navigation}) => {
         navigation.addListener('focus', () => {
             getAllKeys();
         })
-    }, []);
+    }, [all_keys]);
 
     /*
     NAME
@@ -179,7 +178,7 @@ const ManageProfilesScreen = ({navigation}) => {
                     inputStyles={common_style.defaultText}
                     // Placeholder is type so that the selected type will show after the exam is closed and reopened.
                     placeholder={'Select a profile name here'}
-                    setSelected={(val) => setSelected(val)}
+                    setSelected={setSelected}
                     data={all_keys}
                     search={false}
                     save="value"
