@@ -263,9 +263,8 @@ export function calculateExpectedClassAverage(sections) {
     });
     // Filter out any expected section averages that are invalid. There must be at least one valid expected section average, otherwise, a calculated section average would not be determined either, so we will not need to check if any valid expected section averages exist.
     const valid_exp_section_averages = exp_section_averages.filter((e) => {
-        if(e !== 'N/A') return e;
+        if(e[0] !== 'N/A') return e;
     });
-    // Otherwise, accumulate the averages and weights of every section. The total weights need to be tracked as there will be situations wehre they will not total 100%.
     let total_averages = 0;
     let total_weights = 0;
     valid_exp_section_averages.map((v) => {
