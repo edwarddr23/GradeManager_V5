@@ -387,12 +387,12 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
             <TouchableOpacity 
                 onPress={() => {
                     // Validate input for beginning and end year. If either are invalid or if both together are invalid, then do not save the changes to state and global profile context and do not update the current year object in question.
-                    if(beg_year === -1 || beg_year === ''){
+                    if(beg_year === -1 || beg_year.trim() === ''){
                         Toast.show('Please enter a beginning year', Toast.SHORT);
                         setBeg_year(-1);
                         return;
                     }
-                    else if(end_year === -1 || end_year === ''){
+                    else if(end_year === -1 || end_year.trim() === ''){
                         Toast.show('Please enter an end year', Toast.SHORT);
                         setEnd_year(-1);
                         return;
