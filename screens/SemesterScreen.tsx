@@ -59,7 +59,10 @@ const SectionView = ({semester, curr_class, section, navigation}) => {
     useEffect(() => {
         // Listener that runs when the SemesterScreen comes back into focus. The assignments within the SectionView are updated.
         navigation.addListener('focus', () => {
-            setAssignments(profile_context.years.find((y) => y.id === section.year_id).semesters.find((s) => s.id === section.semester_id).classes.find((c) => c.id === section.class_id).sections.find((s) => s.id === section.id).assignments);
+            // If the current section in question was deleted in ConfigureSections.tsx, then finding and editing the assignments for the current section in question will fail, as the current section in question is not in the profile context anymore. If the current section remains in the profile context, then modify its assignments. Otherwise, do nothing.
+            if(profile_context.years.find((y) => y.id === section.year_id).semesters.find((s) => s.id === section.semester_id).classes.find((c) => c.id === section.class_id).sections.find((s) => s.id === section.id) !== undefined){
+                setAssignments(profile_context.years.find((y) => y.id === section.year_id).semesters.find((s) => s.id === section.semester_id).classes.find((c) => c.id === section.class_id).sections.find((s) => s.id === section.id).assignments);
+            }
         })
     }, [assignments]);
 
@@ -345,9 +348,12 @@ const ClassView = ({semester, curr_class, deleteClass, navigation}) => {
     const isFocused = useIsFocused();
 
     useEffect(() => {
-        if(isFocused){
+        navigation.addListener('focus', () => {
             setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
-        }
+        })
+        // if(isFocused){
+        //     setSections(profile_context.years.find((y) => y.id === curr_class.year_id).semesters.find((s) => s.id === curr_class.semester_id).classes.find((c) => c.id === curr_class.id).sections);
+        // }
     }, [sections])
 
     /*

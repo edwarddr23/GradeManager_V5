@@ -109,7 +109,7 @@ function App(): React.JSX.Element {
                   hasSaveButton={false}
                   titleView={(
                     <View>
-                      <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>Home</Text>
+                      <Text style={[common_style.defaultText, {flexWrap: 'wrap', fontWeight: 'bold'}]}>Create Profile</Text>
                     </View>
                   )}
                 />
