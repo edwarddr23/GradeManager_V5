@@ -81,7 +81,7 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
         }
         else if(type === '') return true;
         // Regardless of the type, validate the numerator.
-        else if(numerator === -1 || numerator === ''){
+        else if(numerator === -1 || numerator.trim() === ''){
             Toast.show('Please enter numerator', Toast.SHORT);
             return false;
         }
@@ -104,7 +104,7 @@ const AssignmentView = ({assignment, deleteAssignment}) => {
         }
         // If the type is a ratio, then validate both the numerator and denominator
         if(type === 'Ratio'){
-            if(denominator === -1 || denominator === ''){
+            if(denominator === -1 || denominator.trim() === ''){
                 Toast.show('Please enter denominator', Toast.SHORT);
                 return false;
             }
