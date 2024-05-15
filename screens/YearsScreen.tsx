@@ -48,7 +48,7 @@ RETURNS
 */
 const SemesterView = ({ years_range, semester, updateSemesters, deleteSemester, navigation }) => {
     // Global profile context function extracted to handle updating the specific semester in question in the global profile context.
-    const { updateSemesterInProfile } = useProfileContext();
+    const { profile_context, updateSemesterInProfile } = useProfileContext();
     // State variables to handle the changing behavior and attributes of the current SemesterContent object and the component.
     const[is_editing, setIs_editing] = useState(false);
     const[season, setSeason] = useState(semester.season);
@@ -60,13 +60,19 @@ const SemesterView = ({ years_range, semester, updateSemesters, deleteSemester, 
     const[semesterGPA, setSemesterGPA] = useState(calculateSemesterGPA(semester));
     const[expectedSemesterGPA, setExpectedSemesterGPA] = useState(calculateExpectedSemesterGPA(semester));
 
-    
-
     // Hook that handles the rerendering of the gpa and expected semester gpa for the current semester in question when the YearsScreen comes back into focus.
     useEffect(() => {
+        console.log(`this ran`);
         navigation.addListener('focus', () => {
             setSemesterGPA(calculateSemesterGPA(semester));
             setExpectedSemesterGPA(calculateExpectedSemesterGPA(semester));
+        })
+        const new_year = profile_context.years.find((y) => y.id === semester.year_id).semesters.find((s) => s.id === semester.id).year;
+        // In the case that a user changes the years range of the parent academic year, the current semester's year needs to be re-evaluated and rerendered. Its profile context value has presumably already been updated in the YearView.
+        setYear(new_year)
+        setSeasonAndYear(() => {
+            if(season !== '' && year !== -1) return(`${season} ${new_year}`);
+            return '';
         })
     });
 
@@ -271,7 +277,7 @@ RETURNS
     Returns a dynamic View component that allows the user to edit and view a year within the profile.
 */
 const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigation}) => {
-    const { addSemesterToProfile } = useProfileContext();
+    const { addSemesterToProfile, updateSemesterInProfile } = useProfileContext();
     // State variables to allow for the dynamic behavior of the YearView when attributes of a year are changed.
     const[beg_year, setBeg_year] = useState(year.beg_year);
     const[end_year, setEnd_year] = useState(year.end_year);
@@ -419,6 +425,20 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                             end_year: parseInt(end_year.trim())
                         }
                     );
+                    // Update the semesters in the specific academic year in question so that each semester's year is updated in the profile context. The state will be updated in the SemesterView's useEffect() hook.
+                    for(let semester of semesters){
+                        let new_semester = {...semester};
+                        switch(semester.season){
+                            case 'Fall':
+                            case 'Winter':
+                                new_semester.year = parseInt(beg_year.trim());
+                                break;
+                            case 'Spring':
+                            case 'Summer':
+                                new_semester.year = parseInt(end_year.trim());
+                        }
+                        updateSemesterInProfile(new_semester);
+                    }
                     setIs_editing(!is_editing);
                 }}>
                 <AntDesign name="checkcircleo" size={50} color={'green'}/>
@@ -513,11 +533,11 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
     /*
     NAME
 
-        renderSemsters - a function component that renders the semesters of the academic year in question.
+        renderSemesters - a function component that renders the semesters of the academic year in question.
 
     SYNOPSIS
 
-        <View> or <Text> renderSemsters()
+        <View> or <Text> renderSemesters()
 
     DESCRIPTION
 
@@ -530,7 +550,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
 
         Returns a View or Text component that handles the rendering of SemesterView components for each semester object found ini the semesters array.
     */
-    const renderSemsters = () => {
+    const renderSemesters = () => {
         if(expanded){
             // If there's existing semesters, display them
             if(semesters.length > 0) return (
@@ -580,7 +600,7 @@ const YearView = ({year, updateYears, updateSemestersInYear, deleteYear, navigat
                     {expanded && (<AntDesign name="upcircleo" size={50} color="black"/>)}
                 </TouchableOpacity>
                 { renderAddSemesterButton() }
-                { renderSemsters() }
+                { renderSemesters() }
                 { renderDeleteButton() }
             </View>
         </View>
